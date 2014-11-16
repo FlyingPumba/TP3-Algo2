@@ -1,0 +1,88 @@
+#ifndef DRIVER_H_
+#define DRIVER_H_
+
+#include "Tipos.h"
+#include "aed2/TiposBasicos.h"
+
+//#include ...
+
+namespace aed2 {
+
+class Driver
+{
+	public:
+
+        Driver(const Conj<Estacion>& estacionesIniciales);
+
+		~Driver();
+
+        /// Observadores Mapa //////////////////////////////////////////////////////////
+
+        Nat CantidadEstaciones() const;
+
+        // PRE: i < #estaciones()
+        const Estacion& IesimaEstacion(Nat i) const;
+
+        // PRE: e \in estaciones()
+        Nat CantidadDeSendasParaEstacion(const Estacion& e) const;
+
+        // PRE: e \in estaciones() \and i < # {e2:Estacion | conectadas?(e,e2)}
+        const Estacion& IesimaEstacionDeSenda(const Estacion& e, Nat i) const;
+
+        // PRE: e \in estaciones() \and i < # {e2:Estacion | conectadas?(e,e2)}
+        const Restriccion& IesimaRestriccionDeSenda(const Estacion& e1, Nat i) const;
+
+        /// Armado Mapa ////////////////////////////////////////////////////////////////
+
+        /*******************************************************
+         * VER DESCRIPCION DE LAS RESTRICCIONES EN Tipos.h !!! *
+         *******************************************************/
+
+        // PRE: e1 \in estaciones() \and e2 \in estaciones() \and \not conectadas?(e1,e2)
+        void AgregarSenda(const Estacion& e1, const Estacion& e2, Restriccion r);
+
+        /// Observadores Ciudad //////////////////////////////////////////////////////////////
+
+        Nat CantidadRobotsActivos() const;
+
+        /// PRE: i < #robots()
+        RUR IesimoRobotActivo(Nat i) const;
+
+        /// PRE: i < #robots()
+        const Estacion& EstacionActualIesimoRobotActivo(Nat i) const;
+
+        /// PRE: i < #robots()
+        const Conj<Caracteristica>& CaracteristicasIesimoRobotActivo(Nat i) const;
+
+        /// PRE: i < #robots()
+        Nat CantInfraccionesIesimoRobotActivo(Nat i) const;
+
+        /// PRE: (\exists r:RUR) r \in robots() \and #infracciones(r) > 0
+        RUR ElMasInfractor() const;
+
+        /// Acciones Ciudad ////////////////////////////////////////////////////////////
+        /// Al empezar a usar estas operaciones se asume que ya no se agregan sendas nuevas
+
+        /// PRE: estacionInicial \in estaciones()
+        void Entrar(const Conj<Caracteristica> & cs, const Estacion& estacionInicial);
+
+        /// PRE: robot \in robots() \and destino \in estaciones()
+        void Mover(RUR robot, const Estacion& destino);
+
+        /// PRE: e \in estaciones()
+        void Inspeccion(const Estacion & e);
+
+	private:
+
+    /*********************************************************************
+     * TODO: Va a ser necesario instanciar privadamente un Modulo Ciudad *
+     * con el cuál interactuar. Además, pueden declarar todas las        *
+     * funciones auxiliares que les hagan falta.                         *
+     *********************************************************************/
+
+}; // class Driver
+
+
+} // namespace aed2
+
+#endif // DRIVER_H_
