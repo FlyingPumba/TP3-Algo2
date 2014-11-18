@@ -2,7 +2,7 @@
 #ifndef ARBOL_BINARIO_H_INCLUDED
 #define ARBOL_BINARIO_H_INCLUDED
 
-#include "TiposBasicos.h"
+#include "aed2.h"
 
 namespace tp {
 
@@ -18,7 +18,7 @@ namespace tp {
             /**
              * Crea un ArbolBinario dados 2 sub-arboles (izquierdo y derecho) y una raiz.
              */
-            ArbolBinario(ArbolBinario<T>& izq, raiz T, ArbolBinario<T>& der);
+            ArbolBinario(ArbolBinario<T>& izq, const T& raiz, ArbolBinario<T>& der);
 
             /**
              * Constructor por copia.
@@ -61,40 +61,40 @@ namespace tp {
 
             /**
              * Intercambia la raiz entre los arboles.
-             * Requiere not Nil?(padre) and not Nil?(hijo) and 
+             * Requiere not Nil?(padre) and not Nil?(hijo) and
              *      (Izq(padre) == hijo or Der(padre) == hijo)
              */
-            Swap(ArbolBinario<T>& padre, ArbolBinario<T>& hijo);
+            void Swap(ArbolBinario<T>& padre, ArbolBinario<T>& hijo);
 
             /**
              * Borra el sub-arbol izquierdo.
              * Requiere not Nil?(arbol) and not Nil?(Izq(arbol)) and Izq(arbol) es una hoja
              */
-            BorrarHojaIzq(ArbolBinario<T>& arbol);
+            void BorrarHojaIzq(ArbolBinario<T>& arbol);
 
             /**
              * Borra el sub-arbol derecho.
              * Requiere not Nil?(arbol) and not Nil?(Der(arbol)) and Der(arbol) es una hoja
              */
-            BorrarHojaDer(ArbolBinario<T>& arbol);
+            void BorrarHojaDer(ArbolBinario<T>& arbol);
 
             /**
              * Agrega una hoja a la izquierda del arbol.
              * Requiere not Nil?(arbol) and Nil?(Izq(arbol)) and izq es una hoja
              */
-            AgregarHojaIzq(ArbolBinario<T>& arbol, ArbolBinario<T>& izq);
+            void AgregarHojaIzq(ArbolBinario<T>& arbol, ArbolBinario<T>& izq);
 
             /**
              * Agrega una hoja a la derecha del arbol.
              * Requiere not Nil?(arbol) and Nil?(Der(arbol)) and der es una hoja
              */
-            AgregarHojaDer(ArbolBinario<T>& arbol, ArbolBinario<T>& der);
+            void AgregarHojaDer(ArbolBinario<T>& arbol, ArbolBinario<T>& der);
 
             /**
              * Modifica la raiz del arbol.
              * Requiere not Nil?(arbol)
              */
-            CambiarRaiz(ArbolBinario<T>& arbol, T raiz);
+            void CambiarRaiz(ArbolBinario<T>& arbol, const T& raiz);
 
             /**
              * Devuelve la cantidad de nodos del arbol.
@@ -109,11 +109,14 @@ namespace tp {
         private:
             struct Nodo
             {
-                Nodo(const T& v) : dato(v), izq(NULL), der(NULL), padre(NULL) {}
-                T valor;
-                Nodo* izq;
-                Nodo* der;
-                Nodo* padre; 
+                Nodo(ArbolBinario<T>* i, const T& v, ArbolBinario<T>* d, ArbolBinario<T>* p) : dato(v), izq(i), der(d), padre(p) {};
+                Nodo(ArbolBinario<T>* i, const T& v, ArbolBinario<T>* d) : dato(v), izq(i), der(d), padre(NULL){};
+                Nodo(const T& v) : dato(v), izq(NULL), der(NULL), padre(NULL) {};
+
+                T dato;
+                ArbolBinario<T>* izq;
+                ArbolBinario<T>* der;
+                ArbolBinario<T>* padre;
             };
 
             Nodo* inicio;
@@ -129,19 +132,19 @@ namespace tp {
     ArbolBinario<T>::ArbolBinario() : inicio(NULL), altura(0), tamanho(0) {}
 
     template<class T>
-    ArbolBinario<T>::ArbolBinario(ArbolBinario<T>& izq, T raiz, ArbolBinario<T>& der) {
-        this.inicio = new Nodo(raiz, izq, der, NULL);
-        if (izq != NULL) {
-            (izq->inicio)->padre = this;
+    ArbolBinario<T>::ArbolBinario(ArbolBinario<T>& izq, const T& raiz, ArbolBinario<T>& der) {
+        inicio = new Nodo(&izq, raiz, &der);
+        if (izq.inicio != NULL) {
+            (*izq.inicio).padre = this;
         }
-        if (der != NULL) {
-            (der->inicio)->padre = this;
+        if (der.inicio != NULL) {
+            (*der.inicio).padre = this;
         }
-        this.tamanho = 1 + Tamanho(izq) + Tamanho(der);
-        if (Altura(izq) < Altura(der)) {
-            this.altura = 1 + Altura(der);
+        tamanho = 1 + izq.Tamanho() + der.Tamanho();
+        if (izq.Altura() < der.Altura()) {
+            altura = 1 + der.Altura();
         } else {
-            this.altura = 1 + Altura(izq);
+            altura = 1 + izq.Altura();
         }
     }
 
@@ -158,6 +161,21 @@ namespace tp {
     template<class T>
     bool ArbolBinario<T>::EsNil() const {
         return inicio == NULL;
+    }
+
+    template<class T>
+    ArbolBinario<T>& ArbolBinario<T>::Izq() const {
+        return *(*inicio).izq;
+    }
+
+    template<class T>
+    ArbolBinario<T>& ArbolBinario<T>::Der() const {
+        return *(*inicio).der;
+    }
+
+    template<class T>
+    T ArbolBinario<T>::Raiz() const {
+        return (*inicio).dato;
     }
 
     template<class T>
