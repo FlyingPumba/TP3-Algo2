@@ -26,7 +26,7 @@ namespace tp {
             ArbolBinario(const ArbolBinario<T>& otro);
 
             /**
-             * Destructor.  Borra lo que hubiera en el ArbolBinario.
+             * Destructor.
              */
             ~ArbolBinario();
 

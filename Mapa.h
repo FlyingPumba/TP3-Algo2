@@ -1,291 +1,116 @@
 
-#ifndef AED2_ARREGLO_H_INCLUDED
-#define AED2_ARREGLO_H_INCLUDED
+#ifndef MAPA_H_INCLUDED
+#define MAPA_H_INCLUDED
 
-#include "TiposBasicos.h"
+#include "aed2.h"
 
-namespace aed2 {
+namespace tp {
 
-    template<class T>
-    class Arreglo{
+    class Mapa{
         public:
 
             /**
-             * Crea un arreglo de tamaño 0.
+             * Genera un mapa nuevo.
              */
-            Arreglo();
+            Mapa();
 
             /**
-             * Crea un arreglo de tamaño tam, donde todas las posiciones
-             * son nulas.
+             * Agrega una estacion al Mapa.
+             * Requiere: est no pertenece a las estaciones del mapa.
              */
-            Arreglo(Nat tam);
+            void Agregar(String est);
 
             /**
-             * Constructor por copia.  Los elementos de otro se copian
-             * en el mismo orden a this, y pasan a ser arreglos independientes
+             * Conecta dos estaciones del mapa.
              */
-            Arreglo(const Arreglo<T>& otro);
+            void Conectar(String est1, String est2, Restriccion& r);
 
             /**
-             * Operacion de asignacion.  Borra lo que se que habia en this
-             * y copia los elementos de otro en el mismo orden.
+             * Destructor.
              */
-            Arreglo<T>& operator=(const Arreglo<T>& otro);
+            ~Mapa();
 
             /**
-             * Destructor.  Borra lo que hubiera en el arreglo.
+             * Devuelve las estaciones del mapa.
              */
-            ~Arreglo();
+            Conj<String>::const_Iterador Estaciones() const;
 
             /**
-             * Devuelve el elemento en la posicion pos.
-             * Requiere: Definido(pos)
+             * Devuelve true si las estaciones estan conectadas.
+             * Requiere: est1 y est2 pertenecen a las estaciones del mapa.
              */
-            const T& operator[](Nat pos) const;
+            bool EstanConectadas(String est1, String est2);
 
             /**
-             * Devuelve el elemento en la posicion pos.
-             * Requiere: Definido(pos)
+             * Devuelve la restriccion de la senda que una las estaciones.
+             * Requiere: est1 y est2 pertenecen a las estaciones del mapa, y ademas estan conectadas.
              */
-            T& operator[](Nat pos);
-
-            /**
-             * Devuelve true si en la posicion pos fue definido algun
-             * elemento.
-             */
-            bool Definido(Nat pos) const;
-
-            /**
-             * Define valor en la posicion pos.  Devuelve this
-             */
-            Arreglo<T>& Definir(Nat pos, const T& valor);
-
-            /**
-             * Indefine el elemento en pos.
-             * No requiere que el elemento este definido.
-             * Devuelve this.
-             */
-            Arreglo<T>& Borrar(Nat pos);
-
-            /**
-             * Devuelve el tamaño del arreglo
-             */
-            Nat Tamanho() const;
-
-            /**
-             * Redimensiona el arreglo, sin copiar los items de nuevo.
-             * Si el arreglo es mas chico, se borran los datos sobrantes.
-             * Sino, se definen items nuevos en null.
-             */
-            Arreglo<T>& Redimensionar(Nat tam);
-
-            /**
-             * Mueve el dato de otro[posOtro] a this[posThis] en O(1).
-             * Si ya habia un dato en this[posThis], el mismo se elimina.
-             * Despues de esto, no esta definido el valor de posOtro en
-             * otro.
-             * Obviamente, this puede ser igual a otro, para lograr mover
-             * las cosas de un lugar a otro.  Aunque se recomienda utilizar
-             * la otra version de mover.
-             */
-            Arreglo<T>& Mover(Nat posThis, Arreglo<T>& otro, Nat posOtro);
-
-            /**
-             * Equivalente a Mover(destino, this, origen)
-             */
-            Arreglo<T>& Mover(Nat destino, Nat origen);
-
-            /**
-             * Intercambia los valores de this[posThis] y otro[posOtro]
-             * sin realizar copias nuevas de los elementos.
-             * Obviamente, this puede ser igual a otro.
-             */
-            Arreglo<T>& Swap(Nat posThis, Arreglo<T>& otro, Nat posOtro);
-
-            /**
-             * Equivalente a Swap(posA, this, posB)
-             */
-            Arreglo<T>& Swap(Nat posA, Nat posB);
+            Restriccion& Restriccion(String est1, String est2) const;
 
         private:
-            //HACK PARA QUE AUTOMAGICAMENTE SE ASIGNEN LAS POSICIONES EN NULL
-            struct Ptr {
-                public:
-                    Ptr(T* t = NULL) {ptr = t;}
-                    operator T*() {return ptr;}
-                    void Delete() {if(ptr!=NULL) delete ptr; ptr = NULL;}
-                    Ptr Copiar() {return ptr == NULL ? NULL : Ptr(new T(*ptr));}
-                    T* ptr;
+            struct Nodo {
+                Nodo(const String est1, const String est1, const Restriccion* r) : est1(est1), est2(est2), rest(r) {};
+
+                String est1;
+                String est2;
+                Restriccion* rest;
             };
 
-            Ptr* array;
-            Nat size;
-
-            void Destruir();
-            void Asignar(const Arreglo<T>& otro);
+            Conj<String> estaciones;
+            Conj<Nodo> sendas;
 
     };
 
-    /**
-     * Funciones globales de comparacion.  Con definir el == obtenemos
-     * el != gratis :)
-     */
-    template<class T>
-    bool operator==(const Arreglo<T>&, const Arreglo<T>&);
-
-    template<class T>
     std::ostream& operator<<(std::ostream& os, const Arreglo<T>&);
 
+    Mapa<T>::Mapa() {}
 
-template<class T>
-Arreglo<T>::Arreglo() : array(NULL), size(0) {}
-
-template<class T>
-Arreglo<T>::Arreglo(Nat tamanio) : size(tamanio) {
-    array = new Ptr[size];
-}
-
-template<class T>
-Arreglo<T>::Arreglo(const Arreglo<T>& otro) {
-    Asignar(otro);
-}
-
-template<class T>
-Arreglo<T>& Arreglo<T>::operator=(const Arreglo<T>& otro) {
-    if(this != &otro) {
-        Destruir();
-        Asignar(otro);
+    void Mapa::Agregar(String est) {
+        assert(estaciones.Pertenece(est) == false);
+        estaciones.AgregarRapido(est);
     }
-    return *this;
-}
 
-template<class T>
-Arreglo<T>::~Arreglo() {
-    Destruir();
-}
-
-template<class T>
-const T& Arreglo<T>::operator[](Nat pos) const {
-    assert(Definido(pos));
-    return *array[pos];
-}
-
-template<class T>
-T& Arreglo<T>::operator[](Nat pos) {
-    assert(Definido(pos));
-    return *array[pos];
-}
-
-template<class T>
-bool Arreglo<T>::Definido(Nat pos) const {
-    return pos < size and array[pos] != NULL;
-}
-
-template<class T>
-Arreglo<T>& Arreglo<T>::Definir(Nat pos, const T& valor) {
-    assert(pos < size);
-    Borrar(pos);
-    array[pos] = new T(valor);
-    return *this;
-}
-
-template<class T>
-Arreglo<T>& Arreglo<T>::Borrar(Nat pos) {
-    assert(pos < size);
-    array[pos].Delete();
-    return *this;
-}
-
-template<class T>
-Nat Arreglo<T>::Tamanho() const {
-    return size;
-}
-
-template<class T>
-Arreglo<T>& Arreglo<T>::Redimensionar(Nat tam) {
-    Ptr* oldarray = array;
-    array = tam == 0 ? NULL : new Ptr[tam];
-
-    for(Nat p = 0; p < size && p < tam; ++p)
-        array[p] = oldarray[p];     //no copia, simplemente mueve los punteros
-
-    //borramos los elementos viejos
-    for(Nat p = tam; p < size; ++p)
-        oldarray[p].Delete();
-    delete [] oldarray;
-
-    size = tam;
-    return *this;
-}
-
-template<class T>
-Arreglo<T>& Arreglo<T>::Mover(Nat posThis, Arreglo<T>& otro, Nat posOtro) {
-    if(this != &otro or posThis != posOtro) {
-        Borrar(posThis);
-        array[posThis] = otro.array[posOtro];
-        otro.array[posOtro] = NULL;
+    void Mapa::Conectar(String est1, String est2, Restriccion& r) {
+        assert(estaciones.Pertenece(est1) == true);
+        assert(estaciones.Pertenece(est2) == true);
+        Nodo aux(est1, est2, &r);
+        sendas.AgregarRapido(aux);
     }
-    return *this;
-}
 
-template<class T>
-Arreglo<T>& Arreglo<T>::Mover(Nat destino, Nat origen) {
-    return Mover(destino, *this, origen);
-}
-
-template<class T>
-Arreglo<T>& Arreglo<T>::Swap(Nat posThis, Arreglo<T>& otro, Nat posOtro) {
-    Ptr tmp = array[posThis];
-    array[posThis] = otro.array[posOtro];
-    otro.array[posOtro] = tmp;
-    return *this;
-}
-
-template<class T>
-Arreglo<T>& Arreglo<T>::Swap(Nat posA, Nat posB) {
-    return Swap(posA, *this, posB);
-}
-
-template<class T>
-void Arreglo<T>::Destruir() {
-    for(Nat p = 0; p < size; ++p) Borrar(p);
-    delete[] array;
-    array = NULL;
-}
-
-template<class T>
-void Arreglo<T>::Asignar(const Arreglo<T>& otro) {
-    size = otro.size;
-    array = new Ptr[size];
-    for(Nat p = 0; p < size; ++p)
-        array[p] = otro.array[p].Copiar();
-}
-
-
-template<class T>
-std::ostream& operator<<(std::ostream& os, const Arreglo<T>& a) {
-    os << "[";
-    for(Nat p = 0; p < a.Tamanho() - 1; ++p) {
-        if(a.Definido(p)) os << a[p];
-        os << ",";
+    ~Mapa() {
+        // TODO
     }
-    if(a.Definido(a.Tamanho()-1)) os << a[a.Tamanho()-1];
-    return os << "]";
-}
 
-template<class T>
-bool operator==(const Arreglo<T>& a, const Arreglo<T>& b) {
-    bool retval = a.Tamanho() == b.Tamanho();
-    for(Nat p = 0; p < a.Tamanho() && retval; ++p) {
-        retval = a.Definido(p) == b.Definido(p);
-        if(retval and a.Definido(p)) retval = a[p] == b[p];
+    Conj<String>::const_Iterador Mapa::Estaciones() const {
+        return estaciones.CrearIt();
     }
-    return retval;
+
+    bool Mapa::EstanConectadas() {
+        Conj<Nodo>::const_Iterador it = sendas.CrearIt();
+        while (it.HaySiguiente()) {
+            Nodo aux = it.Siguiente();
+            if ((aux.est1 == est1 && aux.est2 == est2) || 
+                (aux.est1 == est2 && aux.est2 == est1)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    Restriccion& Mapa::Restriccion(String est1, String est2) const {
+        Conj<Nodo>::const_Iterador it = sendas.CrearIt();
+        while (it.HaySiguiente()) {
+            Nodo aux = it.Siguiente();
+            if ((aux.est1 == est1 && aux.est2 == est2) || 
+                (aux.est1 == est2 && aux.est2 == est1)) {
+                return aux.rest;
+            }
+        }
+    }
+
+    std::ostream& operator<<(std::ostream& os, const Mapa& a) {
+        os << "[";
+        return os << "]";
+    }
 }
-
-}
-
-
-
 #endif
