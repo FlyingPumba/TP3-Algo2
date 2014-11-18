@@ -74,6 +74,30 @@ namespace tp {
              * Devuelve la altura del arbol.
              */
             Nat Altura() const;
+            
+            /**
+             * Borra el sub-arbol izquierdo.
+             * Requiere not Nil?(arbol) and not Nil?(Izq(arbol)) and Izq(arbol) es una hoja
+             */
+            void BorrarHojaIzq();
+            
+            /**
+             * Borra el sub-arbol derecho.
+             * Requiere not Nil?(arbol) and not Nil?(Der(arbol)) and Der(arbol) es una hoja
+             */
+            void BorrarHojaDer();
+            
+            /**
+             * Agrega una hoja a la izquierda del arbol.
+             * Requiere not Nil?(arbol) and Nil?(Izq(arbol)) and izq es una hoja
+             */
+            void AgregarHojaIzq(ArbolBinario<T>& izq);
+            
+            /**
+             * Agrega una hoja a la derecha del arbol.
+             * Requiere not Nil?(arbol) and Nil?(Der(arbol)) and der es una hoja
+             */
+            void AgregarHojaDer(ArbolBinario<T>& der);
 
             // Metodos estaticos:
 
@@ -92,7 +116,7 @@ namespace tp {
                 padre.CambiarRaiz(datoHijo);
                 hijo.CambiarRaiz(datoPadre);
                 // arreglo los punteros
-                // TODO y los padres ??
+                // TODO: y los padres ??
                 if (padre.Der() == hijo) {
                     (*padre.inicio).der = (*hijo.inicio).der;
                     (*hijo.inicio).der = &padre;
@@ -106,38 +130,6 @@ namespace tp {
                     (*padre.inicio).der = (*hijo.inicio).der;
                     (*hijo.inicio).der = aux;
                 }
-            }
-            
-            /**
-             * Borra el sub-arbol izquierdo.
-             * Requiere not Nil?(arbol) and not Nil?(Izq(arbol)) and Izq(arbol) es una hoja
-             */
-            static void BorrarHojaIzq(ArbolBinario<T>& arbol) {
-
-            }
-            
-            /**
-             * Borra el sub-arbol derecho.
-             * Requiere not Nil?(arbol) and not Nil?(Der(arbol)) and Der(arbol) es una hoja
-             */
-            static void BorrarHojaDer(ArbolBinario<T>& arbol) {
-
-            }
-            
-            /**
-             * Agrega una hoja a la izquierda del arbol.
-             * Requiere not Nil?(arbol) and Nil?(Izq(arbol)) and izq es una hoja
-             */
-            static void AgregarHojaIzq(ArbolBinario<T>& arbol, ArbolBinario<T>& izq) {
-
-            }
-            
-            /**
-             * Agrega una hoja a la derecha del arbol.
-             * Requiere not Nil?(arbol) and Nil?(Der(arbol)) and der es una hoja
-             */
-            static void AgregarHojaDer(ArbolBinario<T>& arbol, ArbolBinario<T>& der) {
-
             }
 
         private:
@@ -250,6 +242,132 @@ namespace tp {
             return a.Izq() == b.Izq() && a.Der() == b.Der();
         } else {
             return false;
+        }
+    }
+
+    template<class T>
+    void ArbolBinario<T>::BorrarHojaIzq() {
+        assert(this->EsNil() != true);
+        assert(this->Izq().EsNil() != true);
+        assert(this->Izq().Izq().EsNil() == true && this->Izq().Der().EsNil() == true);
+        delete this->inicio->izq;
+        ArbolBinario<T> nil;
+        this->inicio->izq = &nil;
+        this->tamanho = this->tamanho - 1;
+        if (this->inicio->der == NULL) {
+            this->altura = this->altura - 1;
+        }
+        ArbolBinario<T>* aux = this->inicio->padre;
+        while (aux->inicio != NULL) {
+            ArbolBinario<T>* lado;
+            if (aux->inicio->izq == this) {
+                lado = aux->inicio->der;
+            } else {
+                lado = aux->inicio->izq;
+            }
+            if (lado->EsNil() != true) {
+                if (this->altura > lado->altura) {
+                    aux->altura = 1 + this->altura;
+                } else {
+                    aux->altura = 1 + lado->altura;
+                }
+            }
+            aux->tamanho = aux->tamanho - 1;
+            aux = aux->inicio->padre;
+        }
+    }
+
+    template<class T>
+    void ArbolBinario<T>::BorrarHojaDer() {
+        assert(this->EsNil() != true);
+        assert(this->Der().EsNil() != true);
+        assert(this->Der().Izq().EsNil() == true && this->Der().Der().EsNil() == true);
+        delete this->inicio->der;
+        ArbolBinario<T> nil;
+        this->inicio->der = &nil;
+        this->tamanho = this->tamanho - 1;
+        if (this->inicio->izq == NULL) {
+            this->altura = this->altura - 1;
+        }
+        ArbolBinario<T>* aux = this->inicio->padre;
+        while (aux->inicio != NULL) {
+            ArbolBinario<T>* lado;
+            if (aux->inicio->izq == this) {
+                lado = aux->inicio->der;
+            } else {
+                lado = aux->inicio->izq;
+            }
+            if (lado->EsNil() != true) {
+                if (this->altura > lado->altura) {
+                    aux->altura = 1 + this->altura;
+                } else {
+                    aux->altura = 1 + lado->altura;
+                }
+            }
+            aux->tamanho = aux->tamanho - 1;
+            aux = aux->inicio->padre;
+        }
+    }
+
+    template<class T>
+    void ArbolBinario<T>::AgregarHojaIzq(ArbolBinario<T>& izq) {
+        assert(this->EsNil() != true);
+        assert(this->Izq().EsNil() == true);
+        assert(izq.Izq().EsNil() == true && izq.Der().EsNil() == true);
+        delete this->inicio->izq;
+        this->inicio->izq = &izq;
+        this->tamanho = this->tamanho + 1;
+        if (this->inicio->der == NULL) {
+            this->altura = this->altura + 1;
+        }
+        ArbolBinario<T>* aux = this->inicio->padre;
+        while (aux->inicio != NULL) {
+            ArbolBinario<T>* lado;
+            if (aux->inicio->izq == this) {
+                lado = aux->inicio->der;
+            } else {
+                lado = aux->inicio->izq;
+            }
+            if (lado->EsNil() != true) {
+                if (this->altura > lado->altura) {
+                    aux->altura = 1 + this->altura;
+                } else {
+                    aux->altura = 1 + lado->altura;
+                }
+            }
+            aux->tamanho = aux->tamanho + 1;
+            aux = aux->inicio->padre;
+        }
+    }
+
+    template<class T>
+    void ArbolBinario<T>::AgregarHojaDer(ArbolBinario<T>& der) {
+        assert(this->EsNil() != true);
+        assert(this->Izq().EsNil() == true);
+        assert(der.Izq().EsNil() == true && der.Der().EsNil() == true);
+        delete this->inicio->der;
+        this->inicio->der = &der;
+        this->tamanho = this->tamanho + 1;
+        if (this->inicio->izq == NULL) {
+            this->altura = this->altura + 1;
+        }
+        ArbolBinario<T>* aux = this->inicio->padre;
+        while (aux->inicio != NULL) {
+            ArbolBinario<T>* lado;
+            if (aux->inicio->izq == this) {
+                lado = aux->inicio->der;
+            } else {
+                lado = aux->inicio->izq;
+            }
+            if (lado->EsNil() != true) {
+                if (this->altura > lado->altura) {
+                    aux->altura = 1 + this->altura;
+                } else {
+                    aux->altura = 1 + lado->altura;
+                }
+            }
+            aux->tamanho = aux->tamanho + 1;
+            aux = aux->inicio->padre;
         }
     }
 }
