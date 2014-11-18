@@ -18,12 +18,12 @@ namespace tp {
              * Agrega una estacion al Mapa.
              * Requiere: est no pertenece a las estaciones del mapa.
              */
-            void Agregar(String est);
+            void Agregar(Estacion est);
 
             /**
              * Conecta dos estaciones del mapa.
              */
-            void Conectar(String est1, String est2, Restriccion& r);
+            void Conectar(Estacion est1, Estacion est2, Restriccion r);
 
             /**
              * Destructor.
@@ -33,47 +33,47 @@ namespace tp {
             /**
              * Devuelve las estaciones del mapa.
              */
-            Conj<String>::const_Iterador Estaciones() const;
+            Conj<Estacion>::const_Iterador Estaciones() const;
 
             /**
              * Devuelve true si las estaciones estan conectadas.
              * Requiere: est1 y est2 pertenecen a las estaciones del mapa.
              */
-            bool EstanConectadas(String est1, String est2);
+            bool EstanConectadas(Estacion est1, Estacion est2);
 
             /**
              * Devuelve la restriccion de la senda que una las estaciones.
              * Requiere: est1 y est2 pertenecen a las estaciones del mapa, y ademas estan conectadas.
              */
-            Restriccion& Restriccion(String est1, String est2) const;
+            Restriccion Restriccion(Estacion est1, Estacion est2) const;
 
         private:
             struct Nodo {
-                Nodo(const String est1, const String est1, const Restriccion* r) : est1(est1), est2(est2), rest(r) {};
+                Nodo(const Estacion est1, const Estacion est1, const Restriccion r) : est1(est1), est2(est2), rest(r) {};
 
-                String est1;
-                String est2;
-                Restriccion* rest;
+                Estacion est1;
+                Estacion est2;
+                Restriccion rest;
             };
 
-            Conj<String> estaciones;
+            Conj<Estacion> estaciones;
             Conj<Nodo> sendas;
 
     };
 
-    std::ostream& operator<<(std::ostream& os, const Arreglo<T>&);
+    std::ostream& operator<<(std::ostream& os, const Mapa&);
 
-    Mapa<T>::Mapa() {}
+    Mapa::Mapa() {}
 
-    void Mapa::Agregar(String est) {
+    void Mapa::Agregar(Estacion est) {
         assert(estaciones.Pertenece(est) == false);
         estaciones.AgregarRapido(est);
     }
 
-    void Mapa::Conectar(String est1, String est2, Restriccion& r) {
+    void Mapa::Conectar(Estacion est1, Estacion est2, Restriccion r) {
         assert(estaciones.Pertenece(est1) == true);
         assert(estaciones.Pertenece(est2) == true);
-        Nodo aux(est1, est2, &r);
+        Nodo aux(est1, est2, r);
         sendas.AgregarRapido(aux);
     }
 
@@ -97,7 +97,7 @@ namespace tp {
         return false;
     }
 
-    Restriccion& Mapa::Restriccion(String est1, String est2) const {
+    Restriccion Mapa::Restriccion(Estacion est1, Estacion est2) const {
         Conj<Nodo>::const_Iterador it = sendas.CrearIt();
         while (it.HaySiguiente()) {
             Nodo aux = it.Siguiente();
