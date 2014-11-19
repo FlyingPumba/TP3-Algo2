@@ -96,6 +96,8 @@ namespace tp {
     }
 
     bool Mapa::EstanConectadas(Estacion est1, Estacion est2) {
+        assert(estaciones.Pertenece(est1) == true);
+        assert(estaciones.Pertenece(est2) == true);
         Conj<Nodo>::const_Iterador it = sendas.CrearIt();
         while (it.HaySiguiente()) {
             Nodo aux = it.Siguiente();
@@ -103,11 +105,15 @@ namespace tp {
                 (aux.est1 == est2 && aux.est2 == est1)) {
                 return true;
             }
+            it.Avanzar();
         }
         return false;
     }
 
     Restriccion Mapa::Rest(Estacion est1, Estacion est2) const {
+        assert(estaciones.Pertenece(est1) == true);
+        assert(estaciones.Pertenece(est2) == true);
+        //assert(EstanConectadas(est1, est2) == true);
         Conj<Nodo>::const_Iterador it = sendas.CrearIt();
         while (it.HaySiguiente()) {
             Nodo aux = it.Siguiente();
@@ -115,6 +121,7 @@ namespace tp {
                 (aux.est1 == est2 && aux.est2 == est1)) {
                 return aux.rest;
             }
+            it.Avanzar();
         }
     }
 
