@@ -1,291 +1,120 @@
 
-#ifndef AED2_ARREGLO_H_INCLUDED
-#define AED2_ARREGLO_H_INCLUDED
+#ifndef DICC_RAPIDO_H_INCLUDED
+#define DICC_RAPIDO_H_INCLUDED
 
 #include "../aed2.h"
 
 namespace aed2 {
 
     template<class T>
-    class Arreglo{
+    class DiccRapido {
         public:
 
             /**
-             * Crea un arreglo de tamaño 0.
+             * Genera un diccionario vacio.
              */
-            Arreglo();
+            DiccRapido();
 
             /**
-             * Crea un arreglo de tamaño tam, donde todas las posiciones
-             * son nulas.
+             * Agrega a al diccionario con la clave s.
              */
-            Arreglo(Nat tam);
+            Definir(String s, const T& valor);
 
             /**
-             * Constructor por copia.  Los elementos de otro se copian
-             * en el mismo orden a this, y pasan a ser arreglos independientes
+             * Devuelve true si s esta definida en el diccionario.
              */
-            Arreglo(const Arreglo<T>& otro);
+            bool Definido(String s);
 
             /**
-             * Operacion de asignacion.  Borra lo que se que habia en this
-             * y copia los elementos de otro en el mismo orden.
+             * Devuelve el significado de la clave s en el diccionario.
+             * Requiere: Def?(s)
              */
-            Arreglo<T>& operator=(const Arreglo<T>& otro);
+            T& Significado(String s) const;
 
             /**
-             * Destructor.  Borra lo que hubiera en el arreglo.
+             * Destructor.
              */
-            ~Arreglo();
+            ~DiccRapido();
 
             /**
-             * Devuelve el elemento en la posicion pos.
-             * Requiere: Definido(pos)
+             * Devuelve un iterador para el diccionario.
              */
-            const T& operator[](Nat pos) const;
+            const_Iterador CrearIt() const;
 
-            /**
-             * Devuelve el elemento en la posicion pos.
-             * Requiere: Definido(pos)
-             */
-            T& operator[](Nat pos);
+            class const_Iterador
+            {
+              public:
 
-            /**
-             * Devuelve true si en la posicion pos fue definido algun
-             * elemento.
-             */
-            bool Definido(Nat pos) const;
+                const_Iterador();
 
-            /**
-             * Define valor en la posicion pos.  Devuelve this
-             */
-            Arreglo<T>& Definir(Nat pos, const T& valor);
+                /**
+                 * Devuelve true si quedan elementos por iterar.
+                 */
+                bool HaySiguiente() const;
 
-            /**
-             * Indefine el elemento en pos.
-             * No requiere que el elemento este definido.
-             * Devuelve this.
-             */
-            Arreglo<T>& Borrar(Nat pos);
+                /**
+                 * Devuelve la clave del elemento al que apunta el iterador.
+                 */
+                const String SiguienteClave() const;
 
-            /**
-             * Devuelve el tamaño del arreglo
-             */
-            Nat Tamanho() const;
+                /**
+                 * Devuelve el significado del elemento al que apunta el iterador.
+                 */
+                const T& SiguienteSignificado() const;
 
-            /**
-             * Redimensiona el arreglo, sin copiar los items de nuevo.
-             * Si el arreglo es mas chico, se borran los datos sobrantes.
-             * Sino, se definen items nuevos en null.
-             */
-            Arreglo<T>& Redimensionar(Nat tam);
+                /**
+                 * Avanza el iterador al siguiente elemento.
+                 */
+                void Avanzar();
 
-            /**
-             * Mueve el dato de otro[posOtro] a this[posThis] en O(1).
-             * Si ya habia un dato en this[posThis], el mismo se elimina.
-             * Despues de esto, no esta definido el valor de posOtro en
-             * otro.
-             * Obviamente, this puede ser igual a otro, para lograr mover
-             * las cosas de un lugar a otro.  Aunque se recomienda utilizar
-             * la otra version de mover.
-             */
-            Arreglo<T>& Mover(Nat posThis, Arreglo<T>& otro, Nat posOtro);
+            private:
 
-            /**
-             * Equivalente a Mover(destino, this, origen)
-             */
-            Arreglo<T>& Mover(Nat destino, Nat origen);
+                Conj<String>::const_Iterador it_claves_;
+                typename DiccRapido<T> it_dicc_;
 
-            /**
-             * Intercambia los valores de this[posThis] y otro[posOtro]
-             * sin realizar copias nuevas de los elementos.
-             * Obviamente, this puede ser igual a otro.
-             */
-            Arreglo<T>& Swap(Nat posThis, Arreglo<T>& otro, Nat posOtro);
+                const_Iterador(const DiccRapido<T>* d);
 
-            /**
-             * Equivalente a Swap(posA, this, posB)
-             */
-            Arreglo<T>& Swap(Nat posA, Nat posB);
-
-        private:
-            //HACK PARA QUE AUTOMAGICAMENTE SE ASIGNEN LAS POSICIONES EN NULL
-            struct Ptr {
-                public:
-                    Ptr(T* t = NULL) {ptr = t;}
-                    operator T*() {return ptr;}
-                    void Delete() {if(ptr!=NULL) delete ptr; ptr = NULL;}
-                    Ptr Copiar() {return ptr == NULL ? NULL : Ptr(new T(*ptr));}
-                    T* ptr;
+                friend typename DiccRapido<T>::const_Iterador DiccRapido<T>::CrearIt() const;
             };
 
-            Ptr* array;
-            Nat size;
+        private:
+            struct Nodo {
+                Nodo() : significado(NULL) {};
+                Nodo(const T& v) : significado(&v) {};
 
-            void Destruir();
-            void Asignar(const Arreglo<T>& otro);
+                Arreglo<Nodo> arreglo(256);
+                T* significado;
+            };
 
+            Conj<String> claves;
+            Nodo dicc;
     };
 
-    /**
-     * Funciones globales de comparacion.  Con definir el == obtenemos
-     * el != gratis :)
-     */
     template<class T>
-    bool operator==(const Arreglo<T>&, const Arreglo<T>&);
+    std::ostream& operator<<(std::ostream& os, const DiccRapido<T>&);
 
     template<class T>
-    std::ostream& operator<<(std::ostream& os, const Arreglo<T>&);
+    DiccRapido<T>::DiccRapido() {}
 
-
-template<class T>
-Arreglo<T>::Arreglo() : array(NULL), size(0) {}
-
-template<class T>
-Arreglo<T>::Arreglo(Nat tamanio) : size(tamanio) {
-    array = new Ptr[size];
-}
-
-template<class T>
-Arreglo<T>::Arreglo(const Arreglo<T>& otro) {
-    Asignar(otro);
-}
-
-template<class T>
-Arreglo<T>& Arreglo<T>::operator=(const Arreglo<T>& otro) {
-    if(this != &otro) {
-        Destruir();
-        Asignar(otro);
+    template<class T>
+    DiccRapido<T>::Definir(String s, const T& valor); {
+        //claves.Agregar(s);
     }
-    return *this;
-}
 
-template<class T>
-Arreglo<T>::~Arreglo() {
-    Destruir();
-}
-
-template<class T>
-const T& Arreglo<T>::operator[](Nat pos) const {
-    assert(Definido(pos));
-    return *array[pos];
-}
-
-template<class T>
-T& Arreglo<T>::operator[](Nat pos) {
-    assert(Definido(pos));
-    return *array[pos];
-}
-
-template<class T>
-bool Arreglo<T>::Definido(Nat pos) const {
-    return pos < size and array[pos] != NULL;
-}
-
-template<class T>
-Arreglo<T>& Arreglo<T>::Definir(Nat pos, const T& valor) {
-    assert(pos < size);
-    Borrar(pos);
-    array[pos] = new T(valor);
-    return *this;
-}
-
-template<class T>
-Arreglo<T>& Arreglo<T>::Borrar(Nat pos) {
-    assert(pos < size);
-    array[pos].Delete();
-    return *this;
-}
-
-template<class T>
-Nat Arreglo<T>::Tamanho() const {
-    return size;
-}
-
-template<class T>
-Arreglo<T>& Arreglo<T>::Redimensionar(Nat tam) {
-    Ptr* oldarray = array;
-    array = tam == 0 ? NULL : new Ptr[tam];
-
-    for(Nat p = 0; p < size && p < tam; ++p)
-        array[p] = oldarray[p];     //no copia, simplemente mueve los punteros
-
-    //borramos los elementos viejos
-    for(Nat p = tam; p < size; ++p)
-        oldarray[p].Delete();
-    delete [] oldarray;
-
-    size = tam;
-    return *this;
-}
-
-template<class T>
-Arreglo<T>& Arreglo<T>::Mover(Nat posThis, Arreglo<T>& otro, Nat posOtro) {
-    if(this != &otro or posThis != posOtro) {
-        Borrar(posThis);
-        array[posThis] = otro.array[posOtro];
-        otro.array[posOtro] = NULL;
+    template<class T>
+    DiccRapido<T>::~DiccRapido() {
+        // TODO
     }
-    return *this;
-}
 
-template<class T>
-Arreglo<T>& Arreglo<T>::Mover(Nat destino, Nat origen) {
-    return Mover(destino, *this, origen);
-}
-
-template<class T>
-Arreglo<T>& Arreglo<T>::Swap(Nat posThis, Arreglo<T>& otro, Nat posOtro) {
-    Ptr tmp = array[posThis];
-    array[posThis] = otro.array[posOtro];
-    otro.array[posOtro] = tmp;
-    return *this;
-}
-
-template<class T>
-Arreglo<T>& Arreglo<T>::Swap(Nat posA, Nat posB) {
-    return Swap(posA, *this, posB);
-}
-
-template<class T>
-void Arreglo<T>::Destruir() {
-    for(Nat p = 0; p < size; ++p) Borrar(p);
-    delete[] array;
-    array = NULL;
-}
-
-template<class T>
-void Arreglo<T>::Asignar(const Arreglo<T>& otro) {
-    size = otro.size;
-    array = new Ptr[size];
-    for(Nat p = 0; p < size; ++p)
-        array[p] = otro.array[p].Copiar();
-}
-
-
-template<class T>
-std::ostream& operator<<(std::ostream& os, const Arreglo<T>& a) {
-    os << "[";
-    for(Nat p = 0; p < a.Tamanho() - 1; ++p) {
-        if(a.Definido(p)) os << a[p];
-        os << ",";
+    template<class T>
+    bool DiccRapido<T>::Definido(String s) const {
+        return false;
     }
-    if(a.Definido(a.Tamanho()-1)) os << a[a.Tamanho()-1];
-    return os << "]";
-}
 
-template<class T>
-bool operator==(const Arreglo<T>& a, const Arreglo<T>& b) {
-    bool retval = a.Tamanho() == b.Tamanho();
-    for(Nat p = 0; p < a.Tamanho() && retval; ++p) {
-        retval = a.Definido(p) == b.Definido(p);
-        if(retval and a.Definido(p)) retval = a[p] == b[p];
+    template<class T>
+    std::ostream& operator<<(std::ostream& os, const DiccRapido<T>& a) {
+        os << "[";
+        return os << "]";
     }
-    return retval;
 }
-
-}
-
-
-
 #endif
