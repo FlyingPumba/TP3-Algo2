@@ -1,27 +1,23 @@
-Version 1 de los modulos basicos de algo 2 implementados en C++
+Driver de test para el TP3,  AED2 2c2014.,
 
-Este paquete se entrega sin ningun tipo de garantia.  Si el TP no compila o la maquina explota, no nos hacemos cargo.  Cualquier bug o leak error que pudiera tener el programa, debe informarse al webmaster de la materia.  Los acentos tambien pueden pedirselos a el.
+La interacción con el módulo Ciudad se debe hacer exclusivamente * a través de la interfaz del driver *.
+Ver recomendaciones sobre el TP3 en el enunciado:
+http://www.dc.uba.ar/materias/aed2/2014/1c/descargas/tps/tp3/enunciado-tp3/view
 
-Cambios importantes:
-En el modulo vector, la insercion no cuesta O(f(n)*copy(...)), sino que cuesta O(f(n)+copy(elem)) donde elem es el elemento recien agregado.  En cuestiones practicas, no hace falta que guarden los punteros para el TP2.
+Detalle de archivos incluidos
+------------------------------
 
-Hay otras cosillas nuevas, pero a Uds. no deberian importarles, estan iniciando el camino del proximo cuatrimestre.
+Driver.h
+- Interfaz del driver. Completar la parte privada y dejar intacta la parte publica.
 
-Uso:
-simplemente hagan el include de aed2.h, y obtendran los siguientes tipos:
-  Arreglo
-  Vector
-  Lista
-  Conj
-  Dicc
-  ConjAcotado
-y podran usarlos.  Sino, tambien pueden agregar los tipos a mano, con las siguientes instrucciones
-  #include "aed2/Arreglo.h"
-  #include "aed2/Lista.h"
-  #include "aed2/Vector.h"
-  #include "aed2/Dicc.h"
-  #include "aed2/Conj.h"
-  #include "aed2/ConjAcotado.h"
-Recuerden, en este ultimo caso, de incluir el using namespace aed2, o de prefijar con aed2:: todos los objetos.
+Driver.cpp
+- Cáscara a completar con la implementación del Driver por cada grupo. Atención: no compila así como está.
 
-IMPORTANTE: como todas las clases son templates no deben compilar ningun .cpp, salvo ConjAcotado, en cuyo caso deberan compilar aed2/ConjAcotado.cpp .
+test.cpp
+- Esqueleto de tests con un test de ejemplo
+
+ArbolSintactico.cpp / h
+- Clase de ayuda para poder leer restricciones en formato String y obtener un objeto. NO MODIFICAR.
+
+Makefile
+- Archivo para compilar el driver y los test. Modificar cuando agreguen nuevos archivos.

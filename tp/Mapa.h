@@ -2,7 +2,7 @@
 #ifndef MAPA_H_INCLUDED
 #define MAPA_H_INCLUDED
 
-#include "aed2.h"
+#include "../aed2.h"
 
 namespace tp {
 
@@ -22,6 +22,7 @@ namespace tp {
 
             /**
              * Conecta dos estaciones del mapa.
+             * Requiere: est1 y est2 pertenecen a las estaciones del mapa, y no estan conectadas.
              */
             void Conectar(Estacion est1, Estacion est2, Restriccion r);
 
@@ -45,15 +46,20 @@ namespace tp {
              * Devuelve la restriccion de la senda que una las estaciones.
              * Requiere: est1 y est2 pertenecen a las estaciones del mapa, y ademas estan conectadas.
              */
-            Restriccion Restriccion(Estacion est1, Estacion est2) const;
+            Restriccion Rest(Estacion est1, Estacion est2) const;
 
         private:
             struct Nodo {
-                Nodo(const Estacion est1, const Estacion est1, const Restriccion r) : est1(est1), est2(est2), rest(r) {};
+                Nodo(const Estacion est1, const Estacion est2, const Restriccion r) : est1(est1), est2(est2), rest(r) {};
 
                 Estacion est1;
                 Estacion est2;
                 Restriccion rest;
+
+                bool Nodo::operator == (const typename Nodo otro) const
+                {
+                  return est1 == otro.est1 && est2 == oto.est2 && rest = otro.rest;
+                }
             };
 
             Conj<Estacion> estaciones;
@@ -73,6 +79,7 @@ namespace tp {
     void Mapa::Conectar(Estacion est1, Estacion est2, Restriccion r) {
         assert(estaciones.Pertenece(est1) == true);
         assert(estaciones.Pertenece(est2) == true);
+        assert(EstanConectadas(est1, est2) == false);
         Nodo aux(est1, est2, r);
         sendas.AgregarRapido(aux);
     }
@@ -81,11 +88,11 @@ namespace tp {
         // TODO
     }
 
-    Conj<String>::const_Iterador Mapa::Estaciones() const {
+    Conj<Estacion>::const_Iterador Mapa::Estaciones() const {
         return estaciones.CrearIt();
     }
 
-    bool Mapa::EstanConectadas() {
+    bool Mapa::EstanConectadas(Estacion est1, Estacion est2) {
         Conj<Nodo>::const_Iterador it = sendas.CrearIt();
         while (it.HaySiguiente()) {
             Nodo aux = it.Siguiente();
@@ -97,7 +104,7 @@ namespace tp {
         return false;
     }
 
-    Restriccion Mapa::Restriccion(Estacion est1, Estacion est2) const {
+    Restriccion Mapa::Rest(Estacion est1, Estacion est2) const {
         Conj<Nodo>::const_Iterador it = sendas.CrearIt();
         while (it.HaySiguiente()) {
             Nodo aux = it.Siguiente();

@@ -2,7 +2,7 @@
 #ifndef AED2_ARREGLO_H_INCLUDED
 #define AED2_ARREGLO_H_INCLUDED
 
-#include "TiposBasicos.h"
+#include "../aed2.h"
 
 namespace aed2 {
 

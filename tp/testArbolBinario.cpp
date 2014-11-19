@@ -1,5 +1,4 @@
-#include "mini_test.h"
-#include "aed2.h"
+#include "../aed2.h"
 #include "ArbolBinario.h"
 
 #include <string>

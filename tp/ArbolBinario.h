@@ -2,7 +2,7 @@
 #ifndef ARBOL_BINARIO_H_INCLUDED
 #define ARBOL_BINARIO_H_INCLUDED
 
-#include "aed2.h"
+#include "../aed2.h"
 
 namespace tp {
 
