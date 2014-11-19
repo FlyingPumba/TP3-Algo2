@@ -1,8 +1,7 @@
-#include "../aed2.h"
+#include "../mini_test.h"
 #include "Mapa.h"
 
 #include <string>
-#include <iostream>
 
 using namespace tp;
 

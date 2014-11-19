@@ -16,10 +16,11 @@ OBJECTS=$(SOURCES:.cpp=.o)
 # Nombre del ejecutable a generar
 EXECUTABLE=testArbolBinario testMapa
 
-all: $(SOURCES) $(EXECUTABLE)
+arbol: testArbolBinario.o
+	$(CC) testArbolBinario.o -o testArbolBinario
 
-$(EXECUTABLE): $(OBJECTS)
-	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+mapa: testMapa.o
+	$(CC) testMapa.o -o testMapa
 
 clean:
 	rm -rf $(EXECUTABLE) $(OBJECTS)

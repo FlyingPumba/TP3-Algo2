@@ -20,7 +20,6 @@
 #include "aed2/Dicc.h"
 #include "aed2/Conj.h"
 #include "aed2/ConjAcotado.h"
-#include "mini_test.h"
 #include<cassert>
 
 using namespace aed2;
