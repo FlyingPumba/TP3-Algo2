@@ -56,9 +56,12 @@ namespace tp {
                 Estacion est2;
                 Restriccion rest;
 
-                bool Nodo::operator == (const typename Nodo otro) const
-                {
-                  return est1 == otro.est1 && est2 == oto.est2 && rest = otro.rest;
+                bool operator == (const Nodo otro) const {
+                  return est1 == otro.est1 && est2 == otro.est2 && rest == otro.rest;
+                }
+
+                bool operator != (const Nodo otro) const {
+                  return est1 != otro.est1 || est2 != otro.est2 || rest != otro.rest;
                 }
             };
 
@@ -84,7 +87,7 @@ namespace tp {
         sendas.AgregarRapido(aux);
     }
 
-    ~Mapa() {
+    Mapa::~Mapa() {
         // TODO
     }
 
@@ -96,7 +99,7 @@ namespace tp {
         Conj<Nodo>::const_Iterador it = sendas.CrearIt();
         while (it.HaySiguiente()) {
             Nodo aux = it.Siguiente();
-            if ((aux.est1 == est1 && aux.est2 == est2) || 
+            if ((aux.est1 == est1 && aux.est2 == est2) ||
                 (aux.est1 == est2 && aux.est2 == est1)) {
                 return true;
             }
@@ -108,7 +111,7 @@ namespace tp {
         Conj<Nodo>::const_Iterador it = sendas.CrearIt();
         while (it.HaySiguiente()) {
             Nodo aux = it.Siguiente();
-            if ((aux.est1 == est1 && aux.est2 == est2) || 
+            if ((aux.est1 == est1 && aux.est2 == est2) ||
                 (aux.est1 == est2 && aux.est2 == est1)) {
                 return aux.rest;
             }
