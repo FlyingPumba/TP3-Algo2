@@ -1,8 +1,8 @@
 # Compilador que será utilizado
-CC=clang++
+CC=g++
 
 # flags de compilación
-CFLAGS=-g
+CFLAGS=-g -Wall
 
 # flags de linkeo
 LDFLAGS=
