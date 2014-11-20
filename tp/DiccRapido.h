@@ -4,11 +4,14 @@
 
 #include "../aed2.h"
 
-namespace aed2 {
+namespace tp {
 
     template<class T>
     class DiccRapido {
         public:
+
+            // forward declaration
+            class const_Iterador;
 
             /**
              * Genera un diccionario vacio.
@@ -18,12 +21,18 @@ namespace aed2 {
             /**
              * Agrega a al diccionario con la clave s.
              */
-            Definir(String s, const T& valor);
+            void Definir(String s, const T& valor);
+
+            /**
+             * Agrega a al diccionario con la clave s.
+             * Requiere: s no pertenece a las claves del diccionario.
+             */
+            void DefinirRapido(String s, const T& valor);
 
             /**
              * Devuelve true si s esta definida en el diccionario.
              */
-            bool Definido(String s);
+            bool Definido(String s) const;
 
             /**
              * Devuelve el significado de la clave s en el diccionario.
@@ -43,51 +52,53 @@ namespace aed2 {
 
             class const_Iterador
             {
-              public:
+                public:
 
-                const_Iterador();
+                    const_Iterador();
 
-                /**
-                 * Devuelve true si quedan elementos por iterar.
-                 */
-                bool HaySiguiente() const;
+                    /**
+                     * Devuelve true si quedan elementos por iterar.
+                     */
+                    bool HaySiguiente() const;
 
-                /**
-                 * Devuelve la clave del elemento al que apunta el iterador.
-                 */
-                const String SiguienteClave() const;
+                    /**
+                     * Devuelve la clave del elemento al que apunta el iterador.
+                     */
+                    const String SiguienteClave() const;
 
-                /**
-                 * Devuelve el significado del elemento al que apunta el iterador.
-                 */
-                const T& SiguienteSignificado() const;
+                    /**
+                     * Devuelve el significado del elemento al que apunta el iterador.
+                     */
+                    const T& SiguienteSignificado() const;
 
-                /**
-                 * Avanza el iterador al siguiente elemento.
-                 */
-                void Avanzar();
+                    /**
+                     * Avanza el iterador al siguiente elemento.
+                     */
+                    void Avanzar();
 
-            private:
+                private:
 
-                Conj<String>::const_Iterador it_claves_;
-                typename DiccRapido<T> it_dicc_;
+                    Conj<String>::const_Iterador it_claves_;
+                    DiccRapido<T> it_dicc_;
 
-                const_Iterador(const DiccRapido<T>* d);
+                    const_Iterador(const DiccRapido<T>* d);
 
-                friend typename DiccRapido<T>::const_Iterador DiccRapido<T>::CrearIt() const;
+                    friend typename DiccRapido<T>::const_Iterador DiccRapido<T>::CrearIt() const;
             };
 
         private:
             struct Nodo {
-                Nodo() : significado(NULL) {};
-                Nodo(const T& v) : significado(&v) {};
+                Nodo() : siguientes(256), significado(NULL) {};
+                Nodo(const T& v) : siguientes(256), significado(&v) {};
 
-                Arreglo<Nodo> arreglo(256);
-                T* significado;
+                Arreglo<Nodo*> siguientes;
+                const T* significado;
             };
 
             Conj<String> claves;
             Nodo dicc;
+
+            void DefinirAux(String s, const T& valor);
     };
 
     template<class T>
@@ -97,8 +108,33 @@ namespace aed2 {
     DiccRapido<T>::DiccRapido() {}
 
     template<class T>
-    DiccRapido<T>::Definir(String s, const T& valor); {
-        //claves.Agregar(s);
+    void DiccRapido<T>::Definir(String s, const T& valor) {
+        if (claves.Pertenece(s) == false) {
+            claves.Agregar(s);
+            DefinirAux(s, valor);
+        }
+    }
+
+    template<class T>
+    void DiccRapido<T>::DefinirRapido(String s, const T& valor) {
+        claves.AgregarRapido(s);
+        DefinirAux(s, valor);
+    }
+
+    template<class T>
+    void DiccRapido<T>::DefinirAux(String s, const T& valor) {
+        Nodo* aux = &dicc;
+        int i = 0;
+        while (i < s.length()) {
+            if(!aux->siguientes.Definido((int)s[i])) {
+                Nodo* nuevo = new Nodo(s[i]);
+                aux->siguientes.Definir((int)s[i], nuevo);
+            }
+            aux = aux->siguientes[(int)s[i]];
+            i = i + 1;
+        }
+
+        aux->significado = &valor;
     }
 
     template<class T>
@@ -108,7 +144,20 @@ namespace aed2 {
 
     template<class T>
     bool DiccRapido<T>::Definido(String s) const {
-        return false;
+        return claves.Pertenece(s);
+    }
+
+    template<class T>
+    T& DiccRapido<T>::Significado(String s) const {
+        assert(Definido(s) == true);
+        const Nodo* aux = &dicc;
+        int i = 0;
+        while (i < s.length()) {
+            aux = aux->siguientes[(int)s[i]];
+            i = i + 1;
+        }
+        T sig(*(aux->significado));
+        return sig;
     }
 
     template<class T>
