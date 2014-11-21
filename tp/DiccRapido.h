@@ -79,7 +79,7 @@ namespace tp {
                 private:
 
                     Conj<String>::const_Iterador it_claves_;
-                    DiccRapido<T> it_dicc_;
+                    const DiccRapido<T>* it_dicc_;
 
                     const_Iterador(const DiccRapido<T>* d);
 
@@ -165,5 +165,54 @@ namespace tp {
         os << "[";
         return os << "]";
     }
+
+    template<class T>
+    typename DiccRapido<T>::const_Iterador DiccRapido<T>::CrearIt() const {
+        return const_Iterador(this); 
+    }
+
+    // Implementacion const_Iterador:
+
+    template<class T>
+    DiccRapido<T>::const_Iterador::const_Iterador(const DiccRapido<T>* d)
+      : it_claves_(d->claves.CrearIt()), it_dicc_(d)
+    {}
+
+    template<class T>
+    bool DiccRapido<T>::const_Iterador::HaySiguiente() const
+    {
+      return it_claves_.HaySiguiente();
+    }
+
+    template<class T>
+    const String DiccRapido<T>::const_Iterador::SiguienteClave() const
+    {
+      #ifdef DEBUG
+      assert(HaySiguiente());
+      #endif
+
+      return it_claves_.Siguiente();
+    }
+
+    template<class T>
+    const T& DiccRapido<T>::const_Iterador::SiguienteSignificado() const
+    {
+      #ifdef DEBUG
+      assert(HaySiguiente());
+      #endif
+
+      return (*it_dicc_).Significado(it_claves_.Siguiente());
+    }
+
+    template<class T>
+    void DiccRapido<T>::const_Iterador::Avanzar()
+    {
+      #ifdef DEBUG
+      assert(HaySiguiente());
+      #endif
+
+      it_claves_.Avanzar();
+    }
+
 }
 #endif
