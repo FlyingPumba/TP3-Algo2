@@ -26,6 +26,12 @@ namespace tp {
             ArbolBinario(const ArbolBinario<T>& otro);
 
             /**
+             * Operacion de asignacion.  Borra lo que se que habia en this y copia las referencias al otro.
+             * El inicio de los dos arboles pasan a apuntar a la misma dirección de memoria.
+             */
+            ArbolBinario<T>& operator = (const ArbolBinario<T>& otro);
+
+            /**
              * Destructor.
              */
             ~ArbolBinario();
@@ -39,7 +45,7 @@ namespace tp {
              * Devuelve la raiz del arbol.
              * Requiere: not Nil?(arbol)
              */
-            T Raiz() const;
+            const T& Raiz() const;
 
             /**
              * Devuelve el sub-arbol izquierdo.
@@ -57,7 +63,7 @@ namespace tp {
              * Devuelve el arbol padre.
              * Requiere: not Nil?(arbol)
              */
-            ArbolBinario<T>& Padre() const;
+            ArbolBinario<T>* Padre() const;
 
             /**
              * Modifica la raiz del arbol.
@@ -79,13 +85,13 @@ namespace tp {
              * Borra el sub-arbol izquierdo.
              * Requiere not Nil?(arbol) and not Nil?(Izq(arbol)) and Izq(arbol) es una hoja
              */
-            void BorrarHojaIzq();
+            void BorrarHojaIzq(ArbolBinario<T>& nil);
             
             /**
              * Borra el sub-arbol derecho.
              * Requiere not Nil?(arbol) and not Nil?(Der(arbol)) and Der(arbol) es una hoja
              */
-            void BorrarHojaDer();
+            void BorrarHojaDer(ArbolBinario<T>& nil);
             
             /**
              * Agrega una hoja a la izquierda del arbol.
@@ -111,21 +117,31 @@ namespace tp {
                 assert(hijo.EsNil() != true);
                 assert(padre.Izq() == hijo || padre.Der() == hijo);
                 // copio los datos del padre al hijo y viceversa
-                T datoPadre = (*padre.inicio).dato;
-                T datoHijo = (*hijo.inicio).dato;
-                padre.CambiarRaiz(datoHijo);
-                hijo.CambiarRaiz(datoPadre);
+                const T* punteroAux = (*padre.inicio).dato;
+                (*padre.inicio).dato = (*hijo.inicio).dato;
+                (*hijo.inicio).dato = punteroAux;
+                // cambio los padres
+                (*hijo.inicio).padre = (*padre.inicio).padre;
+                (*padre.inicio).padre = &hijo;
+                // arreglo la altura
+                padre.altura = padre.altura - 1;
+                hijo.altura = hijo.altura + 1;
+                // cambio los tamanhos
+                Nat auxTamanho = padre.tamanho;
+                padre.tamanho = hijo.tamanho;
+                hijo.tamanho = auxTamanho;
                 // arreglo los punteros
-                // TODO: y los padres ??
                 if (padre.Der() == hijo) {
                     (*padre.inicio).der = (*hijo.inicio).der;
                     (*hijo.inicio).der = &padre;
+
                     ArbolBinario<T>* aux = (*padre.inicio).izq;
                     (*padre.inicio).izq = (*hijo.inicio).izq;
                     (*hijo.inicio).izq = aux;
                 } else {
                     (*padre.inicio).izq = (*hijo.inicio).izq;
                     (*hijo.inicio).izq = &padre;
+
                     ArbolBinario<T>* aux = (*padre.inicio).der;
                     (*padre.inicio).der = (*hijo.inicio).der;
                     (*hijo.inicio).der = aux;
@@ -135,11 +151,10 @@ namespace tp {
         private:
             struct Nodo
             {
-                Nodo(ArbolBinario<T>* i, const T& v, ArbolBinario<T>* d, ArbolBinario<T>* p) : dato(v), izq(i), der(d), padre(p) {};
-                Nodo(ArbolBinario<T>* i, const T& v, ArbolBinario<T>* d) : dato(v), izq(i), der(d), padre(NULL){};
-                Nodo(const T& v) : dato(v), izq(NULL), der(NULL), padre(NULL) {};
+                Nodo(ArbolBinario<T>& i, const T& v, ArbolBinario<T>& d, ArbolBinario<T>* p) : dato(&v), izq(&i), der(&d), padre(p) {};
+                Nodo(ArbolBinario<T>& i, const T& v, ArbolBinario<T>& d) : dato(&v), izq(&i), der(&d), padre(NULL){};
 
-                T dato;
+                const T* dato;
                 ArbolBinario<T>* izq;
                 ArbolBinario<T>* der;
                 ArbolBinario<T>* padre;
@@ -148,6 +163,9 @@ namespace tp {
             Nodo* inicio;
             Nat altura;
             Nat tamanho;
+
+            void Destruir();
+            void Asignar(const ArbolBinario<T>& otro);
 
     };
 
@@ -162,7 +180,7 @@ namespace tp {
 
     template<class T>
     ArbolBinario<T>::ArbolBinario(ArbolBinario<T>& izq, const T& raiz, ArbolBinario<T>& der) {
-        inicio = new Nodo(&izq, raiz, &der);
+        inicio = new Nodo(izq, raiz, der);
         if (izq.inicio != NULL) {
             (*izq.inicio).padre = this;
         }
@@ -183,8 +201,17 @@ namespace tp {
     }
 
     template<class T>
+    ArbolBinario<T>& ArbolBinario<T>::operator=(const ArbolBinario<T>& otro) {
+        if(this != &otro) {
+            Destruir();
+            Asignar(otro);
+        }
+        return *this;
+    }
+
+    template<class T>
     ArbolBinario<T>::~ArbolBinario() {
-        // TODO
+        Destruir();
     }
 
     template<class T>
@@ -195,19 +222,26 @@ namespace tp {
     template<class T>
     ArbolBinario<T>& ArbolBinario<T>::Izq() const {
         assert(inicio != NULL);
-        return *(*inicio).izq;
+        return *(inicio->izq);
     }
 
     template<class T>
     ArbolBinario<T>& ArbolBinario<T>::Der() const {
         assert(inicio != NULL);
-        return *(*inicio).der;
+        return *(inicio->der);
     }
 
     template<class T>
-    T ArbolBinario<T>::Raiz() const {
+    const T& ArbolBinario<T>::Raiz() const {
         assert(inicio != NULL);
-        return (*inicio).dato;
+        assert((*inicio).dato != NULL);
+        return *(inicio->dato);
+    }
+
+    template<class T>
+    ArbolBinario<T>* ArbolBinario<T>::Padre() const {
+        assert(inicio != NULL);
+        return inicio->padre;
     }
 
     template<class T>
@@ -223,7 +257,26 @@ namespace tp {
     template<class T>
     void ArbolBinario<T>::CambiarRaiz(const T& raiz) {
         assert(inicio != NULL);
-        (*inicio).dato = raiz;
+        (*inicio).dato = &raiz;
+    }
+
+    template<class T>
+    void ArbolBinario<T>::Destruir() {
+        if (!(this->EsNil())) {
+            this->inicio->padre = NULL;
+            delete (this->inicio);
+        }
+    }
+
+    template<class T>
+    void ArbolBinario<T>::Asignar(const ArbolBinario<T>& otro) {
+        if (otro.EsNil()) {
+            tamanho = 0;
+            altura = 0;
+            inicio = NULL;
+        } else {
+            // TODO
+        }
     }
 
     template<class T>
@@ -246,19 +299,18 @@ namespace tp {
     }
 
     template<class T>
-    void ArbolBinario<T>::BorrarHojaIzq() {
+    void ArbolBinario<T>::BorrarHojaIzq(ArbolBinario<T>& nil) {
         assert(this->EsNil() != true);
+        assert(nil.EsNil() == true);
         assert(this->Izq().EsNil() != true);
         assert(this->Izq().Izq().EsNil() == true && this->Izq().Der().EsNil() == true);
-        delete this->inicio->izq;
-        ArbolBinario<T> nil;
         this->inicio->izq = &nil;
         this->tamanho = this->tamanho - 1;
-        if (this->inicio->der == NULL) {
+        if (this->inicio->der->EsNil()) {
             this->altura = this->altura - 1;
         }
         ArbolBinario<T>* aux = this->inicio->padre;
-        while (aux->inicio != NULL) {
+        while (aux != NULL) {
             ArbolBinario<T>* lado;
             if (aux->inicio->izq == this) {
                 lado = aux->inicio->der;
@@ -278,19 +330,18 @@ namespace tp {
     }
 
     template<class T>
-    void ArbolBinario<T>::BorrarHojaDer() {
+    void ArbolBinario<T>::BorrarHojaDer(ArbolBinario<T>& nil) {
         assert(this->EsNil() != true);
+        assert(nil.EsNil() == true);
         assert(this->Der().EsNil() != true);
         assert(this->Der().Izq().EsNil() == true && this->Der().Der().EsNil() == true);
-        delete this->inicio->der;
-        ArbolBinario<T> nil;
         this->inicio->der = &nil;
         this->tamanho = this->tamanho - 1;
-        if (this->inicio->izq == NULL) {
+        if (this->inicio->izq->EsNil()) {
             this->altura = this->altura - 1;
         }
         ArbolBinario<T>* aux = this->inicio->padre;
-        while (aux->inicio != NULL) {
+        while (aux != NULL) {
             ArbolBinario<T>* lado;
             if (aux->inicio->izq == this) {
                 lado = aux->inicio->der;
@@ -314,14 +365,13 @@ namespace tp {
         assert(this->EsNil() != true);
         assert(this->Izq().EsNil() == true);
         assert(izq.Izq().EsNil() == true && izq.Der().EsNil() == true);
-        delete this->inicio->izq;
         this->inicio->izq = &izq;
         this->tamanho = this->tamanho + 1;
-        if (this->inicio->der == NULL) {
+        if (this->inicio->der->EsNil()) {
             this->altura = this->altura + 1;
         }
         ArbolBinario<T>* aux = this->inicio->padre;
-        while (aux->inicio != NULL) {
+        while (aux != NULL) {
             ArbolBinario<T>* lado;
             if (aux->inicio->izq == this) {
                 lado = aux->inicio->der;
@@ -345,14 +395,13 @@ namespace tp {
         assert(this->EsNil() != true);
         assert(this->Izq().EsNil() == true);
         assert(der.Izq().EsNil() == true && der.Der().EsNil() == true);
-        delete this->inicio->der;
         this->inicio->der = &der;
         this->tamanho = this->tamanho + 1;
-        if (this->inicio->izq == NULL) {
+        if (this->inicio->izq->EsNil()) {
             this->altura = this->altura + 1;
         }
         ArbolBinario<T>* aux = this->inicio->padre;
-        while (aux->inicio != NULL) {
+        while (aux != NULL) {
             ArbolBinario<T>* lado;
             if (aux->inicio->izq == this) {
                 lado = aux->inicio->der;
