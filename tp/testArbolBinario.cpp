@@ -50,7 +50,7 @@ void test_swap_izq()
 	ASSERT_EQ(arbol.Raiz(), 42);
 	ASSERT_EQ(arbol.Izq().EsNil(), false);
 	ASSERT_EQ(arbol.Der().EsNil(), true);
-	//ASSERT_EQ(arbol.Izq().Padre(), arbol);
+	ASSERT_EQ(arbol.Izq().Padre(), &arbol);
 	ASSERT_EQ(arbol.Izq().Raiz(), 19);
 	ASSERT_EQ(arbol.Izq().Izq().EsNil(), true);
 	ASSERT_EQ(arbol.Izq().Der().EsNil(), true);
@@ -61,7 +61,7 @@ void test_swap_izq()
 	ASSERT_EQ(izq.Raiz(), 42);
 	ASSERT_EQ(izq.Izq().EsNil(), false);
 	ASSERT_EQ(izq.Der().EsNil(), true);
-	//ASSERT_EQ(izq.Izq().Padre(), izq);
+	ASSERT_EQ(izq.Izq().Padre(), &izq);
 	ASSERT_EQ(izq.Izq().Raiz(), 19);
 	ASSERT_EQ(izq.Izq().Izq().EsNil(), true);
 	ASSERT_EQ(izq.Izq().Der().EsNil(), true);
@@ -78,7 +78,7 @@ void test_swap_der()
 	ASSERT_EQ(arbol.Raiz(), 42);
 	ASSERT_EQ(arbol.Der().EsNil(), false);
 	ASSERT_EQ(arbol.Izq().EsNil(), true);
-	//ASSERT_EQ(arbol.Der().Padre(), arbol);
+	ASSERT_EQ(arbol.Der().Padre(), &arbol);
 	ASSERT_EQ(arbol.Der().Raiz(), 19);
 	ASSERT_EQ(arbol.Der().Izq().EsNil(), true);
 	ASSERT_EQ(arbol.Der().Der().EsNil(), true);
@@ -89,7 +89,7 @@ void test_swap_der()
 	ASSERT_EQ(der.Raiz(), 42);
 	ASSERT_EQ(der.Der().EsNil(), false);
 	ASSERT_EQ(der.Izq().EsNil(), true);
-	//ASSERT_EQ(der.Der().Padre(), der);
+	ASSERT_EQ(der.Der().Padre(), &der);
 	ASSERT_EQ(der.Der().Raiz(), 19);
 	ASSERT_EQ(der.Der().Izq().EsNil(), true);
 	ASSERT_EQ(der.Der().Der().EsNil(), true);
@@ -105,7 +105,8 @@ void test_borrar_hoja_izq()
 	ASSERT_EQ(arbol.Tamanho(), 2);
 	ASSERT_EQ(arbol.Altura(), 2);
 
-	arbol.BorrarHojaIzq();
+	ArbolBinario<int> nil;
+	arbol.BorrarHojaIzq(nil);
 	ASSERT_EQ(arbol.EsNil(), false);
 	ASSERT_EQ(arbol.Raiz(), 42);
 	ASSERT_EQ(arbol.Izq().EsNil(), true);
@@ -124,7 +125,8 @@ void test_borrar_hoja_der()
 	ASSERT_EQ(arbol.Tamanho(), 2);
 	ASSERT_EQ(arbol.Altura(), 2);
 
-	arbol.BorrarHojaDer();
+	ArbolBinario<int> nil;
+	arbol.BorrarHojaDer(nil);
 	ASSERT_EQ(arbol.EsNil(), false);
 	ASSERT_EQ(arbol.Raiz(), 42);
 	ASSERT_EQ(arbol.Izq().EsNil(), true);
@@ -187,9 +189,10 @@ int main(int argc, char **argv)
 	RUN_TEST(test_arbol_bin);
 	RUN_TEST(test_swap_izq);
 	RUN_TEST(test_swap_der);
-	//RUN_TEST(test_borrar_hoja_izq);
-	//RUN_TEST(test_borrar_hoja_der);
-	//RUN_TEST(test_agregar_hoja_izq);
-	//RUN_TEST(test_agregar_hoja_der);
+	RUN_TEST(test_borrar_hoja_izq);
+	RUN_TEST(test_borrar_hoja_der);
+	RUN_TEST(test_agregar_hoja_izq);
+	RUN_TEST(test_agregar_hoja_der);
+
 	return 0;
 }
