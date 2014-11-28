@@ -1,129 +1,103 @@
 
-#ifndef AED2_ARREGLO_H_INCLUDED
-#define AED2_ARREGLO_H_INCLUDED
+#ifndef AED2_ColaPrioridad_H_INCLUDED
+#define AED2_ColaPrioridad_H_INCLUDED
 
 #include "../aed2.h"
+#include "ArbolBinario.h"
 
-namespace aed2 {
+namespace tp {
 
     template<class T>
-    class Arreglo{
+    class ColaPrioridad{
         public:
 
-            /**
-             * Crea un arreglo de tamaño 0.
-             */
-            Arreglo();
+            // forward declaration
+            class const_iterador;
 
             /**
-             * Crea un arreglo de tamaño tam, donde todas las posiciones
-             * son nulas.
+             * Crea una Cola de Prioridad.
              */
-            Arreglo(Nat tam);
+            ColaPrioridad();
+
+            /**
+             * Encola un elemento a la Cola de Prioridad.
+             */
+            void Encolar(const T& elem);
 
             /**
              * Constructor por copia.  Los elementos de otro se copian
-             * en el mismo orden a this, y pasan a ser arreglos independientes
+             * en el mismo orden a this, y pasan a ser Colas de Prioridad independientes
              */
-            Arreglo(const Arreglo<T>& otro);
+            ColaPrioridad<T>(const ColaPrioridad<T>& otro);
 
             /**
              * Operacion de asignacion.  Borra lo que se que habia en this
              * y copia los elementos de otro en el mismo orden.
              */
-            Arreglo<T>& operator=(const Arreglo<T>& otro);
+            ColaPrioridad<T>& operator=(const ColaPrioridad<T>& otro);
 
             /**
-             * Destructor.  Borra lo que hubiera en el arreglo.
+             * Destructor.  Borra lo que hubiera en el ColaPrioridad.
              */
-            ~Arreglo();
+            ~ColaPrioridad();
 
             /**
-             * Devuelve el elemento en la posicion pos.
-             * Requiere: Definido(pos)
+             * Devuelve true si la Cola de Prioridad esta vacia.
              */
-            const T& operator[](Nat pos) const;
+            bool EsVacia() const;
 
             /**
-             * Devuelve el elemento en la posicion pos.
-             * Requiere: Definido(pos)
+             /**
+             * Devuelve el proximo de la Cola de Prioridad.
+             * Requiere: not vacia?(colaPrior)
              */
-            T& operator[](Nat pos);
+            T& Proximo() const;
 
             /**
-             * Devuelve true si en la posicion pos fue definido algun
-             * elemento.
+             * Modifica la cola dada, desencolando al elemento de mayor prioridad
+             * Requiere: not vacia?(colaPrior) 
              */
-            bool Definido(Nat pos) const;
 
-            /**
-             * Define valor en la posicion pos.  Devuelve this
-             */
-            Arreglo<T>& Definir(Nat pos, const T& valor);
+            void Desencolar();
 
-            /**
-             * Indefine el elemento en pos.
-             * No requiere que el elemento este definido.
-             * Devuelve this.
-             */
-            Arreglo<T>& Borrar(Nat pos);
+                         const_Iterador CrearIt() const;
 
-            /**
-             * Devuelve el tamaño del arreglo
-             */
-            Nat Tamanho() const;
-
-            /**
-             * Redimensiona el arreglo, sin copiar los items de nuevo.
-             * Si el arreglo es mas chico, se borran los datos sobrantes.
-             * Sino, se definen items nuevos en null.
-             */
-            Arreglo<T>& Redimensionar(Nat tam);
-
-            /**
-             * Mueve el dato de otro[posOtro] a this[posThis] en O(1).
-             * Si ya habia un dato en this[posThis], el mismo se elimina.
-             * Despues de esto, no esta definido el valor de posOtro en
-             * otro.
-             * Obviamente, this puede ser igual a otro, para lograr mover
-             * las cosas de un lugar a otro.  Aunque se recomienda utilizar
-             * la otra version de mover.
-             */
-            Arreglo<T>& Mover(Nat posThis, Arreglo<T>& otro, Nat posOtro);
-
-            /**
-             * Equivalente a Mover(destino, this, origen)
-             */
-            Arreglo<T>& Mover(Nat destino, Nat origen);
-
-            /**
-             * Intercambia los valores de this[posThis] y otro[posOtro]
-             * sin realizar copias nuevas de los elementos.
-             * Obviamente, this puede ser igual a otro.
-             */
-            Arreglo<T>& Swap(Nat posThis, Arreglo<T>& otro, Nat posOtro);
-
-            /**
-             * Equivalente a Swap(posA, this, posB)
-             */
-            Arreglo<T>& Swap(Nat posA, Nat posB);
-
-        private:
-            //HACK PARA QUE AUTOMAGICAMENTE SE ASIGNEN LAS POSICIONES EN NULL
-            struct Ptr {
+            class const_Iterador
+            {
                 public:
-                    Ptr(T* t = NULL) {ptr = t;}
-                    operator T*() {return ptr;}
-                    void Delete() {if(ptr!=NULL) delete ptr; ptr = NULL;}
-                    Ptr Copiar() {return ptr == NULL ? NULL : Ptr(new T(*ptr));}
-                    T* ptr;
+
+                    const_Iterador();
+
+                    /**
+                     * Devuelve true si el iterador apunta a un nodo valido.
+                     */
+                    bool HaySiguiente() const;
+
+                    /**
+                     * Devuelve el alpha apuntado por le iterador.
+                     * Requiere: haysiguiente?(it)
+                     */
+                    const T& Siguiente() const;
+
+                    /**
+                     * Desencola la subcola del iterador sin alterar el resto de la cola.
+                     * Requiere: haysiguiente?(it)
+                     */
+                    BorrarSiguiente();
+
+
+                private:
+
+                    ArbolBinario<T> cola;
+                    ArbolBinario<T> subCola;
+
+
             };
 
-            Ptr* array;
-            Nat size;
 
-            void Destruir();
-            void Asignar(const Arreglo<T>& otro);
+        private:
+
+            ArbolBinario<T> arbol;
 
     };
 
@@ -132,156 +106,71 @@ namespace aed2 {
      * el != gratis :)
      */
     template<class T>
-    bool operator==(const Arreglo<T>&, const Arreglo<T>&);
+    bool operator==(const ColaPrioridad<T>&, const ColaPrioridad<T>&);
 
     template<class T>
-    std::ostream& operator<<(std::ostream& os, const Arreglo<T>&);
+    std::ostream& operator<<(std::ostream& os, const ColaPrioridad<T>&);
 
 
 template<class T>
-Arreglo<T>::Arreglo() : array(NULL), size(0) {}
+ColaPrioridad<T>::ColaPrioridad() : arbol(ArbolBinario()) {}
+
 
 template<class T>
-Arreglo<T>::Arreglo(Nat tamanio) : size(tamanio) {
-    array = new Ptr[size];
+ColaPrioridad<T>::ColaPrioridad(const ColaPrioridad<T>& otro) {
+    //TODO
 }
 
 template<class T>
-Arreglo<T>::Arreglo(const Arreglo<T>& otro) {
-    Asignar(otro);
+ColaPrioridad<T>& ColaPrioridad<T>::operator=(const ColaPrioridad<T>& otro) {
+    //TODO
 }
 
 template<class T>
-Arreglo<T>& Arreglo<T>::operator=(const Arreglo<T>& otro) {
-    if(this != &otro) {
-        Destruir();
-        Asignar(otro);
+ColaPrioridad<T>::~ColaPrioridad() {
+    //TODO
+}
+
+template<class T>
+T& ColaPrioridad<T>::Proximo() const {
+    return this->arbol.Raiz();
+
+}
+
+template<class T>
+void ColaPrioridad<T>::Encolar(const T& elem) const {
+    if (this.EsVacia()) {
+        this->arbol(ArbolBinario(ArbolBinario(),elem,ArbolBinario()));
+    } else {
+        int h = this->arbol.Altura() - 1;
+        Arreglo<int> camino = CaminoParaInsertarNuevoNodo(this->arbol);
+        int i = 0;
+        ArbolBinario<T> padre = this->arbol;
+        while (i < h - 1) {
+            if (camino[i] % 2 == 1) {
+                padre = padre.Der();
+            } else {
+                padre = padre.Izq();
+            }
+            i++;
+        }
+        ArbolBinario<T> aux(ArbolBinario(), elem, ArbolBinario());
+        if (camino[i] % 2 == 1) {
+            padre.AgregarHojaDer(aux);
+            Nodo<T> nodoAux.SubirUltimoNodo(padre.Der()); // VER
+            
+        } else {
+
+        }
     }
-    return *this;
+    
+
 }
 
 template<class T>
-Arreglo<T>::~Arreglo() {
-    Destruir();
-}
+bool ColaPrioridad<T>::EsVacia() const {
+    return this->arbol.EsNil();
 
-template<class T>
-const T& Arreglo<T>::operator[](Nat pos) const {
-    assert(Definido(pos));
-    return *array[pos];
-}
-
-template<class T>
-T& Arreglo<T>::operator[](Nat pos) {
-    assert(Definido(pos));
-    return *array[pos];
-}
-
-template<class T>
-bool Arreglo<T>::Definido(Nat pos) const {
-    return pos < size and array[pos] != NULL;
-}
-
-template<class T>
-Arreglo<T>& Arreglo<T>::Definir(Nat pos, const T& valor) {
-    assert(pos < size);
-    Borrar(pos);
-    array[pos] = new T(valor);
-    return *this;
-}
-
-template<class T>
-Arreglo<T>& Arreglo<T>::Borrar(Nat pos) {
-    assert(pos < size);
-    array[pos].Delete();
-    return *this;
-}
-
-template<class T>
-Nat Arreglo<T>::Tamanho() const {
-    return size;
-}
-
-template<class T>
-Arreglo<T>& Arreglo<T>::Redimensionar(Nat tam) {
-    Ptr* oldarray = array;
-    array = tam == 0 ? NULL : new Ptr[tam];
-
-    for(Nat p = 0; p < size && p < tam; ++p)
-        array[p] = oldarray[p];     //no copia, simplemente mueve los punteros
-
-    //borramos los elementos viejos
-    for(Nat p = tam; p < size; ++p)
-        oldarray[p].Delete();
-    delete [] oldarray;
-
-    size = tam;
-    return *this;
-}
-
-template<class T>
-Arreglo<T>& Arreglo<T>::Mover(Nat posThis, Arreglo<T>& otro, Nat posOtro) {
-    if(this != &otro or posThis != posOtro) {
-        Borrar(posThis);
-        array[posThis] = otro.array[posOtro];
-        otro.array[posOtro] = NULL;
-    }
-    return *this;
-}
-
-template<class T>
-Arreglo<T>& Arreglo<T>::Mover(Nat destino, Nat origen) {
-    return Mover(destino, *this, origen);
-}
-
-template<class T>
-Arreglo<T>& Arreglo<T>::Swap(Nat posThis, Arreglo<T>& otro, Nat posOtro) {
-    Ptr tmp = array[posThis];
-    array[posThis] = otro.array[posOtro];
-    otro.array[posOtro] = tmp;
-    return *this;
-}
-
-template<class T>
-Arreglo<T>& Arreglo<T>::Swap(Nat posA, Nat posB) {
-    return Swap(posA, *this, posB);
-}
-
-template<class T>
-void Arreglo<T>::Destruir() {
-    for(Nat p = 0; p < size; ++p) Borrar(p);
-    delete[] array;
-    array = NULL;
-}
-
-template<class T>
-void Arreglo<T>::Asignar(const Arreglo<T>& otro) {
-    size = otro.size;
-    array = new Ptr[size];
-    for(Nat p = 0; p < size; ++p)
-        array[p] = otro.array[p].Copiar();
-}
-
-
-template<class T>
-std::ostream& operator<<(std::ostream& os, const Arreglo<T>& a) {
-    os << "[";
-    for(Nat p = 0; p < a.Tamanho() - 1; ++p) {
-        if(a.Definido(p)) os << a[p];
-        os << ",";
-    }
-    if(a.Definido(a.Tamanho()-1)) os << a[a.Tamanho()-1];
-    return os << "]";
-}
-
-template<class T>
-bool operator==(const Arreglo<T>& a, const Arreglo<T>& b) {
-    bool retval = a.Tamanho() == b.Tamanho();
-    for(Nat p = 0; p < a.Tamanho() && retval; ++p) {
-        retval = a.Definido(p) == b.Definido(p);
-        if(retval and a.Definido(p)) retval = a[p] == b[p];
-    }
-    return retval;
 }
 
 }
