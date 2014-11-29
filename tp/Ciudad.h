@@ -115,7 +115,7 @@ namespace tp {
                 Estacion estActual;
                 ConjRapido tags;
                 Nat infracciones;
-                //ColaPrior::itColaPrior posEstacion;
+                ColaPrioridad<NodoPrioridad>::const_Iterador& posEstacion;
                 DiccRapido< DiccRapido<bool> > sendasInfrac;
                 bool esta;
             };
@@ -220,7 +220,27 @@ namespace tp {
                 bool aux = false;
                 dicc.Definir(estB, aux);
             }
+
+            it.Avanzar();
         }
+        datoRobot->esta = true;
+        datoRobot->posEstacion = itCola;
+        robots->Definir(proximoRUR, *datoRobot);
+        proximoRUR = proximoRUR + 1;
+    }
+
+    void Ciudad::Mover(const RUR rur, const Estacion est) {
+        DiccRapido<bool>& diccAux = (*robots)[rur].sendasInfrac.Significado(EstacionActual(rur));
+        ColaPrioridad<NodoPrioridad>& colaEstB = estaciones.Significado(est).robots;
+        (*robots)[rur].posEstacion.BorrarSiguiente();
+        if (diccAux.Significado(est)) {
+            (*robots)[rur].infracciones = (*robots)[rur].infracciones + 1;
+        }
+        NodoPrioridad* nodo = new NodoPrioridad();
+        nodo->infracciones = (*robots)[rur].infracciones;
+        nodo->rur = rur;
+        ColaPrioridad<NodoPrioridad>::const_Iterador itCola = colaEstB.Encolar(*nodo);
+        (*robots)[rur].posEstacion = itCola;
     }
 
     Ciudad::~Ciudad() {
