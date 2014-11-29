@@ -8,13 +8,13 @@ CFLAGS=-g -Wall
 LDFLAGS=
 
 # Agregar acá los archivos .cpp a compilar
-SOURCES=testArbolBinario.cpp testMapa.cpp testDiccRapido.cpp testConjRapido.cpp
+SOURCES=testArbolBinario.cpp testMapa.cpp testDiccRapido.cpp testConjRapido.cpp testCiudad.cpp
 
 # Objetos que serán generados (no tocar)
 OBJECTS=$(SOURCES:.cpp=.o)
 
 # Nombre del ejecutable a generar
-EXECUTABLE=testArbolBinario testMapa testDiccRapido testConjRapido
+EXECUTABLE=testArbolBinario testMapa testDiccRapido testConjRapido testCiudad
 
 arbol: testArbolBinario.o
 	$(CC) testArbolBinario.cpp $(CFLAGS) -o testArbolBinario
@@ -27,6 +27,9 @@ dicc: testDiccRapido.o
 
 conj: testConjRapido.o
 	$(CC) testConjRapido.cpp $(CFLAGS) -o testConjRapido
+
+ciudad: testCiudad.o
+	$(CC) testCiudad.cpp $(CFLAGS) -o testCiudad
 
 clean:
 	rm -rf $(EXECUTABLE) $(OBJECTS)

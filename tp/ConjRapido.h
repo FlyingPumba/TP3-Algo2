@@ -77,7 +77,7 @@ namespace tp {
 
                 private:
 
-                    typename DiccRapido<bool>::const_Iterador it_dicc_;
+                    DiccRapido<bool>::const_Iterador it_dicc_;
 
                     const_Iterador(const ConjRapido* c);
 
@@ -97,7 +97,8 @@ namespace tp {
 
     void ConjRapido::Agregar(const String& elem) {
         if (!dicc.Definido(elem)) {
-            dicc.Definir(elem, true);
+            bool aux = true;
+            dicc.Definir(elem, aux);
             size = size + 1;
         }
     }
@@ -107,7 +108,8 @@ namespace tp {
         assert(Pertenece(elem) == false);
         #endif
 
-        dicc.DefinirRapido(elem, true);
+        bool aux = true;
+        dicc.DefinirRapido(elem, aux);
         size = size + 1;
     }
 
@@ -133,7 +135,7 @@ namespace tp {
     }
 
     ConjRapido::const_Iterador ConjRapido::CrearIt() const {
-        return const_Iterador(this); 
+        return const_Iterador(this);
     }
 
     // Implementacion const_Iterador:

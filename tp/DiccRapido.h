@@ -21,13 +21,13 @@ namespace tp {
             /**
              * Agrega a al diccionario con la clave s.
              */
-            void Definir(String s, const T& valor);
+            void Definir(String s, T& valor);
 
             /**
              * Agrega a al diccionario con la clave s.
              * Requiere: s no pertenece a las claves del diccionario.
              */
-            void DefinirRapido(String s, const T& valor);
+            void DefinirRapido(String s, T& valor);
 
             /**
              * Devuelve true si s esta definida en el diccionario.
@@ -39,6 +39,11 @@ namespace tp {
              * Requiere: Def?(s)
              */
             T& Significado(String s) const;
+
+            /**
+             * Devuelve las claves en el diccionario.
+             */
+            const Conj<String>& Claves() const;
 
             /**
              * Destructor.
@@ -92,23 +97,26 @@ namespace tp {
                 Nodo(const T& v) : siguientes(256), significado(&v) {};
 
                 Arreglo<Nodo*> siguientes;
-                const T* significado;
+                T* significado;
             };
 
             Conj<String> claves;
             Nodo dicc;
 
-            void DefinirAux(String s, const T& valor);
+            void DefinirAux(String s, T& valor);
     };
 
     template<class T>
     std::ostream& operator<<(std::ostream& os, const DiccRapido<T>&);
 
     template<class T>
+    bool operator==(const DiccRapido<T>&, const DiccRapido<T>&);
+
+    template<class T>
     DiccRapido<T>::DiccRapido() {}
 
     template<class T>
-    void DiccRapido<T>::Definir(String s, const T& valor) {
+    void DiccRapido<T>::Definir(String s, T& valor) {
         if (claves.Pertenece(s) == false) {
             claves.Agregar(s);
             DefinirAux(s, valor);
@@ -116,18 +124,18 @@ namespace tp {
     }
 
     template<class T>
-    void DiccRapido<T>::DefinirRapido(String s, const T& valor) {
+    void DiccRapido<T>::DefinirRapido(String s, T& valor) {
         claves.AgregarRapido(s);
         DefinirAux(s, valor);
     }
 
     template<class T>
-    void DiccRapido<T>::DefinirAux(String s, const T& valor) {
+    void DiccRapido<T>::DefinirAux(String s, T& valor) {
         Nodo* aux = &dicc;
         int i = 0;
         while (i < s.length()) {
             if(!aux->siguientes.Definido((int)s[i])) {
-                Nodo* nuevo = new Nodo(s[i]);
+                Nodo* nuevo = new Nodo();
                 aux->siguientes.Definir((int)s[i], nuevo);
             }
             aux = aux->siguientes[(int)s[i]];
@@ -156,8 +164,12 @@ namespace tp {
             aux = aux->siguientes[(int)s[i]];
             i = i + 1;
         }
-        T sig(*(aux->significado));
-        return sig;
+        return *(aux->significado);
+    }
+
+    template<class T>
+    const Conj<String>& DiccRapido<T>::Claves() const {
+        return claves;
     }
 
     template<class T>
@@ -167,8 +179,25 @@ namespace tp {
     }
 
     template<class T>
+    bool operator == (const DiccRapido<T>& d1, const DiccRapido<T>& d2)
+    {
+      if (d1.Claves() == d2.Claves()) {
+          Conj<String>::const_Iterador it = d1.Claves().CrearIt();
+          while (it.HaySiguiente()) {
+              if (d1.Significado(it.Siguiente()) != d2.Significado(it.Siguiente())) {
+                  return false;
+              }
+              it.Avanzar();
+          }
+          return true;
+      } else {
+          return false;
+      }
+    }
+
+    template<class T>
     typename DiccRapido<T>::const_Iterador DiccRapido<T>::CrearIt() const {
-        return const_Iterador(this); 
+        return const_Iterador(this);
     }
 
     // Implementacion const_Iterador:

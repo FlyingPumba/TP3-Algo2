@@ -39,12 +39,12 @@ void test_mapa_con_estaciones()
 	ASSERT_EQ(ests.HaySiguiente(), true);
 	ests.Avanzar();
 	ASSERT_EQ(ests.HaySiguiente(), false);
-	ASSERT_EQ(mapa.EstanConectadas("A", "B"), false);
-	ASSERT_EQ(mapa.EstanConectadas("B", "A"), false);
-	ASSERT_EQ(mapa.EstanConectadas("C", "B"), false);
-	ASSERT_EQ(mapa.EstanConectadas("B", "C"), false);
-	ASSERT_EQ(mapa.EstanConectadas("A", "C"), false);
-	ASSERT_EQ(mapa.EstanConectadas("C", "A"), false);
+	ASSERT_EQ(mapa.Conectadas("A", "B"), false);
+	ASSERT_EQ(mapa.Conectadas("B", "A"), false);
+	ASSERT_EQ(mapa.Conectadas("C", "B"), false);
+	ASSERT_EQ(mapa.Conectadas("B", "C"), false);
+	ASSERT_EQ(mapa.Conectadas("A", "C"), false);
+	ASSERT_EQ(mapa.Conectadas("C", "A"), false);
 }
 
 void test_mapa_con_estaciones_conectadas()
@@ -54,12 +54,12 @@ void test_mapa_con_estaciones_conectadas()
 	mapa.Agregar("B");
 	mapa.Agregar("C");
 	mapa.Conectar("A", "B", "auto | camion");
-	ASSERT_EQ(mapa.EstanConectadas("A", "B"), true);
-	ASSERT_EQ(mapa.EstanConectadas("B", "A"), true);
-	ASSERT_EQ(mapa.EstanConectadas("C", "B"), false);
-	ASSERT_EQ(mapa.EstanConectadas("B", "C"), false);
-	ASSERT_EQ(mapa.EstanConectadas("A", "C"), false);
-	ASSERT_EQ(mapa.EstanConectadas("C", "A"), false);
+	ASSERT_EQ(mapa.Conectadas("A", "B"), true);
+	ASSERT_EQ(mapa.Conectadas("B", "A"), true);
+	ASSERT_EQ(mapa.Conectadas("C", "B"), false);
+	ASSERT_EQ(mapa.Conectadas("B", "C"), false);
+	ASSERT_EQ(mapa.Conectadas("A", "C"), false);
+	ASSERT_EQ(mapa.Conectadas("C", "A"), false);
 	ASSERT_EQ(mapa.Rest("A", "B"), "auto | camion");
 	ASSERT_EQ(mapa.Rest("B", "A"), "auto | camion");
 }
@@ -71,4 +71,3 @@ int main(int argc, char **argv)
 	RUN_TEST(test_mapa_con_estaciones_conectadas);
 	return 0;
 }
-
