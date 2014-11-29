@@ -243,6 +243,17 @@ namespace tp {
         (*robots)[rur].posEstacion = itCola;
     }
 
+    void Ciudad::Inspeccion(const Estacion est) {
+        DatoEstacion datoEst = estaciones.Significado(est);
+        if (!datoEst.robots.EsVacia()) {
+            if (datoEst.robots.Proximo().infracciones != 0) {
+                RUR r = datoEst.robots.Proximo().rur;
+                datoEst.robots.Desencolar();
+                (*robots)[r].esta = false;
+            }
+        }
+    }
+
     Ciudad::~Ciudad() {
         delete robots;
     }
