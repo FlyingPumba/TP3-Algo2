@@ -79,28 +79,6 @@ namespace tp {
              */
             const Conj<Estacion>::const_Iterador Estaciones() const;
 
-            /**
-             * Devuelve la cantidad de veces que se realizo una inspeccion en la estacion est.
-             * Requiere: est in estaciones(c)
-             */
-            const Nat CantInspecciones(const Estacion est) const;
-
-            /**
-             * Devuelve la cantidad de veces que se realizo una inspeccion en la estacion est.
-             * Requiere: est in estaciones(c)
-             */
-            const Nat CantInfraccionesXTag(const Caracteristica est) const;
-
-            /**
-             * Devuelve el conjunto de tags historicos de la ciudad.
-             */
-            const Conj<Caracteristica> TagsHistoricos() const;
-
-            /**
-             * Devuelve el conjunto de tags historicos de la ciudad.
-             */
-            const Caracteristica TagMasInvolucrado() const;
-
         private:
             struct Ests {
                 Estacion estA;
@@ -114,6 +92,18 @@ namespace tp {
             struct NodoPrioridad {
                 Nat infracciones;
                 RUR rur;
+
+                bool operator <(const NodoPrioridad& otro) {
+                    if (infracciones == otro.infracciones) {
+                        return rur < otro.rur;
+                    } else {
+                        return infracciones < otro.infracciones;
+                    }
+                }
+
+                bool operator == (const NodoPrioridad& otro) const {
+                  return infracciones == otro.infracciones && rur == otro.rur;
+                }
             };
 
             struct DatoTag {
@@ -132,7 +122,7 @@ namespace tp {
 
             struct DatoEstacion {
                 DiccRapido<Restriccion> sendas;
-                //ColaPrioridad<NodoPrioridad> robots;
+                ColaPrioridad<NodoPrioridad> robots;
                 Nat cantInspec;
 
                 bool operator == (const DatoEstacion& otro) const {
@@ -140,17 +130,15 @@ namespace tp {
                 }
             };
 
-            Arreglo<DatoRobot> robots;
+            Arreglo<DatoRobot>* robots;
             Nat cantEsts;
             DiccRapido<DatoEstacion> estaciones;
             Conj<Ests> estsConectadas;
             const class Mapa& mapa;
             Nat proximoRUR;
-            DiccRapido<Nat> infracTags;
-            DatoTag tagMasInvol;
     };
 
-    Ciudad::Ciudad(const class Mapa& mapa) : mapa(mapa), robots(32), proximoRUR(0) {
+    Ciudad::Ciudad(const class Mapa& mapa) : mapa(mapa), proximoRUR(0) {
         Conj<Estacion>::const_Iterador itConj = mapa.Estaciones();
         Nat cant = 0;
         while (itConj.HaySiguiente()) {
@@ -158,8 +146,7 @@ namespace tp {
             itConj.Avanzar();
         }
         cantEsts = cant;
-        tagMasInvol.elTag = "";
-        tagMasInvol.inf = -1;
+        robots = new Arreglo<DatoRobot>(32);
 
         itConj = mapa.Estaciones();
         while (itConj.HaySiguiente()) {
@@ -193,8 +180,51 @@ namespace tp {
         }
     }
 
+    void Ciudad::Entrar(const ConjRapido& tags, const Estacion est) {
+        if (robots->Tamanho() == proximoRUR + 1) {
+            Arreglo<DatoRobot>* aux =  new Arreglo<DatoRobot>(32);
+            int i = 0;
+            while (i < robots->Tamanho()) {
+                aux->Definir(i, (*robots)[i]);
+                i = i + 1;
+            }
+            delete robots;
+            robots = aux;
+        }
+
+        NodoPrioridad* nodo = new NodoPrioridad();
+        nodo->infracciones = 0;
+        nodo->rur = proximoRUR;
+
+        DatoEstacion datoAux = estaciones.Significado(est);
+        ColaPrioridad<NodoPrioridad>::const_Iterador itCola = datoAux.robots.Encolar(*nodo);
+
+        DatoRobot* datoRobot = new DatoRobot();
+        Conj<Ests>::const_Iterador it = estsConectadas.CrearIt();
+        while (it.HaySiguiente()) {
+            Estacion estA = it.Siguiente().estA;
+            Estacion estB = it.Siguiente().estB;
+            if (!datoRobot->sendasInfrac.Definido(estA)) {
+                DiccRapido<bool>* dicc = new DiccRapido<bool>();
+                datoRobot->sendasInfrac.Definir(estA, *dicc);
+            }
+            DiccRapido<Restriccion>& diccAux = estaciones.Significado(estA).sendas;
+            Restriccion& rest = diccAux.Significado(estB);
+
+            DiccRapido<bool>& dicc = datoRobot->sendasInfrac.Significado(estA);
+            //if (rest.Verifica(tags)) {
+            if (true) {
+                bool aux = true;
+                dicc.Definir(estB, aux);
+            } else {
+                bool aux = false;
+                dicc.Definir(estB, aux);
+            }
+        }
+    }
+
     Ciudad::~Ciudad() {
-        // TODO
+        delete robots;
     }
 
     const RUR Ciudad::ProximoRUR() const {
@@ -210,15 +240,15 @@ namespace tp {
     }*/
 
     Estacion Ciudad::EstacionActual(const RUR r) const {
-        return robots[r].estActual;
+        return (*robots)[r].estActual;
     }
 
     const ConjRapido Ciudad::Tags(const RUR r) const {
-        return robots[r].tags;
+        return (*robots)[r].tags;
     }
 
     const Nat Ciudad::CantInfracciones(const RUR r) const {
-        return robots[r].infracciones;
+        return (*robots)[r].infracciones;
     }
 
     const Conj<Estacion>::const_Iterador Ciudad::Estaciones() const {
