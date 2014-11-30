@@ -208,14 +208,12 @@ namespace tp {
     {}
 
     template<class T>
-    bool DiccRapido<T>::const_Iterador::HaySiguiente() const
-    {
+    bool DiccRapido<T>::const_Iterador::HaySiguiente() const {
       return it_claves_.HaySiguiente();
     }
 
     template<class T>
-    const String DiccRapido<T>::const_Iterador::SiguienteClave() const
-    {
+    const String DiccRapido<T>::const_Iterador::SiguienteClave() const {
       #ifdef DEBUG
       assert(HaySiguiente());
       #endif
@@ -224,8 +222,7 @@ namespace tp {
     }
 
     template<class T>
-    const T& DiccRapido<T>::const_Iterador::SiguienteSignificado() const
-    {
+    const T& DiccRapido<T>::const_Iterador::SiguienteSignificado() const {
       #ifdef DEBUG
       assert(HaySiguiente());
       #endif
@@ -234,8 +231,7 @@ namespace tp {
     }
 
     template<class T>
-    void DiccRapido<T>::const_Iterador::Avanzar()
-    {
+    void DiccRapido<T>::const_Iterador::Avanzar() {
       #ifdef DEBUG
       assert(HaySiguiente());
       #endif

@@ -8,11 +8,11 @@
 namespace tp {
 
     template<class T>
-    class ColaPrioridad{
+    class ColaPrioridad {
         public:
 
             // forward declaration
-            class const_iterador;
+            class const_Iterador;
 
             /**
              * Crea una Cola de Prioridad.
@@ -22,7 +22,7 @@ namespace tp {
             /**
              * Encola un elemento a la Cola de Prioridad.
              */
-            void Encolar(const T& elem);
+            ColaPrioridad<T>::const_Iterador Encolar(const T& elem);
 
             /**
              * Constructor por copia.  Los elementos de otro se copian
@@ -51,7 +51,7 @@ namespace tp {
              * Devuelve el proximo de la Cola de Prioridad.
              * Requiere: not vacia?(colaPrior)
              */
-            T& Proximo() const;
+            const T& Proximo() const;
 
             /**
              * Modifica la cola dada, desencolando al elemento de mayor prioridad
@@ -83,7 +83,7 @@ namespace tp {
                      * Desencola la subcola del iterador sin alterar el resto de la cola.
                      * Requiere: haysiguiente?(it)
                      */
-                    BorrarSiguiente();
+                    void BorrarSiguiente();
 
 
                 private:
@@ -119,7 +119,7 @@ namespace tp {
     std::ostream& operator<<(std::ostream& os, const ColaPrioridad<T>&);
 
     template<class T>
-    ColaPrioridad<T>::ColaPrioridad() : arbol(ArbolBinario()) {}
+    ColaPrioridad<T>::ColaPrioridad() {}
 
 
     template<class T>
@@ -138,14 +138,14 @@ namespace tp {
     }
 
     template<class T>
-    T& ColaPrioridad<T>::Proximo() const {
+    const T& ColaPrioridad<T>::Proximo() const {
         return this->arbol.Raiz();
 
     }
 
     template<class T>
-    void ColaPrioridad<T>::Encolar(const T& elem) const {
-        if (this.EsVacia()) {
+    typename ColaPrioridad<T>::const_Iterador ColaPrioridad<T>::Encolar(const T& elem) {
+        /*if (this.EsVacia()) {
             this->arbol(ArbolBinario(ArbolBinario(),elem,ArbolBinario()));
         } else {
             int h = this->arbol.Altura() - 1;
@@ -168,9 +168,12 @@ namespace tp {
             } else {
 
             }
-        }
+        }*/
+    }
 
-
+    template<class T>
+    void ColaPrioridad<T>::Desencolar() {
+        // TODO
     }
 
     template<class T>
@@ -186,10 +189,10 @@ namespace tp {
         bool subir= (ulti.padre != NULL);
         while (subir){
             if (ulti.Raiz > ulti.Padre.Raiz){
-                Swap(ulti.padre*, ulti);
-                subir= (ulti.padre != NULL);
+                Swap(*ulti.padre, ulti);
+                subir = (ulti.padre != NULL);
             } else {
-                subir=false;
+                subir = false;
             }
         }
     }
@@ -202,28 +205,28 @@ namespace tp {
                 if (prim.raiz < max(prim.izq.raiz, prim.der.raiz)){
                     if (prim.izq.raiz >= prim.der.raiz){
                         Swap(prim,prim.izq);
-                        bajar= (!(EsNil(prim.izq)) || !(EsNil(prim.der)));
+                        bajar = (!(EsNil(prim.izq)) || !(EsNil(prim.der)));
                     } else {
                         Swap(prim,prim.der);
-                        bajar= (!(EsNil(prim.izq)) || !(EsNil(prim.der)));
+                        bajar = (!(EsNil(prim.izq)) || !(EsNil(prim.der)));
                     }
                 } else {
-                    bajar= false;
+                    bajar = false;
                 }
             } else {
                 if (!(EsNil(prim.izq))){
                     if (prim.izq.raiz > prim.raiz){
                         swap(prim, prim.izq);
-                        bajar= (!(EsNil(prim.izq)) || !(EsNil(prim.der)));
+                        bajar = (!(EsNil(prim.izq)) || !(EsNil(prim.der)));
                     } else {
-                        bajar= false;
+                        bajar = false;
                     }
                 } else {
                     if (prim.der.raiz > prim.raiz){
                         swap(prim, prim.der);
-                        bajar= (!(EsNil(prim.izq)) || !(EsNil(prim.der)));
+                        bajar = (!(EsNil(prim.izq)) || !(EsNil(prim.der)));
                     } else {
-                        bajar= false;
+                        bajar = false;
                     }
                 }
             }
@@ -235,7 +238,7 @@ namespace tp {
     Arreglo<int> ColaPrioridad<T>::caminoParaInsertarNuevoNodo(ArbolBinario<T> c){
         int n= c.Tamanho+1;
         int len= log2(n); //arriba esta el include math.h, espero que funcione
-        Arreglo<int> camino= Arreglo(len);
+        Arreglo<int> camino(len);
         int i=1;
         while (i<=len){
             if(n%2 == 0){
@@ -246,6 +249,13 @@ namespace tp {
             n=n/2;
             i++;
         }
+    }
+
+    // Implementacion del iterador:
+
+    template<class T>
+    void ColaPrioridad<T>::const_Iterador::BorrarSiguiente() {
+        // TODO
     }
 }
 #endif

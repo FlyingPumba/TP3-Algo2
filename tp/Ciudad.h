@@ -5,12 +5,14 @@
 #include "DiccRapido.h"
 #include "ConjRapido.h"
 #include "Mapa.h"
-//#include "ColaPrioridad.h"
+#include "ColaPrioridad.h"
 
 namespace tp {
 
     class Ciudad {
         public:
+
+            class itArreglo;
 
             /**
              * Genera una ciudad nueva
@@ -54,7 +56,7 @@ namespace tp {
             /**
              * Devuelve un iterador a los robots de la ciudad.
              */
-            const Ciudad::itArreglo Robots() const;
+            Ciudad::itArreglo Robots() const;
 
             /**
              * Devuelve la estacion actual del robot.
@@ -93,7 +95,7 @@ namespace tp {
                     /**
                      * Devuelve el datoRobot al que apunta el iterador.
                      */
-                    const DatoRobot& Siguiente() const;
+                    const struct DatoRobot& Siguiente() const;
 
                     /**
                      * Avanza el iterador a la posicion valida mas proxima.
@@ -102,10 +104,10 @@ namespace tp {
 
                 private:
 
-                    Arreglo<DatoRobot>& arreglo;
+                    Arreglo<struct DatoRobot>& arreglo;
                     Nat pos;
 
-                    itArreglo(const Arreglo<DatoRobot>& a);
+                    itArreglo(const Arreglo<struct DatoRobot>& a);
 
                     friend typename Ciudad::itArreglo Ciudad::Robots() const;
             };
@@ -146,7 +148,7 @@ namespace tp {
                 Estacion estActual;
                 ConjRapido tags;
                 Nat infracciones;
-                ColaPrioridad<NodoPrioridad>::const_Iterador& posEstacion;
+                ColaPrioridad<NodoPrioridad>::const_Iterador* posEstacion;
                 DiccRapido< DiccRapido<bool> > sendasInfrac;
                 bool esta;
             };
@@ -194,7 +196,6 @@ namespace tp {
                 if (mapa.Conectadas(it.Siguiente(), itAux.Siguiente())) {
                     Restriccion r = mapa.Rest(it.Siguiente(), itAux.Siguiente());
                     DatoEstacion datoAux = estaciones.Significado(it.Siguiente());
-                    std::cout << datoAux.sendas.Definido(itAux.Siguiente()) << std::endl;
                     datoAux.sendas.Definir(itAux.Siguiente(), r);
                     Ests conexion;
                     conexion.estA = it.Siguiente();
@@ -255,7 +256,7 @@ namespace tp {
             it.Avanzar();
         }
         datoRobot->esta = true;
-        datoRobot->posEstacion = itCola;
+        datoRobot->posEstacion = &itCola;
         robots->Definir(proximoRUR, *datoRobot);
         proximoRUR = proximoRUR + 1;
     }
@@ -263,7 +264,7 @@ namespace tp {
     void Ciudad::Mover(const RUR rur, const Estacion est) {
         DiccRapido<bool>& diccAux = (*robots)[rur].sendasInfrac.Significado(EstacionActual(rur));
         ColaPrioridad<NodoPrioridad>& colaEstB = estaciones.Significado(est).robots;
-        (*robots)[rur].posEstacion.BorrarSiguiente();
+        (*robots)[rur].posEstacion->BorrarSiguiente();
         if (diccAux.Significado(est)) {
             (*robots)[rur].infracciones = (*robots)[rur].infracciones + 1;
         }
@@ -271,7 +272,7 @@ namespace tp {
         nodo->infracciones = (*robots)[rur].infracciones;
         nodo->rur = rur;
         ColaPrioridad<NodoPrioridad>::const_Iterador itCola = colaEstB.Encolar(*nodo);
-        (*robots)[rur].posEstacion = itCola;
+        (*robots)[rur].posEstacion = &itCola;
     }
 
     void Ciudad::Inspeccion(const Estacion est) {
