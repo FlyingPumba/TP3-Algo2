@@ -54,7 +54,7 @@ namespace tp {
             /**
              * Devuelve un iterador a los robots de la ciudad.
              */
-            //const itCiudad Robots() const;
+            const Ciudad::itArreglo Robots() const;
 
             /**
              * Devuelve la estacion actual del robot.
@@ -78,6 +78,37 @@ namespace tp {
              * Devuelve las estaciones que componen la ciudad.
              */
             const Conj<Estacion>::const_Iterador Estaciones() const;
+
+            class itArreglo
+            {
+                public:
+
+                    itArreglo();
+
+                    /**
+                     * Devuelve true si quedan elementos validos por iterar.
+                     */
+                    bool HaySiguiente() const;
+
+                    /**
+                     * Devuelve el datoRobot al que apunta el iterador.
+                     */
+                    const DatoRobot& Siguiente() const;
+
+                    /**
+                     * Avanza el iterador a la posicion valida mas proxima.
+                     */
+                    void Avanzar();
+
+                private:
+
+                    Arreglo<DatoRobot>& arreglo;
+                    Nat pos;
+
+                    itArreglo(const Arreglo<DatoRobot>& a);
+
+                    friend typename Ciudad::itArreglo Ciudad::Robots() const;
+            };
 
         private:
             struct Ests {
