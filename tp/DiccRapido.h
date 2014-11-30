@@ -21,24 +21,24 @@ namespace tp {
             /**
              * Agrega a al diccionario con la clave s.
              */
-            void Definir(String s, T& valor);
+            void Definir(const String& s, T& valor);
 
             /**
              * Agrega a al diccionario con la clave s.
              * Requiere: s no pertenece a las claves del diccionario.
              */
-            void DefinirRapido(String s, T& valor);
+            void DefinirRapido(const String& s, T& valor);
 
             /**
              * Devuelve true si s esta definida en el diccionario.
              */
-            bool Definido(String s) const;
+            bool Definido(const String& s) const;
 
             /**
              * Devuelve el significado de la clave s en el diccionario.
              * Requiere: Def?(s)
              */
-            T& Significado(String s) const;
+            T& Significado(const String& s) const;
 
             /**
              * Devuelve las claves en el diccionario.
@@ -103,7 +103,7 @@ namespace tp {
             Conj<String> claves;
             Nodo dicc;
 
-            void DefinirAux(String s, T& valor);
+            void DefinirAux(const String& s, T& valor);
     };
 
     template<class T>
@@ -116,7 +116,7 @@ namespace tp {
     DiccRapido<T>::DiccRapido() {}
 
     template<class T>
-    void DiccRapido<T>::Definir(String s, T& valor) {
+    void DiccRapido<T>::Definir(const String& s, T& valor) {
         if (claves.Pertenece(s) == false) {
             claves.Agregar(s);
             DefinirAux(s, valor);
@@ -124,13 +124,13 @@ namespace tp {
     }
 
     template<class T>
-    void DiccRapido<T>::DefinirRapido(String s, T& valor) {
+    void DiccRapido<T>::DefinirRapido(const String& s, T& valor) {
         claves.AgregarRapido(s);
         DefinirAux(s, valor);
     }
 
     template<class T>
-    void DiccRapido<T>::DefinirAux(String s, T& valor) {
+    void DiccRapido<T>::DefinirAux(const String& s, T& valor) {
         Nodo* aux = &dicc;
         int i = 0;
         while (i < s.length()) {
@@ -151,12 +151,12 @@ namespace tp {
     }
 
     template<class T>
-    bool DiccRapido<T>::Definido(String s) const {
+    bool DiccRapido<T>::Definido(const String& s) const {
         return claves.Pertenece(s);
     }
 
     template<class T>
-    T& DiccRapido<T>::Significado(String s) const {
+    T& DiccRapido<T>::Significado(const String& s) const {
         assert(Definido(s) == true);
         const Nodo* aux = &dicc;
         int i = 0;
