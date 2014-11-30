@@ -1,5 +1,5 @@
-#ifndef RESTRICCION_H_INCLUDED
-#define RESTRICCION_H_INCLUDED
+#ifndef RESTRICCION_TP_H_INCLUDED
+#define RESTRICCION_TP_H_INCLUDED
 
 #include "../aed2.h"
 #include "ConjRapido.h"
@@ -7,13 +7,13 @@
 
 namespace tp {
 
-    class Restriccion {
+    class RestriccionTP {
         public:
 
             /**
              * Crea una restriccion para el tag dado.
              */
-            Restriccion(const Caracteristica& tag);
+            RestriccionTP(const Caracteristica& tag);
 
             /**
              * Devuelve true si los tags cumplen con la restriccion.
@@ -23,13 +23,13 @@ namespace tp {
             /**
              * Destructor.
              */
-            ~Restriccion();
+            ~RestriccionTP();
 
             /**
              * Une las dos restricciones usan un operador AND.
              */
-            static Restriccion& And(const Restriccion& r1, const Restriccion& r2) {
-                Restriccion* rest = new Restriccion();
+            static RestriccionTP& And(const RestriccionTP& r1, const RestriccionTP& r2) {
+                RestriccionTP* rest = new RestriccionTP();
                 String* str_and = new String("AND");
                 ArbolBinario<String>* aux = new ArbolBinario<String>(*r1.arbol, *str_and, *r2.arbol);
                 rest->arbol = aux;
@@ -37,10 +37,10 @@ namespace tp {
             }
 
             /**
-             * Une las dos restricciones usan un operador AND.
+             * Une las dos Restricciones usan un operador AND.
              */
-            static Restriccion& Or(const Restriccion& r1, const Restriccion& r2) {
-                Restriccion* rest = new Restriccion();
+            static RestriccionTP& Or(const RestriccionTP& r1, const RestriccionTP& r2) {
+                RestriccionTP* rest = new RestriccionTP();
                 String* str_or = new String("OR");
                 ArbolBinario<String>* aux = new ArbolBinario<String>(*r1.arbol, *str_or, *r2.arbol);
                 rest->arbol = aux;
@@ -50,9 +50,9 @@ namespace tp {
             /**
              * Une las dos restricciones usan un operador AND.
              */
-            static Restriccion& Not(const Restriccion& r1) {
+            static RestriccionTP& Not(const RestriccionTP& r1) {
                 ArbolBinario<String> der;
-                Restriccion* rest = new Restriccion();
+                RestriccionTP* rest = new RestriccionTP();
                 String* str_not = new String("NOT");
                 ArbolBinario<String>* aux = new ArbolBinario<String>(*r1.arbol, *str_not, der);
                 rest->arbol = aux;
@@ -63,23 +63,23 @@ namespace tp {
             ArbolBinario<String>* arbol;
 
             bool VerificaAux(const ArbolBinario<String>& arbol, const ConjRapido& tags) const;
-            Restriccion();
+            RestriccionTP();
     };
 
-    Restriccion::Restriccion() : arbol(NULL) {}
+    RestriccionTP::RestriccionTP() : arbol(NULL) {}
 
-    Restriccion::Restriccion(const Caracteristica& tag) {
+    RestriccionTP::RestriccionTP(const Caracteristica& tag) {
         ArbolBinario<String> izq;
         ArbolBinario<String> der;
         ArbolBinario<String>* aux = new ArbolBinario<String>(izq, tag, der);
         arbol = aux;
     }
 
-    bool Restriccion::Verifica(const ConjRapido& tags) const {
+    bool RestriccionTP::Verifica(const ConjRapido& tags) const {
         return VerificaAux(*arbol, tags);
     }
 
-    bool Restriccion::VerificaAux(const ArbolBinario<String>& arbol, const ConjRapido& tags) const {
+    bool RestriccionTP::VerificaAux(const ArbolBinario<String>& arbol, const ConjRapido& tags) const {
         if (arbol.Raiz() == "AND") {
             return VerificaAux(arbol.Izq(), tags) && VerificaAux(arbol.Der(), tags);
         } else if (arbol.Raiz() == "OR") {
@@ -95,7 +95,7 @@ namespace tp {
         }
     }
 
-    Restriccion::~Restriccion() {
+    RestriccionTP::~RestriccionTP() {
         delete arbol;
     }
 }
