@@ -24,12 +24,6 @@ namespace tp {
             void Definir(const String& s, T& valor);
 
             /**
-             * Agrega a al diccionario con la clave s.
-             * Requiere: s no pertenece a las claves del diccionario.
-             */
-            void DefinirRapido(const String& s, T& valor);
-
-            /**
              * Devuelve true si s esta definida en el diccionario.
              */
             bool Definido(const String& s) const;
@@ -94,7 +88,7 @@ namespace tp {
         private:
             struct Nodo {
                 Nodo() : siguientes(256), significado(NULL) {};
-                Nodo(const T& v) : siguientes(256), significado(&v) {};
+                Nodo(T& v) : siguientes(256), significado(&v) {};
 
                 Arreglo<Nodo*> siguientes;
                 T* significado;
@@ -124,12 +118,6 @@ namespace tp {
     }
 
     template<class T>
-    void DiccRapido<T>::DefinirRapido(const String& s, T& valor) {
-        claves.AgregarRapido(s);
-        DefinirAux(s, valor);
-    }
-
-    template<class T>
     void DiccRapido<T>::DefinirAux(const String& s, T& valor) {
         Nodo* aux = &dicc;
         int i = 0;
@@ -141,7 +129,6 @@ namespace tp {
             aux = aux->siguientes[(int)s[i]];
             i = i + 1;
         }
-
         aux->significado = &valor;
     }
 
