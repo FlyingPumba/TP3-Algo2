@@ -24,13 +24,7 @@ namespace tp {
             void Agregar(const String& elem);
 
             /**
-             * Agrega un elemento al conjunto.
-             * Requiere: el elem no pertenece al conjunto.
-             */
-            void AgregarRapido(const String& elem);
-
-            /**
-             * Destructor.o.
+             * Destructor
              */
             ~ConjRapido();
 
@@ -101,16 +95,6 @@ namespace tp {
             dicc.Definir(elem, aux);
             size = size + 1;
         }
-    }
-
-    void ConjRapido::AgregarRapido(const String& elem) {
-        #ifdef DEBUG
-        assert(Pertenece(elem) == false);
-        #endif
-
-        bool aux = true;
-        dicc.DefinirRapido(elem, aux);
-        size = size + 1;
     }
 
     ConjRapido::~ConjRapido() {

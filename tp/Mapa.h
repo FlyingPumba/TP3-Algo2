@@ -2,6 +2,7 @@
 #define MAPA_H_INCLUDED
 
 #include "../aed2.h"
+#include "RestriccionTP.h"
 
 namespace tp {
 
@@ -23,7 +24,7 @@ namespace tp {
              * Conecta dos estaciones del mapa.
              * Requiere: est1 y est2 pertenecen a las estaciones del mapa, y no estan conectadas.
              */
-            void Conectar(Estacion est1, Estacion est2, Restriccion r);
+            void Conectar(Estacion est1, Estacion est2, const RestriccionTP& r);
 
             /**
              * Destructor.
@@ -45,22 +46,22 @@ namespace tp {
              * Devuelve la restriccion de la senda que una las estaciones.
              * Requiere: est1 y est2 pertenecen a las estaciones del mapa, y ademas estan conectadas.
              */
-            Restriccion Rest(Estacion est1, Estacion est2) const;
+            const RestriccionTP& Rest(Estacion est1, Estacion est2) const;
 
         private:
             struct Nodo {
-                Nodo(const Estacion est1, const Estacion est2, const Restriccion r) : est1(est1), est2(est2), rest(r) {};
+                Nodo(const Estacion est1, const Estacion est2, const RestriccionTP& r) : est1(est1), est2(est2), rest(r) {};
 
                 Estacion est1;
                 Estacion est2;
-                Restriccion rest;
+                const RestriccionTP& rest;
 
                 bool operator == (const Nodo otro) const {
                   return est1 == otro.est1 && est2 == otro.est2 && rest == otro.rest;
                 }
 
                 bool operator != (const Nodo otro) const {
-                  return est1 != otro.est1 || est2 != otro.est2 || rest != otro.rest;
+                  return est1 != otro.est1 || est2 != otro.est2 || !(rest == otro.rest);
                 }
             };
 
@@ -75,15 +76,15 @@ namespace tp {
 
     void Mapa::Agregar(Estacion est) {
         assert(estaciones.Pertenece(est) == false);
-        estaciones.AgregarRapido(est);
+        estaciones.Agregar(est);
     }
 
-    void Mapa::Conectar(Estacion est1, Estacion est2, Restriccion r) {
+    void Mapa::Conectar(Estacion est1, Estacion est2, const RestriccionTP& r) {
         assert(estaciones.Pertenece(est1) == true);
         assert(estaciones.Pertenece(est2) == true);
         assert(Conectadas(est1, est2) == false);
         Nodo aux(est1, est2, r);
-        sendas.AgregarRapido(aux);
+        sendas.Agregar(aux);
     }
 
     Mapa::~Mapa() {
@@ -109,7 +110,7 @@ namespace tp {
         return false;
     }
 
-    Restriccion Mapa::Rest(Estacion est1, Estacion est2) const {
+    const RestriccionTP& Mapa::Rest(Estacion est1, Estacion est2) const {
         assert(estaciones.Pertenece(est1) == true);
         assert(estaciones.Pertenece(est2) == true);
         //assert(Conectadas(est1, est2) == true);
