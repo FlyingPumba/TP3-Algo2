@@ -1,5 +1,5 @@
 #include "../mini_test.h"
-#include "Restriccion.h"
+#include "RestriccionTP.h"
 
 #include <string>
 
@@ -24,7 +24,7 @@ void test_restriccion_simple()
 	Caracteristica tag_Camion = "Camion";
 	Caracteristica tag_Auto = "Auto";
 
-	Restriccion rest(tag_Camion);
+	RestriccionTP rest(tag_Camion);
 	ASSERT_EQ(rest.Verifica(tags), false);
 
 	tags.Agregar(tag_Auto);
@@ -41,10 +41,10 @@ void test_restriccion_and()
 	Caracteristica tag_Auto = "Auto";
 	Caracteristica tag_Bici = "Bici";
 
-	Restriccion r1(tag_Camion);
-	Restriccion r2(tag_Auto);
+	RestriccionTP r1(tag_Camion);
+	RestriccionTP r2(tag_Auto);
 
-	Restriccion restAnd = Restriccion::And(r1, r2);
+	RestriccionTP restAnd = RestriccionTP::And(r1, r2);
 
 	ASSERT_EQ(restAnd.Verifica(tags), false);
 	tags.Agregar(tag_Auto);
@@ -63,10 +63,10 @@ void test_restriccion_or()
 	Caracteristica tag_Auto = "Auto";
 	Caracteristica tag_Bici = "Bici";
 
-	Restriccion r1(tag_Camion);
-	Restriccion r2(tag_Auto);
+	RestriccionTP r1(tag_Camion);
+	RestriccionTP r2(tag_Auto);
 
-	Restriccion restOr = Restriccion::Or(r1, r2);
+	RestriccionTP restOr = RestriccionTP::Or(r1, r2);
 
 	ASSERT_EQ(restOr.Verifica(tags1), false);
 	tags1.Agregar(tag_Bici);
@@ -84,9 +84,9 @@ void test_restriccion_not()
 	Caracteristica tag_Auto = "Auto";
 	Caracteristica tag_Bici = "Bici";
 
-	Restriccion r1(tag_Camion);
+	RestriccionTP r1(tag_Camion);
 
-	Restriccion restNot = Restriccion::Not(r1);
+	RestriccionTP restNot = RestriccionTP::Not(r1);
 
 	ASSERT_EQ(restNot.Verifica(tags), true);
 	tags.Agregar(tag_Auto);
@@ -107,22 +107,22 @@ void test_restriccion_compleja()
 	Caracteristica tag_Avion = "Avion";
 	Caracteristica tag_Lancha = "Lancha";
 
-	Restriccion r1(tag_Camion);
-	Restriccion r2(tag_Auto);
-	Restriccion r3(tag_Bici);
-	Restriccion r4(tag_Avion);
-	Restriccion r5(tag_Lancha);
+	RestriccionTP r1(tag_Camion);
+	RestriccionTP r2(tag_Auto);
+	RestriccionTP r3(tag_Bici);
+	RestriccionTP r4(tag_Avion);
+	RestriccionTP r5(tag_Lancha);
 
 	// Restriccion:
 	// (!Avion & !Lancha) & (Camion | Auto | Bici)
-	Restriccion restNot1 = Restriccion::Not(r5);
-	Restriccion restNot2 = Restriccion::Not(r4);
-	Restriccion restAnd1 = Restriccion::And(restNot1, restNot2);
+	RestriccionTP restNot1 = RestriccionTP::Not(r5);
+	RestriccionTP restNot2 = RestriccionTP::Not(r4);
+	RestriccionTP restAnd1 = RestriccionTP::And(restNot1, restNot2);
 
-	Restriccion restOr1 = Restriccion::Or(r1, r2);
-	Restriccion restOr2 = Restriccion::Or(r3, restOr1);
+	RestriccionTP restOr1 = RestriccionTP::Or(r1, r2);
+	RestriccionTP restOr2 = RestriccionTP::Or(r3, restOr1);
 
-	Restriccion rest = Restriccion::And(restOr2, restAnd1);
+	RestriccionTP rest = RestriccionTP::And(restOr2, restAnd1);
 
 	ConjRapido tags;
 	ASSERT_EQ(rest.Verifica(tags), false);
