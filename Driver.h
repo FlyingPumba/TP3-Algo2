@@ -27,10 +27,10 @@ class Driver
         Nat CantidadDeSendasParaEstacion(const Estacion& e) const;
 
         // PRE: e \in estaciones() \and i < # {e2:Estacion | conectadas?(e,e2)}
-        const Estacion& IesimaEstacionDeSenda(const Estacion& e, Nat i) const;
+        Estacion IesimaEstacionDeSenda(const Estacion& e, Nat i) const;
 
         // PRE: e \in estaciones() \and i < # {e2:Estacion | conectadas?(e,e2)}
-        const Restriccion& IesimaRestriccionDeSenda(const Estacion& e1, Nat i) const;
+        Restriccion IesimaRestriccionDeSenda(const Estacion& e1, Nat i) const;
 
         /// Armado Mapa ////////////////////////////////////////////////////////////////
 
@@ -49,10 +49,10 @@ class Driver
         RUR IesimoRobotActivo(Nat i) const;
 
         /// PRE: i < #robots()
-        const Estacion& EstacionActualIesimoRobotActivo(Nat i) const;
+        Estacion EstacionActualIesimoRobotActivo(Nat i) const;
 
         /// PRE: i < #robots()
-        const Conj<Caracteristica>& CaracteristicasIesimoRobotActivo(Nat i) const;
+        Conj<Caracteristica> CaracteristicasIesimoRobotActivo(Nat i) const;
 
         /// PRE: i < #robots()
         Nat CantInfraccionesIesimoRobotActivo(Nat i) const;

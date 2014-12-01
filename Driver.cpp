@@ -21,12 +21,12 @@ Nat Driver::CantidadDeSendasParaEstacion(const Estacion &e) const
  // TODO
 }
 
-const Estacion& Driver::IesimaEstacionDeSenda(const Estacion &e, Nat i) const
+Estacion Driver::IesimaEstacionDeSenda(const Estacion &e, Nat i) const
 {
  // TODO
 }
 
-const Restriccion& Driver::IesimaRestriccionDeSenda(const Estacion &e1, Nat i) const
+Restriccion Driver::IesimaRestriccionDeSenda(const Estacion &e1, Nat i) const
 {
  // TODO
 }
@@ -51,12 +51,12 @@ RUR Driver::IesimoRobotActivo(Nat i) const
  // TODO
 }
 
-const Estacion& Driver::EstacionActualIesimoRobotActivo(Nat i) const
+Estacion Driver::EstacionActualIesimoRobotActivo(Nat i) const
 {
  // TODO
 }
 
-const Conj<Caracteristica>& Driver::CaracteristicasIesimoRobotActivo(Nat i) const
+Conj<Caracteristica> Driver::CaracteristicasIesimoRobotActivo(Nat i) const
 {
  // TODO
 }
