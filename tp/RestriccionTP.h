@@ -25,7 +25,7 @@ namespace tp {
              */
             ~RestriccionTP();
 
-            //bool operator == (const RestriccionTP& otro) const;
+            bool operator == (const RestriccionTP& otro) const;
 
             /**
              * Une las dos restricciones usan un operador AND.
@@ -68,7 +68,7 @@ namespace tp {
             RestriccionTP();
     };
 
-    bool operator == (const RestriccionTP& r1, const RestriccionTP& r2);
+    std::ostream& operator<<(std::ostream& os, const RestriccionTP&);
 
     RestriccionTP::RestriccionTP() : arbol(NULL) {}
 
@@ -103,12 +103,13 @@ namespace tp {
         delete arbol;
     }
 
-    /*bool RestriccionTP::operator == (const RestriccionTP& otro) const {
+    bool RestriccionTP::operator == (const RestriccionTP& otro) const {
         return *(arbol) == *(otro.arbol);
-    }*/
+    }
 
-    bool operator == (const RestriccionTP& r1, const RestriccionTP& r2) {
-        return true;
+    std::ostream& operator<<(std::ostream& os, const RestriccionTP& a) {
+        os << "[";
+        return os << "]";
     }
 }
 #endif

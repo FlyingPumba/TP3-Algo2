@@ -64,8 +64,8 @@ void test_mapa_con_estaciones_conectadas()
 	ASSERT_EQ(mapa.Conectadas("B", "C"), false);
 	ASSERT_EQ(mapa.Conectadas("A", "C"), false);
 	ASSERT_EQ(mapa.Conectadas("C", "A"), false);
-	//ASSERT_EQ(mapa.Rest("A", "B"), rest);
-	//ASSERT_EQ(mapa.Rest("B", "A"), rest);
+	ASSERT_EQ(mapa.Rest("A", "B") == rest, true);
+	ASSERT_EQ(mapa.Rest("B", "A") == rest, true);
 }
 
 int main(int argc, char **argv)
