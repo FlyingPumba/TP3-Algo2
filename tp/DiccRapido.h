@@ -139,7 +139,22 @@ namespace tp {
 
     template<class T>
     bool DiccRapido<T>::Definido(const String& s) const {
-        return claves.Pertenece(s);
+        const Nodo* aux = &dicc;
+        int i = 0;
+        while (i < s.length()) {
+            if(!aux->siguientes.Definido((int)s[i])) {
+                return false;
+            } else {
+                aux = aux->siguientes[(int)s[i]];
+            }
+            i = i + 1;
+        }
+
+        if (i < s.length() || aux->significado == NULL) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     template<class T>
