@@ -98,6 +98,7 @@ namespace tp {
             Nodo dicc;
 
             void DefinirAux(const String& s, T& valor);
+            bool BorrarAux(Nodo* aux, String s);
     };
 
     template<class T>
@@ -111,7 +112,7 @@ namespace tp {
 
     template<class T>
     void DiccRapido<T>::Definir(const String& s, T& valor) {
-        if (claves.Pertenece(s) == false) {
+        if (Definido(s) == false) {
             claves.Agregar(s);
             DefinirAux(s, valor);
         }
@@ -122,7 +123,7 @@ namespace tp {
         Nodo* aux = &dicc;
         int i = 0;
         while (i < s.length()) {
-            if(!aux->siguientes.Definido((int)s[i])) {
+            if (!aux->siguientes.Definido((int)s[i])) {
                 Nodo* nuevo = new Nodo();
                 aux->siguientes.Definir((int)s[i], nuevo);
             }
@@ -134,7 +135,52 @@ namespace tp {
 
     template<class T>
     DiccRapido<T>::~DiccRapido() {
-        // TODO
+        Conj<String>::const_Iterador it = claves.CrearIt();
+        while (it.HaySiguiente()) {
+            // recorro todas las claves y las voy borrando
+            BorrarAux(&dicc, it.Siguiente());
+            it.Avanzar();
+        }
+    }
+
+    template<class T>
+    bool DiccRapido<T>::BorrarAux(Nodo* aux, String s) {
+        if (s.length() == 1) {
+            Nodo* sigAux = aux->siguientes[(int)s[0]];
+
+            int j = 0;
+            bool algunoEnSigAux = false;
+            while (j < 256) {
+                if (sigAux->siguientes.Definido(j)) {
+                    algunoEnSigAux = true;
+                    break;
+                }
+                j = j + 1;
+            }
+
+            if (algunoEnSigAux) {
+                sigAux->significado = NULL;
+                return false;
+            } else {
+                if (sigAux != &dicc) {
+                    delete sigAux;
+                }
+                aux->siguientes.Borrar((int)s[0]);
+                return true;
+            }
+        } else {
+            Nodo* sigAux = aux->siguientes[(int)s[0]];
+            String fin = s.substr(1, s.length()-1);
+            bool hizoDelete = BorrarAux(sigAux, fin);
+
+            if (hizoDelete && sigAux->significado == NULL) {
+                delete sigAux;
+                aux->siguientes.Borrar((int)s[0]);
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
     template<class T>
@@ -142,7 +188,7 @@ namespace tp {
         const Nodo* aux = &dicc;
         int i = 0;
         while (i < s.length()) {
-            if(!aux->siguientes.Definido((int)s[i])) {
+            if (!aux->siguientes.Definido((int)s[i])) {
                 return false;
             } else {
                 aux = aux->siguientes[(int)s[i]];
@@ -159,7 +205,9 @@ namespace tp {
 
     template<class T>
     T& DiccRapido<T>::Significado(const String& s) const {
+        #ifdef DEBUG
         assert(Definido(s) == true);
+        #endif
         const Nodo* aux = &dicc;
         int i = 0;
         while (i < s.length()) {
@@ -181,8 +229,7 @@ namespace tp {
     }
 
     template<class T>
-    bool operator == (const DiccRapido<T>& d1, const DiccRapido<T>& d2)
-    {
+    bool operator == (const DiccRapido<T>& d1, const DiccRapido<T>& d2) {
       if (d1.Claves() == d2.Claves()) {
           Conj<String>::const_Iterador it = d1.Claves().CrearIt();
           while (it.HaySiguiente()) {
@@ -240,6 +287,5 @@ namespace tp {
 
       it_claves_.Avanzar();
     }
-
 }
 #endif
