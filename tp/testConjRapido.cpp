@@ -28,9 +28,9 @@ void test_conj_vacio()
 void test_conj_con_elementos()
 {
 	ConjRapido conj;
-	conj.AgregarRapido("A");
-	conj.AgregarRapido("B");
-	conj.AgregarRapido("C");
+	conj.Agregar("A");
+	conj.Agregar("B");
+	conj.Agregar("C");
 
 	ASSERT_EQ(conj.EsVacio(), false);
 	ASSERT_EQ(conj.Cardinal(), 3);
@@ -46,9 +46,9 @@ void test_conj_con_elementos()
 void test_conj_iterador()
 {
 	ConjRapido conj;
-	conj.AgregarRapido("A");
-	conj.AgregarRapido("B");
-	conj.AgregarRapido("C");
+	conj.Agregar("A");
+	conj.Agregar("B");
+	conj.Agregar("C");
 
 	ConjRapido::const_Iterador it = conj.CrearIt();
 	ASSERT_EQ(it.HaySiguiente(), true);
