@@ -21,7 +21,7 @@ class Driver
         Nat CantidadEstaciones() const;
 
         // PRE: i < #estaciones()
-        const Estacion& IesimaEstacion(Nat i) const;
+	Estacion IesimaEstacion(Nat i) const;
 
         // PRE: e \in estaciones()
         Nat CantidadDeSendasParaEstacion(const Estacion& e) const;

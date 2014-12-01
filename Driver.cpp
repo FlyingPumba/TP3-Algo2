@@ -16,6 +16,12 @@ Nat Driver::CantidadEstaciones() const
  // TODO
 }
 
+Estacion IesimaEstacion(Nat i) const
+{
+ // TODO
+}
+
+
 Nat Driver::CantidadDeSendasParaEstacion(const Estacion &e) const
 {
  // TODO
@@ -87,4 +93,3 @@ void Driver::Inspeccion(const Estacion &e)
 }
 
 } // namespace aed2
-
