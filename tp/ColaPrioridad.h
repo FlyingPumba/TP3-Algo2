@@ -221,7 +221,7 @@ namespace tp {
     void ColaPrioridad<T>::SubirUltimoNodo(ArbolBinario<T> ulti) {
         bool subir = (ulti.Padre() != NULL);
         while (subir){
-            if (ulti.Raiz() > ulti.Padre().Raiz()){
+            if (ulti.Raiz() > ulti.Padre()->Raiz()){
                 ArbolBinario<T>::Swap(*ulti.Padre(), ulti);
                 subir = (ulti.Padre() != NULL);
             } else {

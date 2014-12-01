@@ -233,7 +233,7 @@ namespace tp {
       if (d1.Claves() == d2.Claves()) {
           Conj<String>::const_Iterador it = d1.Claves().CrearIt();
           while (it.HaySiguiente()) {
-              if (d1.Significado(it.Siguiente()) != d2.Significado(it.Siguiente())) {
+              if (!(d1.Significado(it.Siguiente()) == d2.Significado(it.Siguiente()))) {
                   return false;
               }
               it.Avanzar();

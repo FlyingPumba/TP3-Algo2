@@ -13,7 +13,7 @@ namespace tp {
     class Ciudad {
         public:
 
-            class itArreglo;
+            friend class itArreglo;
 
             /**
              * Genera una ciudad nueva
@@ -57,7 +57,7 @@ namespace tp {
             /**
              * Devuelve un iterador a los robots de la ciudad.
              */
-            Ciudad::itArreglo Robots() const;
+            class itArreglo Robots() const;
 
             /**
              * Devuelve la estacion actual del robot.
@@ -82,37 +82,6 @@ namespace tp {
              */
             const Conj<Estacion>::const_Iterador Estaciones() const;
 
-            class itArreglo
-            {
-                public:
-
-                    itArreglo();
-
-                    /**
-                     * Devuelve true si quedan elementos validos por iterar.
-                     */
-                    bool HaySiguiente() const;
-
-                    /**
-                     * Devuelve el datoRobot al que apunta el iterador.
-                     */
-                    const struct DatoRobot& Siguiente() const;
-
-                    /**
-                     * Avanza el iterador a la posicion valida mas proxima.
-                     */
-                    void Avanzar();
-
-                private:
-
-                    Arreglo<struct DatoRobot>& arreglo;
-                    Nat pos;
-
-                    itArreglo(Arreglo<DatoRobot>& a);
-
-                    friend typename Ciudad::itArreglo Ciudad::Robots() const;
-            };
-
         private:
             struct Ests {
                 Estacion estA;
@@ -127,7 +96,7 @@ namespace tp {
                 Nat infracciones;
                 RUR rur;
 
-                bool operator <(const NodoPrioridad& otro) {
+                bool operator <(const NodoPrioridad& otro) const {
                     if (infracciones == otro.infracciones) {
                         return rur < otro.rur;
                     } else {
@@ -135,12 +104,16 @@ namespace tp {
                     }
                 }
 
-                bool operator >(const NodoPrioridad& otro) {
+                bool operator >(const NodoPrioridad& otro) const {
                     if (infracciones == otro.infracciones) {
                         return rur > otro.rur;
                     } else {
                         return infracciones > otro.infracciones;
                     }
+                }
+
+                bool operator >=(const NodoPrioridad& otro) const {
+                    return *this == otro || *this > otro;
                 }
 
                 bool operator == (const NodoPrioridad& otro) const {
@@ -178,6 +151,37 @@ namespace tp {
             Conj<Ests> estsConectadas;
             const class Mapa& mapa;
             Nat proximoRUR;
+    };
+
+    class itArreglo
+    {
+        public:
+
+            itArreglo();
+
+            /**
+             * Devuelve true si quedan elementos validos por iterar.
+             */
+            bool HaySiguiente() const;
+
+            /**
+             * Devuelve el datoRobot al que apunta el iterador.
+             */
+            const Ciudad::DatoRobot& Siguiente() const;
+
+            /**
+             * Avanza el iterador a la posicion valida mas proxima.
+             */
+            void Avanzar();
+
+        private:
+
+            Arreglo<Ciudad::DatoRobot>& arreglo;
+            Nat pos;
+
+            itArreglo(Arreglo<Ciudad::DatoRobot>& a);
+
+            friend itArreglo Ciudad::Robots() const;
     };
 
     Ciudad::Ciudad(const class Mapa& mapa) : mapa(mapa), proximoRUR(0) {
@@ -306,7 +310,7 @@ namespace tp {
         return mapa;
     }
 
-    Ciudad::itArreglo Ciudad::Robots() const {
+    itArreglo Ciudad::Robots() const {
         return itArreglo(*robots);
     }
 
@@ -328,13 +332,13 @@ namespace tp {
 
     // Implementacion del iterador:
 
-    typename Ciudad::itArreglo(Arreglo<DatoRobot>& a) : arreglo(a), pos(0) {
+    itArreglo::itArreglo(Arreglo<Ciudad::DatoRobot>& a) : arreglo(a), pos(0) {
         if (a[0].esta) {
             Avanzar();
         }
     }
 
-    bool Ciudad::itArreglo::HaySiguiente() const {
+    bool itArreglo::HaySiguiente() const {
         bool res = false;
         if (pos + 1 <= arreglo.Tamanho() -1) {
             int i = pos + 1;
@@ -350,11 +354,11 @@ namespace tp {
         return res;
     }
 
-    const DatoRobot& Ciudad::itArreglo::Siguiente() const {
+    const Ciudad::DatoRobot& itArreglo::Siguiente() const {
         return arreglo[pos];
     }
 
-    void Ciudad::itArreglo::Avanzar() {
+    void itArreglo::Avanzar() {
         int i = pos + 1;
         while (i < arreglo.Tamanho() -1) {
             if (arreglo[i].esta) {
