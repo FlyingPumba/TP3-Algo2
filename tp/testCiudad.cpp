@@ -24,20 +24,14 @@ void test_ciudad_vacia()
 	mapa.Agregar("A");
 	mapa.Agregar("B");
 	mapa.Agregar("C");
-	mapa.Conectar("A", "B", "auto | camion");
+	//mapa.Conectar("A", "B", "auto | camion");
 
 	Ciudad c(mapa);
 }
 
 void test_ciudad_entrar()
 {
-	Mapa mapa;
-	mapa.Agregar("A");
-	mapa.Agregar("B");
-	mapa.Agregar("C");
-	mapa.Conectar("A", "B", "auto | camion");
-
-	Ciudad c(mapa);
+	// TODO
 }
 
 int main(int argc, char **argv)

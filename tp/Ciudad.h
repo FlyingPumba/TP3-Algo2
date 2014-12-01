@@ -6,6 +6,7 @@
 #include "ConjRapido.h"
 #include "Mapa.h"
 #include "ColaPrioridad.h"
+#include "RestriccionTP.h"
 
 namespace tp {
 
@@ -107,7 +108,7 @@ namespace tp {
                     Arreglo<struct DatoRobot>& arreglo;
                     Nat pos;
 
-                    itArreglo(const Arreglo<struct DatoRobot>& a);
+                    itArreglo(Arreglo<DatoRobot>& a);
 
                     friend typename Ciudad::itArreglo Ciudad::Robots() const;
             };
@@ -134,6 +135,14 @@ namespace tp {
                     }
                 }
 
+                bool operator >(const NodoPrioridad& otro) {
+                    if (infracciones == otro.infracciones) {
+                        return rur > otro.rur;
+                    } else {
+                        return infracciones > otro.infracciones;
+                    }
+                }
+
                 bool operator == (const NodoPrioridad& otro) const {
                   return infracciones == otro.infracciones && rur == otro.rur;
                 }
@@ -154,7 +163,7 @@ namespace tp {
             };
 
             struct DatoEstacion {
-                DiccRapido<Restriccion> sendas;
+                DiccRapido<RestriccionTP> sendas;
                 ColaPrioridad<NodoPrioridad> robots;
                 Nat cantInspec;
 
@@ -194,7 +203,7 @@ namespace tp {
             Conj<Estacion>::const_Iterador itAux = mapa.Estaciones();
             while (itAux.HaySiguiente()) {
                 if (mapa.Conectadas(it.Siguiente(), itAux.Siguiente())) {
-                    Restriccion r = mapa.Rest(it.Siguiente(), itAux.Siguiente());
+                    RestriccionTP& r = mapa.Rest(it.Siguiente(), itAux.Siguiente());
                     DatoEstacion datoAux = estaciones.Significado(it.Siguiente());
                     datoAux.sendas.Definir(itAux.Siguiente(), r);
                     Ests conexion;
@@ -240,12 +249,11 @@ namespace tp {
                 DiccRapido<bool>* dicc = new DiccRapido<bool>();
                 datoRobot->sendasInfrac.Definir(estA, *dicc);
             }
-            DiccRapido<Restriccion>& diccAux = estaciones.Significado(estA).sendas;
-            Restriccion& rest = diccAux.Significado(estB);
+            DiccRapido<RestriccionTP>& diccAux = estaciones.Significado(estA).sendas;
+            RestriccionTP& rest = diccAux.Significado(estB);
 
             DiccRapido<bool>& dicc = datoRobot->sendasInfrac.Significado(estA);
-            //if (rest.Verifica(tags)) {
-            if (true) {
+            if (rest.Verifica(tags)) {
                 bool aux = true;
                 dicc.Definir(estB, aux);
             } else {
@@ -298,9 +306,9 @@ namespace tp {
         return mapa;
     }
 
-    /*const itCiudad Ciudad::Robots() const {
-
-    }*/
+    Ciudad::itArreglo Ciudad::Robots() const {
+        return itArreglo(*robots);
+    }
 
     Estacion Ciudad::EstacionActual(const RUR r) const {
         return (*robots)[r].estActual;
@@ -316,6 +324,46 @@ namespace tp {
 
     const Conj<Estacion>::const_Iterador Ciudad::Estaciones() const {
         return mapa.Estaciones();
+    }
+
+    // Implementacion del iterador:
+
+    typename Ciudad::itArreglo(Arreglo<DatoRobot>& a) : arreglo(a), pos(0) {
+        if (a[0].esta) {
+            Avanzar();
+        }
+    }
+
+    bool Ciudad::itArreglo::HaySiguiente() const {
+        bool res = false;
+        if (pos + 1 <= arreglo.Tamanho() -1) {
+            int i = pos + 1;
+            while (i < arreglo.Tamanho() -1) {
+                if (arreglo[i].esta) {
+                    res = true;
+                    i = arreglo.Tamanho();
+                } else {
+                    i = i +1;
+                }
+            }
+        }
+        return res;
+    }
+
+    const DatoRobot& Ciudad::itArreglo::Siguiente() const {
+        return arreglo[pos];
+    }
+
+    void Ciudad::itArreglo::Avanzar() {
+        int i = pos + 1;
+        while (i < arreglo.Tamanho() -1) {
+            if (arreglo[i].esta) {
+                pos = i;
+                i = arreglo.Tamanho();
+            } else {
+                i = i +1;
+            }
+        }
     }
 }
 #endif

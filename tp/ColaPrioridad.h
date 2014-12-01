@@ -98,17 +98,17 @@ namespace tp {
              * Sube un nodo hasta donde corresponda
              * Requiere: ulti deberia ser el ultimo nodo
              */
-            void subirUltimoNodo(ArbolBinario<T> ulti);
+            void SubirUltimoNodo(ArbolBinario<T> ulti);
 
             /**
              * Baja un nodo hasta donde corresponda
              * Requiere: prim deberia ser el primer nodo del arbol
              */
-            void bajarUltimoNodo(ArbolBinario<T> prim);
+            void BajarPrimerNodo(ArbolBinario<T> prim);
 
-            Arreglo<int> caminoParaInsertarNuevoNodo(ArbolBinario<T> c);
+            Arreglo<int> CaminoParaInsertarNuevoNodo(ArbolBinario<T> c);
 
-            Arreglo<int> caminoParaBorrarUltimoNodo(ArbolBinario<T> c);
+            Arreglo<int> CaminoParaBorrarUltimoNodo(ArbolBinario<T> c);
 
             ArbolBinario<T> arbol;
 
@@ -149,7 +149,7 @@ namespace tp {
 
     template<class T>
     typename ColaPrioridad<T>::const_Iterador ColaPrioridad<T>::Encolar(const T& elem) {
-        if (this.EsVacia()) {
+        if (this->EsVacia()) {
             ArbolBinario<T> izq;
             ArbolBinario<T> der;
             this->arbol = ArbolBinario<T>(izq, elem, der);
@@ -173,7 +173,7 @@ namespace tp {
             //ArbolBinario<T> aux(ArbolBinario(), elem, ArbolBinario());
             if (camino[i] % 2 == 1) {
                 padre.AgregarHojaDer(aux);
-                subirUltimoNodo(aux); // VER
+                SubirUltimoNodo(aux); // VER
 
             } else {
 
@@ -183,7 +183,7 @@ namespace tp {
 
     template<class T>
     void ColaPrioridad<T>::Desencolar() {
-        if (arbol.Izq.EsNil() && arbol.Der.EsNil()){
+        if (arbol.Izq().EsNil() && arbol.Der().EsNil()){
             ArbolBinario<T> aux;
             this->arbol = aux;
         } else {
@@ -199,11 +199,12 @@ namespace tp {
                 }
                 i++;
             }
-            CambiarRaiz(ultimoNodo.Raiz(), arbol.Raiz());
-            if (camino[i] % 2 == 1){
-                BorrarHojaDer(*(ultimoNodo.Padre()));
+            arbol.CambiarRaiz(ultimoNodo.Raiz());
+            ArbolBinario<T> nil;
+            if (camino[i] % 2 == 1) {
+                ultimoNodo.Padre()->BorrarHojaDer(nil);
             } else {
-                BorrarHojaIzq(*(ultimoNodo.Padre()));
+                ultimoNodo.Padre()->BorrarHojaIzq(nil);
             }
             BajarPrimerNodo(arbol);
         }
@@ -217,12 +218,12 @@ namespace tp {
 
     // funciones privadas:
     template<class T>
-    void ColaPrioridad<T>::subirUltimoNodo(ArbolBinario<T> ulti) {
-        bool subir= (ulti.padre != NULL);
+    void ColaPrioridad<T>::SubirUltimoNodo(ArbolBinario<T> ulti) {
+        bool subir = (ulti.Padre() != NULL);
         while (subir){
-            if (ulti.Raiz > ulti.Padre.Raiz){
-                Swap(*ulti.padre, ulti);
-                subir = (ulti.padre != NULL);
+            if (ulti.Raiz() > ulti.Padre().Raiz()){
+                ArbolBinario<T>::Swap(*ulti.Padre(), ulti);
+                subir = (ulti.Padre() != NULL);
             } else {
                 subir = false;
             }
@@ -230,33 +231,33 @@ namespace tp {
     }
 
     template<class T>
-    void ColaPrioridad<T>::bajarUltimoNodo(ArbolBinario<T> prim) {
-        bool bajar= (!(EsNil(prim.izq)) || !(EsNil(prim.der)));
+    void ColaPrioridad<T>::BajarPrimerNodo(ArbolBinario<T> prim) {
+        bool bajar = !prim.Izq().EsNil() || !prim.Der().EsNil();
         while (bajar){
-            if (!(EsNil(prim.izq)) && !(EsNil(prim.der))){
-                if (prim.raiz < max(prim.izq.raiz, prim.der.raiz)){
-                    if (prim.izq.raiz >= prim.der.raiz){
-                        Swap(prim,prim.izq);
-                        bajar = (!(EsNil(prim.izq)) || !(EsNil(prim.der)));
+            if (!prim.Izq().EsNil() && !prim.Der().EsNil()){
+                if (prim.Raiz() < std::max(prim.Izq().Raiz(), prim.Der().Raiz())){
+                    if (prim.Izq().Raiz() >= prim.Der().Raiz()){
+                        ArbolBinario<T>::Swap(prim,prim.Izq());
+                        bajar = !prim.Izq().EsNil() || !prim.Der().EsNil();
                     } else {
-                        Swap(prim,prim.der);
-                        bajar = (!(EsNil(prim.izq)) || !(EsNil(prim.der)));
+                        ArbolBinario<T>::Swap(prim,prim.Der());
+                        bajar = !prim.Izq().EsNil() || !prim.Der().EsNil();
                     }
                 } else {
                     bajar = false;
                 }
             } else {
-                if (!(EsNil(prim.izq))){
-                    if (prim.izq.raiz > prim.raiz){
-                        swap(prim, prim.izq);
-                        bajar = (!(EsNil(prim.izq)) || !(EsNil(prim.der)));
+                if (!prim.Izq().EsNil()) {
+                    if (prim.Izq().Raiz() > prim.Raiz()){
+                        ArbolBinario<T>::Swap(prim, prim.Izq());
+                        bajar = !prim.Izq().EsNil() || !prim.Der().EsNil();
                     } else {
                         bajar = false;
                     }
                 } else {
-                    if (prim.der.raiz > prim.raiz){
-                        swap(prim, prim.der);
-                        bajar = (!(EsNil(prim.izq)) || !(EsNil(prim.der)));
+                    if (prim.Der().Raiz() > prim.Raiz()){
+                        ArbolBinario<T>::Swap(prim, prim.Der());
+                        bajar = !prim.Izq().EsNil() || !prim.Der().EsNil();
                     } else {
                         bajar = false;
                     }
@@ -267,8 +268,8 @@ namespace tp {
     }
 
     template<class T>
-    Arreglo<int> ColaPrioridad<T>::caminoParaInsertarNuevoNodo(ArbolBinario<T> c){
-        int n= c.Tamanho+1;
+    Arreglo<int> ColaPrioridad<T>::CaminoParaInsertarNuevoNodo(ArbolBinario<T> c) {
+        int n= c.Tamanho() + 1;
         int len= log2(n);
         Arreglo<int> camino(len);
         int i=1;
@@ -284,8 +285,8 @@ namespace tp {
     }
 
     template<class T>
-    Arreglo<int> ColaPrioridad<T>::caminoParaBorrarUltimoNodo(ArbolBinario<T> c){
-        int n= c.Tamanho;
+    Arreglo<int> ColaPrioridad<T>::CaminoParaBorrarUltimoNodo(ArbolBinario<T> c) {
+        int n= c.Tamanho();
         int len= log2(n);
         Arreglo<int> camino(len);
         int i=1;

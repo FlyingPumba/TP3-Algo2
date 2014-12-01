@@ -24,7 +24,7 @@ namespace tp {
              * Conecta dos estaciones del mapa.
              * Requiere: est1 y est2 pertenecen a las estaciones del mapa, y no estan conectadas.
              */
-            void Conectar(Estacion est1, Estacion est2, const RestriccionTP& r);
+            void Conectar(Estacion est1, Estacion est2, RestriccionTP& r);
 
             /**
              * Destructor.
@@ -46,15 +46,15 @@ namespace tp {
              * Devuelve la restriccion de la senda que una las estaciones.
              * Requiere: est1 y est2 pertenecen a las estaciones del mapa, y ademas estan conectadas.
              */
-            const RestriccionTP& Rest(Estacion est1, Estacion est2) const;
+            RestriccionTP& Rest(Estacion est1, Estacion est2) const;
 
         private:
             struct Nodo {
-                Nodo(const Estacion est1, const Estacion est2, const RestriccionTP& r) : est1(est1), est2(est2), rest(r) {};
+                Nodo(const Estacion est1, const Estacion est2, RestriccionTP& r) : est1(est1), est2(est2), rest(r) {};
 
                 Estacion est1;
                 Estacion est2;
-                const RestriccionTP& rest;
+                RestriccionTP& rest;
 
                 bool operator == (const Nodo otro) const {
                   return est1 == otro.est1 && est2 == otro.est2 && rest == otro.rest;
@@ -79,7 +79,7 @@ namespace tp {
         estaciones.Agregar(est);
     }
 
-    void Mapa::Conectar(Estacion est1, Estacion est2, const RestriccionTP& r) {
+    void Mapa::Conectar(Estacion est1, Estacion est2, RestriccionTP& r) {
         assert(estaciones.Pertenece(est1) == true);
         assert(estaciones.Pertenece(est2) == true);
         assert(Conectadas(est1, est2) == false);
@@ -110,7 +110,7 @@ namespace tp {
         return false;
     }
 
-    const RestriccionTP& Mapa::Rest(Estacion est1, Estacion est2) const {
+    RestriccionTP& Mapa::Rest(Estacion est1, Estacion est2) const {
         assert(estaciones.Pertenece(est1) == true);
         assert(estaciones.Pertenece(est2) == true);
         //assert(Conectadas(est1, est2) == true);
