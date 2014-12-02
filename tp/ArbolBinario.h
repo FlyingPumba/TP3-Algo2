@@ -79,25 +79,25 @@ namespace tp {
              * Devuelve la altura del arbol.
              */
             Nat Altura() const;
-            
+
             /**
              * Borra el sub-arbol izquierdo.
              * Requiere not Nil?(arbol) and not Nil?(Izq(arbol)) and Izq(arbol) es una hoja
              */
             void BorrarHojaIzq(ArbolBinario<T>& nil);
-            
+
             /**
              * Borra el sub-arbol derecho.
              * Requiere not Nil?(arbol) and not Nil?(Der(arbol)) and Der(arbol) es una hoja
              */
             void BorrarHojaDer(ArbolBinario<T>& nil);
-            
+
             /**
              * Agrega una hoja a la izquierda del arbol.
              * Requiere not Nil?(arbol) and Nil?(Izq(arbol)) and izq es una hoja
              */
             void AgregarHojaIzq(ArbolBinario<T>& izq);
-            
+
             /**
              * Agrega una hoja a la derecha del arbol.
              * Requiere not Nil?(arbol) and Nil?(Der(arbol)) and der es una hoja
@@ -280,13 +280,13 @@ namespace tp {
 
     template<class T>
     std::ostream& operator<<(std::ostream& os, const ArbolBinario<T>& arbol) {
-        if (!arbol.EsNil()) { 
+        if (!arbol.EsNil()) {
             if (!arbol.Izq().EsNil()) {
-                os << arbol.Izq() << "-";
+                os << arbol.Izq() << " ";
             }
-            os << arbol.Raiz() << "-";
-            if (!arbol.Izq().EsNil()) {
-                os << arbol.Der() << "-";
+            os << "-" << arbol.Raiz() << "-";
+            if (!arbol.Der().EsNil()) {
+                os << arbol.Der() << " ";
             }
         }
         return os;
