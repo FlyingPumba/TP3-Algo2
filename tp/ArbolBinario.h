@@ -280,8 +280,16 @@ namespace tp {
 
     template<class T>
     std::ostream& operator<<(std::ostream& os, const ArbolBinario<T>& arbol) {
-        os << "[";
-        return os << "]";
+        if (!arbol.EsNil()) { 
+            if (!arbol.Izq().EsNil()) {
+                os << arbol.Izq() << "-";
+            }
+            os << arbol.Raiz() << "-";
+            if (!arbol.Izq().EsNil()) {
+                os << arbol.Der() << "-";
+            }
+        }
+        return os;
     }
 
     template<class T>
@@ -365,6 +373,7 @@ namespace tp {
         assert(this->Izq().EsNil() == true);
         assert(izq.Izq().EsNil() == true && izq.Der().EsNil() == true);
         this->inicio->izq = &izq;
+        izq.inicio->padre = this;
         this->tamanho = this->tamanho + 1;
         if (this->inicio->der->EsNil()) {
             this->altura = this->altura + 1;
@@ -395,6 +404,7 @@ namespace tp {
         assert(this->Izq().EsNil() == true);
         assert(der.Izq().EsNil() == true && der.Der().EsNil() == true);
         this->inicio->der = &der;
+        der.inicio->padre = this;
         this->tamanho = this->tamanho + 1;
         if (this->inicio->izq->EsNil()) {
             this->altura = this->altura + 1;

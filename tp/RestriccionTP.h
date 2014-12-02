@@ -53,10 +53,10 @@ namespace tp {
              * Une las dos restricciones usan un operador AND.
              */
             static RestriccionTP& Not(const RestriccionTP& r1) {
-                ArbolBinario<String> der;
+                ArbolBinario<String>* der = new ArbolBinario<String>();
                 RestriccionTP* rest = new RestriccionTP();
                 String* str_not = new String("NOT");
-                ArbolBinario<String>* aux = new ArbolBinario<String>(*r1.arbol, *str_not, der);
+                ArbolBinario<String>* aux = new ArbolBinario<String>(*r1.arbol, *str_not, *der);
                 rest->arbol = aux;
                 return *rest;
             }
@@ -66,16 +66,18 @@ namespace tp {
 
             bool VerificaAux(const ArbolBinario<String>& arbol, const ConjRapido& tags) const;
             RestriccionTP();
+
+            friend std::ostream& operator<<(std::ostream& os, RestriccionTP& r);
     };
 
-    std::ostream& operator<<(std::ostream& os, const RestriccionTP&);
+    std::ostream& operator<<(std::ostream& os, RestriccionTP& r);
 
     RestriccionTP::RestriccionTP() : arbol(NULL) {}
 
     RestriccionTP::RestriccionTP(const Caracteristica& tag) {
-        ArbolBinario<String> izq;
-        ArbolBinario<String> der;
-        ArbolBinario<String>* aux = new ArbolBinario<String>(izq, tag, der);
+        ArbolBinario<String>* izq = new ArbolBinario<String>();
+        ArbolBinario<String>* der = new ArbolBinario<String>();
+        ArbolBinario<String>* aux = new ArbolBinario<String>(*izq, tag, *der);
         arbol = aux;
     }
 
@@ -92,7 +94,7 @@ namespace tp {
             if (!arbol.Izq().EsNil()) {
                 return !VerificaAux(arbol.Izq(), tags);
             } else {
-                return !VerificaAux(arbol.Izq(), tags);
+                return !VerificaAux(arbol.Der(), tags);
             }
         } else {
             return tags.Pertenece(arbol.Raiz());
@@ -107,9 +109,8 @@ namespace tp {
         return *(arbol) == *(otro.arbol);
     }
 
-    std::ostream& operator<<(std::ostream& os, const RestriccionTP& a) {
-        os << "[";
-        return os << "]";
+    std::ostream& operator<<(std::ostream& os, RestriccionTP& r) {        
+        return os << *r.arbol;
     }
 }
 #endif

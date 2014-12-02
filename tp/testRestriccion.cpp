@@ -95,6 +95,8 @@ void test_restriccion_not()
 	ASSERT_EQ(restNot.Verifica(tags), true);
 	tags.Agregar(tag_Camion);
 	ASSERT_EQ(restNot.Verifica(tags), false);
+
+	std::cout << restNot;
 }
 
 void test_restriccion_compleja()
