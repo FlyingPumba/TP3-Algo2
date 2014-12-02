@@ -30,35 +30,35 @@ namespace tp {
             /**
              * Une las dos restricciones usan un operador AND.
              */
-            static RestriccionTP& And(const RestriccionTP& r1, const RestriccionTP& r2) {
+            static RestriccionTP* And(const RestriccionTP& r1, const RestriccionTP& r2) {
                 RestriccionTP* rest = new RestriccionTP();
                 String* str_and = new String("AND");
                 ArbolBinario<String>* aux = new ArbolBinario<String>(*r1.arbol, *str_and, *r2.arbol);
                 rest->arbol = aux;
-                return *rest;
+                return rest;
             }
 
             /**
              * Une las dos Restricciones usan un operador AND.
              */
-            static RestriccionTP& Or(const RestriccionTP& r1, const RestriccionTP& r2) {
+            static RestriccionTP* Or(const RestriccionTP& r1, const RestriccionTP& r2) {
                 RestriccionTP* rest = new RestriccionTP();
                 String* str_or = new String("OR");
                 ArbolBinario<String>* aux = new ArbolBinario<String>(*r1.arbol, *str_or, *r2.arbol);
                 rest->arbol = aux;
-                return *rest;
+                return rest;
             }
 
             /**
              * Une las dos restricciones usan un operador AND.
              */
-            static RestriccionTP& Not(const RestriccionTP& r1) {
+            static RestriccionTP* Not(const RestriccionTP& r1) {
                 ArbolBinario<String>* der = new ArbolBinario<String>();
                 RestriccionTP* rest = new RestriccionTP();
                 String* str_not = new String("NOT");
                 ArbolBinario<String>* aux = new ArbolBinario<String>(*r1.arbol, *str_not, *der);
                 rest->arbol = aux;
-                return *rest;
+                return rest;
             }
 
         private:
@@ -102,15 +102,38 @@ namespace tp {
     }
 
     RestriccionTP::~RestriccionTP() {
-        delete arbol;
+        if ((arbol->Raiz() == "AND")||(arbol->Raiz() == "OR")) {
+            delete &(arbol->Raiz());
+            delete arbol;
+        } else {
+            if (arbol->Raiz() == "NOT") {
+                delete &(arbol->Der());
+                delete &(arbol->Raiz());
+                delete arbol;
+            } else {
+                delete &(arbol->Izq());
+                delete &(arbol->Der());
+                delete arbol;
+            }
+        }
     }
 
     bool RestriccionTP::operator == (const RestriccionTP& otro) const {
         return *(arbol) == *(otro.arbol);
     }
 
-    std::ostream& operator<<(std::ostream& os, RestriccionTP& r) {        
-        return os << *r.arbol;
+    std::ostream& operator<<(std::ostream& os, RestriccionTP& r) {
+        if ((r.arbol->Raiz() == "AND")||(r.arbol->Raiz() == "OR")) {
+            os << *r.arbol;
+        } else {
+            if (r.arbol->Raiz() == "NOT") {
+                os << r.arbol->Raiz();
+                os << r.arbol->Izq();
+            } else {
+                os << r.arbol->Raiz();
+            }
+        }
+        return os;
     }
 }
 #endif

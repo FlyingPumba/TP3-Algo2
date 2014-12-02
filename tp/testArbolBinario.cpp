@@ -57,14 +57,14 @@ void test_swap_izq()
 
 	// swap arbol con izq
 	ArbolBinario<int>::Swap(arbol, arbol.Izq());
-	ASSERT_EQ(izq.EsNil(), false);
-	ASSERT_EQ(izq.Raiz(), 42);
-	ASSERT_EQ(izq.Izq().EsNil(), false);
-	ASSERT_EQ(izq.Der().EsNil(), true);
-	ASSERT_EQ(izq.Izq().Padre(), &izq);
-	ASSERT_EQ(izq.Izq().Raiz(), 19);
-	ASSERT_EQ(izq.Izq().Izq().EsNil(), true);
-	ASSERT_EQ(izq.Izq().Der().EsNil(), true);
+	ASSERT_EQ(arbol.EsNil(), false);
+	ASSERT_EQ(arbol.Raiz(), 19);
+	ASSERT_EQ(arbol.Izq().EsNil(), false);
+	ASSERT_EQ(arbol.Der().EsNil(), true);
+	ASSERT_EQ(arbol.Izq().Padre(), &arbol);
+	ASSERT_EQ(arbol.Izq().Raiz(), 42);
+	ASSERT_EQ(arbol.Izq().Izq().EsNil(), true);
+	ASSERT_EQ(arbol.Izq().Der().EsNil(), true);
 }
 
 void test_swap_der()
@@ -85,14 +85,14 @@ void test_swap_der()
 
 	// swap arbol con der
 	ArbolBinario<int>::Swap(arbol, arbol.Der());
-	ASSERT_EQ(der.EsNil(), false);
-	ASSERT_EQ(der.Raiz(), 42);
-	ASSERT_EQ(der.Der().EsNil(), false);
-	ASSERT_EQ(der.Izq().EsNil(), true);
-	ASSERT_EQ(der.Der().Padre(), &der);
-	ASSERT_EQ(der.Der().Raiz(), 19);
-	ASSERT_EQ(der.Der().Izq().EsNil(), true);
-	ASSERT_EQ(der.Der().Der().EsNil(), true);
+	ASSERT_EQ(arbol.EsNil(), false);
+	ASSERT_EQ(arbol.Raiz(), 19);
+	ASSERT_EQ(arbol.Der().EsNil(), false);
+	ASSERT_EQ(arbol.Izq().EsNil(), true);
+	ASSERT_EQ(arbol.Der().Padre(), &arbol);
+	ASSERT_EQ(arbol.Der().Raiz(), 42);
+	ASSERT_EQ(arbol.Der().Izq().EsNil(), true);
+	ASSERT_EQ(arbol.Der().Der().EsNil(), true);
 }
 
 void test_borrar_hoja_izq()

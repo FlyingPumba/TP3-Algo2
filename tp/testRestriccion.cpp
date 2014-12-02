@@ -44,15 +44,17 @@ void test_restriccion_and()
 	RestriccionTP r1(tag_Camion);
 	RestriccionTP r2(tag_Auto);
 
-	RestriccionTP restAnd = RestriccionTP::And(r1, r2);
+	RestriccionTP* restAnd = RestriccionTP::And(r1, r2);
 
-	ASSERT_EQ(restAnd.Verifica(tags), false);
+	ASSERT_EQ(restAnd->Verifica(tags), false);
 	tags.Agregar(tag_Auto);
-	ASSERT_EQ(restAnd.Verifica(tags), false);
+	ASSERT_EQ(restAnd->Verifica(tags), false);
 	tags.Agregar(tag_Bici);
-	ASSERT_EQ(restAnd.Verifica(tags), false);
+	ASSERT_EQ(restAnd->Verifica(tags), false);
 	tags.Agregar(tag_Camion);
-	ASSERT_EQ(restAnd.Verifica(tags), true);
+	ASSERT_EQ(restAnd->Verifica(tags), true);
+
+	delete restAnd;
 }
 
 void test_restriccion_or()
@@ -66,15 +68,17 @@ void test_restriccion_or()
 	RestriccionTP r1(tag_Camion);
 	RestriccionTP r2(tag_Auto);
 
-	RestriccionTP restOr = RestriccionTP::Or(r1, r2);
+	RestriccionTP* restOr = RestriccionTP::Or(r1, r2);
 
-	ASSERT_EQ(restOr.Verifica(tags1), false);
+	ASSERT_EQ(restOr->Verifica(tags1), false);
 	tags1.Agregar(tag_Bici);
-	ASSERT_EQ(restOr.Verifica(tags1), false);
+	ASSERT_EQ(restOr->Verifica(tags1), false);
 	tags1.Agregar(tag_Auto);
-	ASSERT_EQ(restOr.Verifica(tags1), true);
+	ASSERT_EQ(restOr->Verifica(tags1), true);
 	tags2.Agregar(tag_Camion);
-	ASSERT_EQ(restOr.Verifica(tags2), true);
+	ASSERT_EQ(restOr->Verifica(tags2), true);
+
+	delete restOr;
 }
 
 void test_restriccion_not()
@@ -86,17 +90,17 @@ void test_restriccion_not()
 
 	RestriccionTP r1(tag_Camion);
 
-	RestriccionTP restNot = RestriccionTP::Not(r1);
+	RestriccionTP* restNot = RestriccionTP::Not(r1);
 
-	ASSERT_EQ(restNot.Verifica(tags), true);
+	ASSERT_EQ(restNot->Verifica(tags), true);
 	tags.Agregar(tag_Auto);
-	ASSERT_EQ(restNot.Verifica(tags), true);
+	ASSERT_EQ(restNot->Verifica(tags), true);
 	tags.Agregar(tag_Bici);
-	ASSERT_EQ(restNot.Verifica(tags), true);
+	ASSERT_EQ(restNot->Verifica(tags), true);
 	tags.Agregar(tag_Camion);
-	ASSERT_EQ(restNot.Verifica(tags), false);
+	ASSERT_EQ(restNot->Verifica(tags), false);
 
-	std::cout << restNot;
+	delete restNot;
 }
 
 void test_restriccion_compleja()
@@ -117,23 +121,30 @@ void test_restriccion_compleja()
 
 	// Restriccion:
 	// (!Avion & !Lancha) & (Camion | Auto | Bici)
-	RestriccionTP restNot1 = RestriccionTP::Not(r5);
-	RestriccionTP restNot2 = RestriccionTP::Not(r4);
-	RestriccionTP restAnd1 = RestriccionTP::And(restNot1, restNot2);
+	RestriccionTP* restNot1 = RestriccionTP::Not(r5);
+	RestriccionTP* restNot2 = RestriccionTP::Not(r4);
+	RestriccionTP* restAnd1 = RestriccionTP::And(*restNot1, *restNot2);
 
-	RestriccionTP restOr1 = RestriccionTP::Or(r1, r2);
-	RestriccionTP restOr2 = RestriccionTP::Or(r3, restOr1);
+	RestriccionTP* restOr1 = RestriccionTP::Or(r1, r2);
+	RestriccionTP* restOr2 = RestriccionTP::Or(r3, *restOr1);
 
-	RestriccionTP rest = RestriccionTP::And(restOr2, restAnd1);
+	RestriccionTP* rest = RestriccionTP::And(*restOr2, *restAnd1);
 
 	ConjRapido tags;
-	ASSERT_EQ(rest.Verifica(tags), false);
+	ASSERT_EQ(rest->Verifica(tags), false);
 	tags.Agregar(tag_Auto);
-	ASSERT_EQ(rest.Verifica(tags), true);
+	ASSERT_EQ(rest->Verifica(tags), true);
 	tags.Agregar(tag_Camion);
-	ASSERT_EQ(rest.Verifica(tags), true);
+	ASSERT_EQ(rest->Verifica(tags), true);
 	tags.Agregar(tag_Avion);
-	ASSERT_EQ(rest.Verifica(tags), false);
+	ASSERT_EQ(rest->Verifica(tags), true);
+
+	delete restNot1;
+	delete restNot2;
+	delete restAnd1;
+	delete restOr1;
+	delete restOr2;
+	delete rest;
 }
 
 int main(int argc, char **argv)
