@@ -120,7 +120,7 @@ namespace tp {
                 (*padre.inicio).dato = (*hijo.inicio).dato;
                 (*hijo.inicio).dato = punteroAux;
                 // cambio los padres
-                (*hijo.inicio).padre = (*padre.inicio).padre;
+                /*(*hijo.inicio).padre = (*padre.inicio).padre;
                 (*padre.inicio).padre = &hijo;
                 // arreglo la altura
                 padre.altura = padre.altura - 1;
@@ -144,7 +144,7 @@ namespace tp {
                     ArbolBinario<T>* aux = (*padre.inicio).der;
                     (*padre.inicio).der = (*hijo.inicio).der;
                     (*hijo.inicio).der = aux;
-                }
+                }*/
             }
 
         private:
@@ -312,6 +312,7 @@ namespace tp {
         assert(this->Izq().EsNil() != true);
         assert(this->Izq().Izq().EsNil() == true && this->Izq().Der().EsNil() == true);
         this->inicio->izq = &nil;
+       // nil.inicio->padre = this;
         this->tamanho = this->tamanho - 1;
         if (this->inicio->der->EsNil()) {
             this->altura = this->altura - 1;
@@ -343,6 +344,7 @@ namespace tp {
         assert(this->Der().EsNil() != true);
         assert(this->Der().Izq().EsNil() == true && this->Der().Der().EsNil() == true);
         this->inicio->der = &nil;
+      //  nil.inicio->padre = this;
         this->tamanho = this->tamanho - 1;
         if (this->inicio->izq->EsNil()) {
             this->altura = this->altura - 1;
@@ -401,7 +403,7 @@ namespace tp {
     template<class T>
     void ArbolBinario<T>::AgregarHojaDer(ArbolBinario<T>& der) {
         assert(this->EsNil() != true);
-        assert(this->Izq().EsNil() == true);
+        assert(this->Der().EsNil() == true);
         assert(der.Izq().EsNil() == true && der.Der().EsNil() == true);
         this->inicio->der = &der;
         der.inicio->padre = this;
