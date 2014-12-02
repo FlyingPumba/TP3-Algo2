@@ -173,10 +173,24 @@ namespace tp {
             String fin = s.substr(1, s.length()-1);
             bool hizoDelete = BorrarAux(sigAux, fin);
 
-            if (hizoDelete && sigAux->significado == NULL) {
-                delete sigAux;
-                aux->siguientes.Borrar((int)s[0]);
-                return true;
+            if (hizoDelete && sigAux->significado == NULL && sigAux != &dicc) {
+                int j = 0;
+                bool algunoEnSigAux = false;
+                while (j < 256) {
+                    if (sigAux->siguientes.Definido(j) && j != (int)s[1]) {
+                        algunoEnSigAux = true;
+                        break;
+                    }
+                    j = j + 1;
+                }
+
+                if (algunoEnSigAux) {
+                    return false;
+                } else {
+                    delete sigAux;
+                    aux->siguientes.Borrar((int)s[0]);
+                    return true;
+                }
             } else {
                 return false;
             }

@@ -77,6 +77,28 @@ void test_dicc_con_elementos_complejos()
 	ASSERT_EQ(dicc.Significado(clave3), sig3);
 }
 
+void test_dicc_con_elementos_complejos2()
+{
+	DiccRapido<int> dicc;
+	String clave1 = "Camion";
+	String clave2 = "Auto";
+	String clave4 = "Avion";
+	int sig1 = 1;
+	int sig2 = 2;
+	int sig4 = 4;
+	dicc.Definir(clave1, sig1);
+	dicc.Definir(clave2, sig2);
+	dicc.Definir(clave4, sig4);
+
+	ASSERT_EQ(dicc.Definido(clave1), true);
+	ASSERT_EQ(dicc.Definido(clave2), true);
+	ASSERT_EQ(dicc.Definido(clave4), true);
+
+	ASSERT_EQ(dicc.Significado(clave1), sig1);
+	ASSERT_EQ(dicc.Significado(clave2), sig2);
+	ASSERT_EQ(dicc.Significado(clave4), sig4);
+}
+
 void test_dicc_iterador()
 {
 	DiccRapido<int> dicc;
@@ -105,6 +127,7 @@ int main(int argc, char **argv)
 	RUN_TEST(test_dicc_vacio);
 	RUN_TEST(test_dicc_con_elementos_simples);
 	RUN_TEST(test_dicc_con_elementos_complejos);
+	RUN_TEST(test_dicc_con_elementos_complejos2);
 	RUN_TEST(test_dicc_iterador);
 	return 0;
 }
