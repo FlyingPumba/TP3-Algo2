@@ -21,7 +21,7 @@ class Driver
         Nat CantidadEstaciones() const;
 
         // PRE: i < #estaciones()
-	Estacion IesimaEstacion(Nat i) const;
+	    Estacion IesimaEstacion(Nat i) const;
 
         // PRE: e \in estaciones()
         Nat CantidadDeSendasParaEstacion(const Estacion& e) const;
@@ -79,6 +79,8 @@ class Driver
      * con el cuál interactuar. Además, pueden declarar todas las        *
      * funciones auxiliares que les hagan falta.                         *
      *********************************************************************/
+     Mapa mapa;
+     Ciudad* ciudad;
 
 }; // class Driver
 
