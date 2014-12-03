@@ -6,6 +6,8 @@
 
 #include "tp/Ciudad.h"
 
+using namespace tp;
+
 namespace aed2 {
 
 	class Driver
@@ -83,9 +85,6 @@ namespace aed2 {
 		Ciudad* ciudad;
 
 		RestriccionTP& ParsearArbolSintactico(ArbolSintactico* expr);
-
-		template <typename T>
-		std::string to_str(const T& t);
 
 	}; // class Driver
 

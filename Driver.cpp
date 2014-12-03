@@ -1,5 +1,8 @@
 #include "Driver.h"
 #include "ArbolSintactico.h"
+#include <iostream>
+#include <string>
+#include <sstream>
 
 namespace aed2 {
 
@@ -27,7 +30,7 @@ namespace aed2 {
         return cant;
     }
 
-    Estacion IesimaEstacion(Nat i) const
+    Estacion Driver::IesimaEstacion(Nat i) const
     {
         Conj<Estacion>::const_Iterador it = mapa.Estaciones();
         int j = 0;
@@ -71,13 +74,17 @@ namespace aed2 {
         Conj<Estacion>::const_Iterador it = mapa.Estaciones();
         int j = 0;
         while (j < i) {
-            if (mapa.Conectadas(e, it.Siguiente())) {
+            if (mapa.Conectadas(e1, it.Siguiente())) {
                 j = j + 1;
             }
             it.Avanzar();
         }
-        RestriccionTP& rest = mapa.Rest(it.Siguiente(), e);
-        return to_str(rest);
+        RestriccionTP& rest = mapa.Rest(it.Siguiente(), e1);
+
+        std::stringstream ss;
+        ss << rest;
+
+        return ss.str();
     }
 
     void Driver::AgregarSenda(const Estacion &e1, const Estacion &e2, Restriccion r)
@@ -98,40 +105,42 @@ namespace aed2 {
     Nat Driver::CantidadRobotsActivos() const
     {
         int cant = 0;
-        itArreglo it = itArreglo(*robots);
+        itArreglo& it(ciudad->Robots());
         while (it.HaySiguiente()) {
             cant = cant + 1;
             it.Avanzar();
         }
+        delete &it;
         return cant;
-
     }
 
     RUR Driver::IesimoRobotActivo(Nat i) const
     {
-        itArreglo it = itArreglo(*robots);
+        itArreglo& it(ciudad->Robots());
         int j = 0;
         while (j < i) {
             j = j + 1;
             it.Avanzar();
         }
-        return it.Siguiente().posEstacion.rur;
+        delete &it;
+        return it.Siguiente().posEstacion.Siguiente().rur;
     }
 
     Estacion Driver::EstacionActualIesimoRobotActivo(Nat i) const
     {
-        itArreglo it = itArreglo(*robots);
+        itArreglo& it(ciudad->Robots());
         int j = 0;
         while (j < i) {
             j = j + 1;
             it.Avanzar();
         }
+        delete &it;
         return (it.Siguiente()).estActual;
     }
 
     Conj<Caracteristica> Driver::CaracteristicasIesimoRobotActivo(Nat i) const
     {
-        itArreglo it = itArreglo(*robots);
+        itArreglo& it(ciudad->Robots());
         int j = 0;
         while (j < i) {
             j = j + 1;
@@ -141,35 +150,38 @@ namespace aed2 {
         ConjRapido::const_Iterador itTags = (it.Siguiente()).tags.CrearIt();
         while (itTags.HaySiguiente()) {
             conj.AgregarRapido(itTags.Siguiente());
-            itTags.Avanzar()
+            itTags.Avanzar();
         }
+        delete &it;
         return conj;
     }
 
     Nat Driver::CantInfraccionesIesimoRobotActivo(Nat i) const
     {
-        itArreglo it = itArreglo(*robots);
+        itArreglo& it(ciudad->Robots());
         int j = 0;
         while (j < i) {
             j = j + 1;
             it.Avanzar();
         }
+        delete &it;
         return (it.Siguiente()).infracciones;
     }
 
     RUR Driver::ElMasInfractor() const
     {
-        itArreglo it = itArreglo(*robots);
-        RUR r = it.Siguiente().posEstacion.rur;
+        itArreglo& it(ciudad->Robots());
+        RUR r = it.Siguiente().posEstacion.Siguiente().rur;
         Nat inf = it.Siguiente().infracciones;
 
         while (it.HaySiguiente()) {
             if (it.Siguiente().infracciones > inf) {
-                r = it.Siguiente().posEstacion.rur;
+                r = it.Siguiente().posEstacion.Siguiente().rur;
                 inf = it.Siguiente().infracciones;
             }
             it.Avanzar();
         }
+        delete &it;
         return r;
     }
 
@@ -179,33 +191,24 @@ namespace aed2 {
         Conj<Caracteristica>::const_Iterador it = cs.CrearIt();
 
         while (it.HaySiguiente()) {
-            tags.Agregar(it.Siguiente());
-            it.Avanzar()
+            tags->Agregar(it.Siguiente());
+            it.Avanzar();
         }
-        ciudad.Entrar(tags, estacionInicial);
+        ciudad->Entrar(*tags, estacionInicial);
     }
 
     void Driver::Mover(RUR robot, const Estacion &destino)
     {
-        ciudad.Mover(robot, destino);
+        ciudad->Mover(robot, destino);
     }
 
     void Driver::Inspeccion(const Estacion &e)
     {
-        ciudad.Inspeccion(e);
-    }
-
-    template <typename T>
-    std::string to_str(const T& t)
-    {
-        std::stringstream ss;
-        ss << t;
-
-        return ss.str();
+        ciudad->Inspeccion(e);
     }
 
     RestriccionTP& ParsearArbolSintactico(ArbolSintactico* expr) {
-        RestriccionTP* rest
+        RestriccionTP* rest;
         if (expr->raiz == "&") {
             rest = RestriccionTP::And(ParsearArbolSintactico(expr->izq),
                                         ParsearArbolSintactico(expr->der));
