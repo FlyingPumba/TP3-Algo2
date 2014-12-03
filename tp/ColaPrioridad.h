@@ -65,7 +65,7 @@ namespace tp {
             {
                 public:
 
-                    const_Iterador(ColaPrioridad<T>* a, ColaPrioridad<T>* b){
+                    const_Iterador(ArbolBinario<T>* a, ArbolBinario<T>* b){
                         this->Cola = a;
                         this->subCola = b;
                     }
@@ -74,7 +74,7 @@ namespace tp {
                      * Devuelve true si el iterador apunta a un nodo valido.
                      */
                      bool HaySiguiente() const{
-                         if (this->subCola->EsVacia()){
+                         if (this->subCola->EsNil()){
                              return false;
                          }else{
                              return true;
@@ -87,8 +87,8 @@ namespace tp {
                      * Requiere: haysiguiente?(it)
                      */
                     const T& Siguiente() const{
-                        assert(this->subCola->EsVacia() != true);
-                        return this->subCola->Proximo();
+                        assert(this->subCola->EsNil() == false);
+                        return this->subCola->Raiz();
                     }
 
                     /**
@@ -99,8 +99,8 @@ namespace tp {
 
                 private:
 
-                    ColaPrioridad<T>* cola;
-                    ColaPrioridad<T>* subCola;
+                    ArbolBinario<T>* Cola;
+                    ArbolBinario<T>* subCola;
             };
 
 
@@ -146,7 +146,12 @@ namespace tp {
 
     template<class T>
     ColaPrioridad<T>::~ColaPrioridad() {
-        //TODO
+        //while (!this->EsVacia()) {
+            //Desencolar();
+        //}
+
+        delete (this->arbol);
+
     }
 
     template<class T>
@@ -160,8 +165,9 @@ namespace tp {
         if (this->EsVacia()) {
             ArbolBinario<T>* izq = new ArbolBinario<T>();
             ArbolBinario<T>* der = new ArbolBinario<T>();
+            delete (this->arbol);
             this->arbol = new ArbolBinario<T>(*izq, elem, *der);
-            const_Iterador* it = new const_Iterador(this->arbol, this->arbol);
+            ColaPrioridad<T>::const_Iterador* it = new const_Iterador(this->arbol, this->arbol);
             return *it;
         } else {
 
@@ -181,14 +187,18 @@ namespace tp {
             ArbolBinario<T>* aux = new ArbolBinario<T>(*izq, elem, *der);
 
             if (camino[i] % 2 == 1) {
+                //ArbolBinario<T>* aux1 = &(padre->Der());
                 padre->AgregarHojaDer(*aux);
+                //delete aux1;
                 SubirUltimoNodo(aux);
 
             } else {
+                //ArbolBinario<T>* aux1 = &(padre->Izq());
                 padre->AgregarHojaIzq(*aux);
+                //delete aux1;
                 SubirUltimoNodo(aux);
             }
-            const_Iterador* it = new const_Iterador(this->arbol, aux);
+            ColaPrioridad<T>::const_Iterador* it = new const_Iterador(this->arbol, aux);
             return *it;
         }
     }
@@ -197,6 +207,15 @@ namespace tp {
     void ColaPrioridad<T>::Desencolar() {
 	    assert(this->arbol->EsNil() != true);
         if (arbol->Izq().EsNil() && arbol->Der().EsNil()){
+            if (!this->EsVacia()) {
+                if (this->arbol->Izq().EsNil()) {
+                    delete &(this->arbol->Izq());
+                }
+                if (this->arbol->Der().EsNil()) {
+                    delete &(this->arbol->Der());
+                }
+            }
+            delete (this->arbol);
             ArbolBinario<T>* aux = new ArbolBinario<T>();
             this->arbol = aux;
         } else {
@@ -212,12 +231,22 @@ namespace tp {
                 }
                 i++;
             }
-            arbol->CambiarRaiz(ultimoNodo->Raiz());
+            arbol->CambiarRaiz(ultimoNodo->Raiz()); // esto no va mas
             ArbolBinario<T>* nil = new ArbolBinario<T>();
             if (camino[i-1] % 2 == 1) {
                 ultimoNodo->Padre()->BorrarHojaDer(*nil);
+                /*if (!ultimoNodo->EsNil()) {
+                        delete &(ultimoNodo->Izq());
+                        delete &(ultimoNodo->Der());
+                }
+                delete ultimoNodo; */
             } else {
                 ultimoNodo->Padre()->BorrarHojaIzq(*nil);
+                /*ifif (!ultimoNodo->EsNil()) {
+                        delete &(ultimoNodo->Izq());
+                        delete &(ultimoNodo->Der());
+                }
+                delete ultimoNodo; */
             }
             BajarPrimerNodo(*arbol);
         }
@@ -235,13 +264,13 @@ namespace tp {
         while (subir){
             if (ulti->Raiz() > ulti->Padre()->Raiz()) {
                 ArbolBinario<T>::Swap(*ulti->Padre(), *ulti);
-                subir = (ulti->Padre()->Padre() != NULL);
-                if (subir) {
-                    ulti = ulti->Padre();
-                }
+                subir = (ulti->Padre() != NULL);
             } else {
                 subir = false;
             }
+        }
+        if (this->arbol->Padre() == ulti) {
+            this->arbol = ulti;
         }
     }
 
