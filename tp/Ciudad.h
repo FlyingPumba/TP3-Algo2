@@ -127,10 +127,13 @@ namespace tp {
             };
 
             struct DatoRobot {
+                DatoRobot(Estacion est, ColaPrioridad<NodoPrioridad>::const_Iterador& it, const ConjRapido& tags) : estActual(est),
+                            tags(tags), infracciones(0), posEstacion(it), esta(true){};
+
                 Estacion estActual;
-                ConjRapido tags;
+                const ConjRapido& tags;
                 Nat infracciones;
-                ColaPrioridad<NodoPrioridad>::const_Iterador* posEstacion;
+                ColaPrioridad<NodoPrioridad>::const_Iterador& posEstacion;
                 DiccRapido< DiccRapido<bool> > sendasInfrac;
                 bool esta;
             };
@@ -244,8 +247,10 @@ namespace tp {
 
         DatoEstacion& datoAux = estaciones.Significado(est);
         ColaPrioridad<NodoPrioridad>::const_Iterador& itCola = datoAux.robots.Encolar(*nodo);
+        //ColaPrioridad<NodoPrioridad>::const_Iterador& itCola = datoAux.robots.Encolar(*nodo);
 
-        DatoRobot* datoRobot = new DatoRobot();
+        DatoRobot* datoRobot = new DatoRobot(est, itCola, tags);
+
         Conj<Ests>::const_Iterador it = estsConectadas.CrearIt();
         while (it.HaySiguiente()) {
             Estacion estA = it.Siguiente().estA;
@@ -270,9 +275,6 @@ namespace tp {
 
             it.Avanzar();
         }
-        datoRobot->estActual = est;
-        datoRobot->esta = true;
-        datoRobot->posEstacion = &itCola;
         robots->Definir(proximoRUR, *datoRobot);
         proximoRUR = proximoRUR + 1;
     }
@@ -282,7 +284,8 @@ namespace tp {
         assert(mapa.Conectadas(est, (*robots)[rur].estActual));
         DiccRapido<bool>& diccAux = (*robots)[rur].sendasInfrac.Significado(EstacionActual(rur));
         ColaPrioridad<NodoPrioridad>& colaEstB = estaciones.Significado(est).robots;
-        (*robots)[rur].posEstacion->BorrarSiguiente();
+        (*robots)[rur].posEstacion.BorrarSiguiente();
+        //delete &((*robots)[rur].posEstacion);
         if (diccAux.Significado(est)) {
             (*robots)[rur].infracciones = (*robots)[rur].infracciones + 1;
         }
@@ -290,7 +293,7 @@ namespace tp {
         nodo->infracciones = (*robots)[rur].infracciones;
         nodo->rur = rur;
         ColaPrioridad<NodoPrioridad>::const_Iterador itCola = colaEstB.Encolar(*nodo);
-        (*robots)[rur].posEstacion = &itCola;
+        (*robots)[rur].posEstacion = itCola;
         (*robots)[rur].estActual = est;
     }
 
@@ -307,7 +310,49 @@ namespace tp {
     }
 
     Ciudad::~Ciudad() {
+        // borro todos los robots del arreglo
+        int i = 0;
+        while (i < robots->Tamanho() && robots->Definido(i)) {
+
+            DatoRobot& datoRobot = (*robots)[i];
+            Conj<String> claves = datoRobot.sendasInfrac.Claves();
+            Conj<String>::Iterador it = claves.CrearIt();
+            while (it.HaySiguiente()) {
+                /*Conj<String> claves2 = datoRobot.sendasInfrac.Significado(it.Siguiente()).Claves();
+                Conj<String>::Iterador it2 = claves.CrearIt();
+                while (it2.HaySiguiente()) {
+                    bool& aux = datoRobot.sendasInfrac.Significado(it.Siguiente()).Significado(it2.Siguiente());
+                    delete &aux;
+                    it2.Avanzar();
+                }*/
+                DiccRapido<bool>& dicc = datoRobot.sendasInfrac.Significado(it.Siguiente());
+                delete &dicc;
+                it.Avanzar();
+            }
+            //delete &(datoRobot.sendasInfrac);
+            delete &(datoRobot.posEstacion);
+            robots->Borrar(i);
+            //delete &datoRobot;
+            i = i + 1;
+        }
+
         delete robots;
+
+        DiccRapido<DatoEstacion>::const_Iterador itEsts = estaciones.CrearIt();
+        Conj<String> claves = estaciones.Claves();
+        Conj<String>::Iterador it = claves.CrearIt();
+        while (it.HaySiguiente()) {
+            DatoEstacion& dato = estaciones.Significado(it.Siguiente());
+            ColaPrioridad<NodoPrioridad>& robs = dato.robots;
+            while (!robs.EsVacia()) {
+                const NodoPrioridad& nodo = robs.Proximo();
+                robs.Desencolar();
+                delete &nodo;
+            }
+
+            delete &dato;
+            it.Avanzar();
+        }
     }
 
     const RUR Ciudad::ProximoRUR() const {
@@ -345,22 +390,20 @@ namespace tp {
     // Implementacion del iterador:
 
     itArreglo::itArreglo(Arreglo<Ciudad::DatoRobot>& a) : arreglo(a), pos(0) {
-        if (a[0].esta) {
+        if (arreglo.Definido(0) && !a[0].esta) {
             Avanzar();
         }
     }
 
     bool itArreglo::HaySiguiente() const {
+        int i = pos;
         bool res = false;
-        if (pos + 1 <= arreglo.Tamanho() -1) {
-            int i = pos + 1;
-            while (i < arreglo.Tamanho() -1) {
-                if (arreglo[i].esta) {
-                    res = true;
-                    i = arreglo.Tamanho();
-                } else {
-                    i = i +1;
-                }
+        while (i < arreglo.Tamanho() && arreglo.Definido(i)) {
+            if (arreglo[i].esta) {
+                res = true;
+                break;
+            } else {
+                i = i + 1;
             }
         }
         return res;
@@ -373,13 +416,18 @@ namespace tp {
     void itArreglo::Avanzar() {
         assert(HaySiguiente());
         int i = pos + 1;
-        while (i < arreglo.Tamanho() -1) {
+        bool hayUnoValido = false;
+        while (i < arreglo.Tamanho() && arreglo.Definido(i)) {
             if (arreglo[i].esta) {
                 pos = i;
-                i = arreglo.Tamanho();
+                hayUnoValido = true;
+                break;
             } else {
-                i = i +1;
+                i = i + 1;
             }
+        }
+        if (!hayUnoValido) {
+            pos = arreglo.Tamanho();
         }
     }
 }

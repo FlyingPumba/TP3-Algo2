@@ -35,6 +35,12 @@ namespace tp {
             T& Significado(const String& s) const;
 
             /**
+             * Borra la clave en el diccionario.
+             * Requiere: Def?(s)
+             */
+             void Borrar(const String& s);
+
+            /**
              * Devuelve las claves en el diccionario.
              */
             const Conj<String>& Claves() const;
@@ -131,6 +137,11 @@ namespace tp {
             i = i + 1;
         }
         aux->significado = &valor;
+    }
+
+    template<class T>
+    void DiccRapido<T>::Borrar(const String& s) {
+        BorrarAux(&dicc, s);
     }
 
     template<class T>

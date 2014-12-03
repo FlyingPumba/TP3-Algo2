@@ -22,7 +22,7 @@ namespace tp {
             /**
              * Encola un elemento a la Cola de Prioridad.
              */
-             ColaPrioridad<T>::const_Iterador Encolar(const T& elem);
+             ColaPrioridad<T>::const_Iterador& Encolar(const T& elem);
 
 
             /**
@@ -161,13 +161,14 @@ namespace tp {
     }
 
     template<class T>
-    typename ColaPrioridad<T>::const_Iterador ColaPrioridad<T>::Encolar(const T& elem) {
+    typename ColaPrioridad<T>::const_Iterador& ColaPrioridad<T>::Encolar(const T& elem) {
         if (this->EsVacia()) {
             ArbolBinario<T>* izq = new ArbolBinario<T>();
             ArbolBinario<T>* der = new ArbolBinario<T>();
             delete (this->arbol);
             this->arbol = new ArbolBinario<T>(*izq, elem, *der);
-            return const_Iterador(this->arbol, this->arbol);
+            ColaPrioridad<T>::const_Iterador* it = new const_Iterador(this->arbol, this->arbol);
+            return *it;
         } else {
 
             Arreglo<int> camino = CaminoParaInsertarNuevoNodo(*this->arbol);
@@ -197,7 +198,8 @@ namespace tp {
                 delete aux1;
                 SubirUltimoNodo(aux);
             }
-            return const_Iterador(this->arbol, aux);
+            ColaPrioridad<T>::const_Iterador* it = new const_Iterador(this->arbol, aux);
+            return *it;
         }
     }
 
