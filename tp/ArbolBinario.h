@@ -115,12 +115,12 @@ namespace tp {
                 assert(padre.EsNil() != true);
                 assert(hijo.EsNil() != true);
                 assert(padre.Izq() == hijo || padre.Der() == hijo);
-                // copio los datos del padre al hijo y viceversa
-                const T* punteroAux = (*padre.inicio).dato;
-                (*padre.inicio).dato = (*hijo.inicio).dato;
-                (*hijo.inicio).dato = punteroAux;
+                // NO copio los datos del padre al hijo y viceversa porque quiero que la dir conserve su valor inicial
+                //const T* punteroAux = (*padre.inicio).dato;
+                //(*padre.inicio).dato = (*hijo.inicio).dato;
+                //(*hijo.inicio).dato = punteroAux;
                 // cambio los padres
-                /*(*hijo.inicio).padre = (*padre.inicio).padre;
+                (*hijo.inicio).padre = (*padre.inicio).padre;
                 (*padre.inicio).padre = &hijo;
                 // arreglo la altura
                 padre.altura = padre.altura - 1;
@@ -144,7 +144,16 @@ namespace tp {
                     ArbolBinario<T>* aux = (*padre.inicio).der;
                     (*padre.inicio).der = (*hijo.inicio).der;
                     (*hijo.inicio).der = aux;
-                }*/
+                }
+                // tengo que arreglar el enlace izq o der del padre del padre (sino dos subir fallan)
+                if ((*hijo.inicio).padre != NULL) {
+                    if (hijo.inicio->padre->inicio->izq == &padre) {
+                        hijo.inicio->padre->inicio->izq = &hijo;
+
+                    } else {
+                        hijo.inicio->padre->inicio->der = &hijo;
+                    }
+                }
             }
 
         private:
