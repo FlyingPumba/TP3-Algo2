@@ -155,6 +155,30 @@ namespace tp {
                     }
                 }
             }
+            static void CambiarPimeroPorUltimo(ArbolBinario<T>& prim, ArbolBinario<T>& ult) {
+                assert(prim.EsNil() != true);
+                assert(ult.EsNil() != true);
+                // cambio los padres
+                (*prim.inicio).padre = (*ult.inicio).padre;
+                (*ult.inicio).padre = NULL;
+                // cambio las alturas
+                Nat auxAltura = prim.altura;
+                prim.altura = ult.altura;
+                ult.altura = auxAltura;
+                // cambio los tamanhos
+                Nat auxTamanho = prim.tamanho;
+                prim.tamanho = ult.tamanho;
+                ult.tamanho = auxTamanho;
+                // arreglo la izquierda
+                ArbolBinario<T>* aux1 = (*prim.inicio).izq;
+                (*prim.inicio).izq = (*ult.inicio).izq;
+                (*ult.inicio).izq = aux1;
+                // arreglo la derecha
+                ArbolBinario<T>* aux2 = (*prim.inicio).der;
+                (*prim.inicio).der = (*ult.inicio).der;
+                (*ult.inicio).der = aux2;
+
+            }
 
         private:
             struct Nodo
