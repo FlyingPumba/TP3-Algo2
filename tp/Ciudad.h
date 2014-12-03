@@ -318,13 +318,16 @@ namespace tp {
             Conj<String> claves = datoRobot.sendasInfrac.Claves();
             Conj<String>::Iterador it = claves.CrearIt();
             while (it.HaySiguiente()) {
-                /*Conj<String> claves2 = datoRobot.sendasInfrac.Significado(it.Siguiente()).Claves();
-                Conj<String>::Iterador it2 = claves.CrearIt();
+
+                Conj<String> claves2 = datoRobot.sendasInfrac.Significado(it.Siguiente()).Claves();
+                Conj<String>::Iterador it2 = claves2.CrearIt();
                 while (it2.HaySiguiente()) {
                     bool& aux = datoRobot.sendasInfrac.Significado(it.Siguiente()).Significado(it2.Siguiente());
                     delete &aux;
                     it2.Avanzar();
-                }*/
+                }
+
+
                 DiccRapido<bool>& dicc = datoRobot.sendasInfrac.Significado(it.Siguiente());
                 delete &dicc;
                 it.Avanzar();
