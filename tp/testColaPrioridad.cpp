@@ -36,27 +36,31 @@ void test_cola_encolar()
     int aux3 = 5;
     int aux4 = 60;
 	cola.Encolar(aux);
-	ASSERT_EQ(cola.EsVacia(), false);
+	//ASSERT_EQ(cola.EsVacia(), false);
 	ASSERT_EQ(cola.Proximo(), 10);
 	cola.Encolar(aux2);
 	ASSERT_EQ(cola.Proximo(), 42);
 	cola.Encolar(aux3);
 	ASSERT_EQ(cola.Proximo(), 42);
 	cola.Encolar(aux4);
-	ASSERT_EQ(cola.Proximo(), 60);
+	ASSERT_EQ(cola.Proximo(), 60); 
 }
 
 void test_cola_desencolar()
 {
 	ColaPrioridad<int> cola;
 	int aux = 10;
+	int aux2 = 5;
 	cola.Encolar(aux);
 
 	ASSERT_EQ(cola.EsVacia(), false);
 	ASSERT_EQ(cola.Proximo(), 10);
-
+	cola.Encolar(aux2);
 	cola.Desencolar();
-	ASSERT_EQ(cola.EsVacia(), true);
+	ASSERT_EQ(cola.Proximo(), 5);
+	ASSERT_EQ(cola.EsVacia(), false);
+	cola.Desencolar();
+
 }
 
 void test_cola_encolar_y_desencolar()
@@ -91,6 +95,8 @@ void test_cola_encolar_y_desencolar_groso()
 	int aux2 = 42;
 	int aux3 = 5;
 	int aux4 = 60;
+	int aux5 = 3;
+	int aux6 = 1;
 
 	cola.Encolar(aux);
 
@@ -105,7 +111,8 @@ void test_cola_encolar_y_desencolar_groso()
 
 	cola.Encolar(aux4);
 	ASSERT_EQ(cola.Proximo(), 60);
-
+	cola.Encolar(aux5);
+	cola.Encolar(aux6);
 	cola.Desencolar();
 	ASSERT_EQ(cola.Proximo(), 42);
 
@@ -116,7 +123,26 @@ void test_cola_encolar_y_desencolar_groso()
 	ASSERT_EQ(cola.Proximo(), 5);
 
 	cola.Desencolar();
+	ASSERT_EQ(cola.EsVacia(), false);
+}
+
+void test_iterador_cola()
+{
+	ColaPrioridad<int> cola;
 	ASSERT_EQ(cola.EsVacia(), true);
+
+	int aux = 10;
+	int aux2 = 42;
+	//int aux3 = 5;
+	//int aux4 = 60;
+
+	ColaPrioridad<int>::const_Iterador it= cola.Encolar(aux);
+	ColaPrioridad<int>::const_Iterador it1 = cola.Encolar(aux2);
+	//cola.Desencolar();
+	ASSERT_EQ(it.HaySiguiente(), true);
+	ASSERT_EQ(it1.Siguiente(), 42);
+	ASSERT_EQ(it.Siguiente(), 10);
+
 }
 
 int main(int argc, char **argv)
@@ -126,6 +152,7 @@ int main(int argc, char **argv)
 	RUN_TEST(test_cola_desencolar);
 	RUN_TEST(test_cola_encolar_y_desencolar);
 	RUN_TEST(test_cola_encolar_y_desencolar_groso);
+	RUN_TEST(test_iterador_cola);
 
 	return 0;
 }

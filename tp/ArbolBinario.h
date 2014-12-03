@@ -154,6 +154,20 @@ namespace tp {
                         hijo.inicio->padre->inicio->der = &hijo;
                     }
                 }
+                //tengo que arreglar el padre del hijo del ex hijo (si un trabalenguas)
+                if (!padre.Izq().EsNil()) {
+                    padre.inicio->izq->inicio->padre = &padre;
+                }
+                if (!padre.Der().EsNil()) {
+                    padre.inicio->der->inicio->padre = &padre;
+                }
+                if (!hijo.Izq().EsNil()) {
+                    hijo.inicio->izq->inicio->padre = &hijo;
+                }
+                if (!hijo.Der().EsNil()) {
+                    hijo.inicio->der->inicio->padre = &hijo;
+                }
+
             }
             static void CambiarPimeroPorUltimo(ArbolBinario<T>& prim, ArbolBinario<T>& ult) {
                 assert(prim.EsNil() != true);
@@ -177,7 +191,30 @@ namespace tp {
                 ArbolBinario<T>* aux2 = (*prim.inicio).der;
                 (*prim.inicio).der = (*ult.inicio).der;
                 (*ult.inicio).der = aux2;
-
+                //tengo que arreglar el padre del hijo del de (ahora) prim
+                if (!ult.Izq().EsNil()) {
+                    ult.inicio->izq->inicio->padre = &ult;
+                }
+                if (!ult.Der().EsNil()) {
+                    ult.inicio->der->inicio->padre = &ult;
+                }
+                // tengo que arreglar la izq y la der de izq y lo mismo con der
+                if (!ult.Izq().EsNil()){
+                    if (ult.inicio->izq->inicio->izq == &ult) {
+                        ult.inicio->izq->inicio->izq = &prim;
+                    }
+                    if (ult.inicio->izq->inicio->der == &ult) {
+                        ult.inicio->izq->inicio->der = &prim;
+                    }
+                }
+                if (!ult.Der().EsNil()){
+                    if (ult.inicio->der->inicio->izq == &ult) {
+                        ult.inicio->der->inicio->izq = &prim;
+                    }
+                    if (ult.inicio->der->inicio->der == &ult) {
+                        ult.inicio->der->inicio->der = &prim;
+                    }
+                }
             }
 
         private:
