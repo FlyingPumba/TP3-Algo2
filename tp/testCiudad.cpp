@@ -162,6 +162,7 @@ void test_ciudad_iterador()
     ASSERT_EQ(robot1Esta, true);
     ASSERT_EQ(robot2Esta, true);
     ASSERT_EQ(hayOtro, false);
+	ASSERT_EQ(cant, 2);
 }
 
 void test_ciudad_inspeccion()
@@ -207,6 +208,27 @@ void test_ciudad_inspeccion()
 	c.Inspeccion("A");
 
 	// chequeamos con el iterador de robots activos que rur1 no este mas en la ciudad
+	itArreglo& it(c.Robots());
+	int cant = 0;
+	bool robot1Esta = false;
+	bool robot2Esta = false;
+	bool hayOtro = false;
+	while (it.HaySiguiente()) {
+		cant = cant + 1;
+		if (it.Siguiente().posEstacion->Siguiente().rur == rur1) {
+			robot1Esta = true;
+		} else if (it.Siguiente().posEstacion->Siguiente().rur == rur2) {
+			robot2Esta = true;
+		} else {
+			hayOtro = true;
+		}
+		it.Avanzar();
+	}
+
+	ASSERT_EQ(robot1Esta, false);
+	ASSERT_EQ(robot2Esta, true);
+	ASSERT_EQ(hayOtro, false);
+	ASSERT_EQ(cant, 1);
 }
 
 int main(int argc, char **argv)
