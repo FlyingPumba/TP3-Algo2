@@ -24,20 +24,20 @@ namespace tp {
              * Agrega un robot a la ciudad. La estacion actual del robot es la estacion pasada por parametro.
              * Requiere: est in estaciones(c)
              */
-            void Entrar(const ConjRapido& tags, const Estacion est);
+            void Entrar(const ConjRapido& tags, Estacion est);
 
             /**
              * Mueve el robot dado de su estacion actual a la estacion de destino.
              * Sí el robot comete una infraccion, la cantidad de sus infracciones aumenta en 1.
              * Requiere: est in estaciones(c)
              */
-            void Mover(const RUR rur, const Estacion est);
+            void Mover(RUR rur, Estacion est);
 
             /**
              * Saca de circulacion el robot con mayor cantidad de infracciones en la estacion dada, desempatando por RUR.
              * Requiere: est in estaciones(c)
              */
-            void Inspeccion(const Estacion est);
+            void Inspeccion(Estacion est);
 
             /**
              * Destructor.
@@ -57,25 +57,25 @@ namespace tp {
             /**
              * Devuelve un iterador a los robots de la ciudad.
              */
-            class itArreglo Robots() const;
+            class itArreglo& Robots() const;
 
             /**
              * Devuelve la estacion actual del robot.
              * Requiere: r in robots(c)
              */
-            Estacion EstacionActual(const RUR r) const;
+            Estacion EstacionActual(RUR r) const;
 
             /**
              * Devuelve los tags actual del robot.
              * Requiere: r in robots(c)
              */
-            const ConjRapido Tags(const RUR r) const;
+            const ConjRapido& Tags(RUR r) const;
 
             /**
              * Devuelve la cantidad de infracciones del robot.
              * Requiere: r in robots(c)
              */
-            const Nat CantInfracciones(const RUR r) const;
+            const Nat CantInfracciones(RUR r) const;
 
             /**
              * Devuelve las estaciones que componen la ciudad.
@@ -181,7 +181,7 @@ namespace tp {
 
             itArreglo(Arreglo<Ciudad::DatoRobot>& a);
 
-            friend itArreglo Ciudad::Robots() const;
+            friend itArreglo& Ciudad::Robots() const;
     };
 
     Ciudad::Ciudad(const class Mapa& mapa) : mapa(mapa), proximoRUR(0) {
@@ -196,9 +196,9 @@ namespace tp {
 
         itConj = mapa.Estaciones();
         while (itConj.HaySiguiente()) {
-            DatoEstacion aux;
-            aux.cantInspec = 0;
-            estaciones.Definir(itConj.Siguiente(), aux);
+            DatoEstacion* aux = new DatoEstacion();
+            aux->cantInspec = 0;
+            estaciones.Definir(itConj.Siguiente(), *aux);
             itConj.Avanzar();
         }
 
@@ -208,7 +208,7 @@ namespace tp {
             while (itAux.HaySiguiente()) {
                 if (mapa.Conectadas(it.Siguiente(), itAux.Siguiente())) {
                     RestriccionTP& r = mapa.Rest(it.Siguiente(), itAux.Siguiente());
-                    DatoEstacion datoAux = estaciones.Significado(it.Siguiente());
+                    DatoEstacion& datoAux = estaciones.Significado(it.Siguiente());
                     datoAux.sendas.Definir(itAux.Siguiente(), r);
                     Ests conexion;
                     conexion.estA = it.Siguiente();
@@ -225,7 +225,8 @@ namespace tp {
         }
     }
 
-    void Ciudad::Entrar(const ConjRapido& tags, const Estacion est) {
+    void Ciudad::Entrar(const ConjRapido& tags, Estacion est) {
+        assert(estaciones.Definido(est));
         if (robots->Tamanho() == proximoRUR + 1) {
             Arreglo<DatoRobot>* aux =  new Arreglo<DatoRobot>(32);
             int i = 0;
@@ -241,8 +242,8 @@ namespace tp {
         nodo->infracciones = 0;
         nodo->rur = proximoRUR;
 
-        DatoEstacion datoAux = estaciones.Significado(est);
-        ColaPrioridad<NodoPrioridad>::const_Iterador itCola = datoAux.robots.Encolar(*nodo);
+        DatoEstacion& datoAux = estaciones.Significado(est);
+        ColaPrioridad<NodoPrioridad>::const_Iterador& itCola = datoAux.robots.Encolar(*nodo);
 
         DatoRobot* datoRobot = new DatoRobot();
         Conj<Ests>::const_Iterador it = estsConectadas.CrearIt();
@@ -258,22 +259,27 @@ namespace tp {
 
             DiccRapido<bool>& dicc = datoRobot->sendasInfrac.Significado(estA);
             if (rest.Verifica(tags)) {
-                bool aux = true;
-                dicc.Definir(estB, aux);
+                bool* aux = new bool();
+                *aux = true;
+                dicc.Definir(estB, *aux);
             } else {
-                bool aux = false;
-                dicc.Definir(estB, aux);
+                bool* aux = new bool();
+                *aux = false;
+                dicc.Definir(estB, *aux);
             }
 
             it.Avanzar();
         }
+        datoRobot->estActual = est;
         datoRobot->esta = true;
         datoRobot->posEstacion = &itCola;
         robots->Definir(proximoRUR, *datoRobot);
         proximoRUR = proximoRUR + 1;
     }
 
-    void Ciudad::Mover(const RUR rur, const Estacion est) {
+    void Ciudad::Mover(RUR rur, Estacion est) {
+        assert(estaciones.Definido(est));
+        assert(mapa.Conectadas(est, (*robots)[rur].estActual));
         DiccRapido<bool>& diccAux = (*robots)[rur].sendasInfrac.Significado(EstacionActual(rur));
         ColaPrioridad<NodoPrioridad>& colaEstB = estaciones.Significado(est).robots;
         (*robots)[rur].posEstacion->BorrarSiguiente();
@@ -285,10 +291,12 @@ namespace tp {
         nodo->rur = rur;
         ColaPrioridad<NodoPrioridad>::const_Iterador itCola = colaEstB.Encolar(*nodo);
         (*robots)[rur].posEstacion = &itCola;
+        (*robots)[rur].estActual = est;
     }
 
-    void Ciudad::Inspeccion(const Estacion est) {
-        DatoEstacion datoEst = estaciones.Significado(est);
+    void Ciudad::Inspeccion(Estacion est) {
+        assert(estaciones.Definido(est));
+        DatoEstacion& datoEst = estaciones.Significado(est);
         if (!datoEst.robots.EsVacia()) {
             if (datoEst.robots.Proximo().infracciones != 0) {
                 RUR r = datoEst.robots.Proximo().rur;
@@ -310,19 +318,23 @@ namespace tp {
         return mapa;
     }
 
-    itArreglo Ciudad::Robots() const {
-        return itArreglo(*robots);
+    itArreglo& Ciudad::Robots() const {
+        itArreglo* it = new itArreglo(*robots);;
+        return *it;
     }
 
-    Estacion Ciudad::EstacionActual(const RUR r) const {
+    Estacion Ciudad::EstacionActual(RUR r) const {
+        assert(robots->Definido(r));
         return (*robots)[r].estActual;
     }
 
-    const ConjRapido Ciudad::Tags(const RUR r) const {
+    const ConjRapido& Ciudad::Tags(RUR r) const {
+        assert(robots->Definido(r));
         return (*robots)[r].tags;
     }
 
-    const Nat Ciudad::CantInfracciones(const RUR r) const {
+    const Nat Ciudad::CantInfracciones(RUR r) const {
+        assert(robots->Definido(r));
         return (*robots)[r].infracciones;
     }
 
@@ -359,6 +371,7 @@ namespace tp {
     }
 
     void itArreglo::Avanzar() {
+        assert(HaySiguiente());
         int i = pos + 1;
         while (i < arreglo.Tamanho() -1) {
             if (arreglo[i].esta) {
