@@ -401,13 +401,9 @@ namespace tp {
         while (aux->Padre() != NULL){
             ArbolBinario<T>::Swap(*(aux->Padre()), *aux);
         }
-        ColaPrioridad<T>* colaAux = new ColaPrioridad<T>(aux);
-        colaAux->Desencolar();
-        cola->arbol = colaAux->arbol;
-        free(colaAux);
-        //delete [] new char [sizeof(colaAux)];
-        //colaAux = NULL;
-        //delete colaAux;
+
+        cola->arbol = aux;
+        cola->Desencolar();
     }
 }
 #endif
