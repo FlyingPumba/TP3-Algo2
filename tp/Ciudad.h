@@ -127,13 +127,13 @@ namespace tp {
             };
 
             struct DatoRobot {
-                DatoRobot(Estacion est, ColaPrioridad<NodoPrioridad>::const_Iterador& it, const ConjRapido& tags) : estActual(est),
+                DatoRobot(Estacion est, ColaPrioridad<NodoPrioridad>::const_Iterador* it, const ConjRapido& tags) : estActual(est),
                             tags(tags), infracciones(0), posEstacion(it), esta(true){};
 
                 Estacion estActual;
                 const ConjRapido& tags;
                 Nat infracciones;
-                ColaPrioridad<NodoPrioridad>::const_Iterador& posEstacion;
+                ColaPrioridad<NodoPrioridad>::const_Iterador* posEstacion;
                 DiccRapido< DiccRapido<bool> > sendasInfrac;
                 bool esta;
             };
@@ -246,7 +246,7 @@ namespace tp {
         nodo->rur = proximoRUR;
 
         DatoEstacion& datoAux = estaciones.Significado(est);
-        ColaPrioridad<NodoPrioridad>::const_Iterador& itCola = datoAux.robots.Encolar(*nodo);
+        ColaPrioridad<NodoPrioridad>::const_Iterador* itCola = datoAux.robots.Encolar(*nodo);
         //ColaPrioridad<NodoPrioridad>::const_Iterador& itCola = datoAux.robots.Encolar(*nodo);
 
         DatoRobot* datoRobot = new DatoRobot(est, itCola, tags);
@@ -284,7 +284,7 @@ namespace tp {
         assert(mapa.Conectadas(est, (*robots)[rur].estActual));
         DiccRapido<bool>& diccAux = (*robots)[rur].sendasInfrac.Significado(EstacionActual(rur));
         ColaPrioridad<NodoPrioridad>& colaEstB = estaciones.Significado(est).robots;
-        (*robots)[rur].posEstacion.BorrarSiguiente();
+        (*robots)[rur].posEstacion->BorrarSiguiente();
         //delete &((*robots)[rur].posEstacion);
         if (diccAux.Significado(est)) {
             (*robots)[rur].infracciones = (*robots)[rur].infracciones + 1;
@@ -292,7 +292,7 @@ namespace tp {
         NodoPrioridad* nodo = new NodoPrioridad();
         nodo->infracciones = (*robots)[rur].infracciones;
         nodo->rur = rur;
-        ColaPrioridad<NodoPrioridad>::const_Iterador itCola = colaEstB.Encolar(*nodo);
+        ColaPrioridad<NodoPrioridad>::const_Iterador* itCola = colaEstB.Encolar(*nodo);
         (*robots)[rur].posEstacion = itCola;
         (*robots)[rur].estActual = est;
     }
@@ -333,7 +333,7 @@ namespace tp {
                 it.Avanzar();
             }
             //delete &(datoRobot.sendasInfrac);
-            delete &(datoRobot.posEstacion);
+            //delete &(datoRobot.posEstacion);
             robots->Borrar(i);
             //delete &datoRobot;
             i = i + 1;

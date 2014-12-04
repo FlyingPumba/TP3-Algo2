@@ -99,7 +99,6 @@ namespace tp {
                     ~const_Iterador() {
                         cola = NULL;
                         subCola = NULL;
-                        std::cout << "dest it" << std::endl;
                     }
 
                 private:
@@ -155,7 +154,6 @@ namespace tp {
 
     template<class T>
     ColaPrioridad<T>::~ColaPrioridad() {
-        std::cout << "dest cola" << std::endl;
         while (!this->EsVacia()) {
             ArbolBinario<T>* aux = arbol;
             Desencolar();
@@ -168,7 +166,6 @@ namespace tp {
         typename Lista<const_Iterador*>::Iterador it = iteradores.CrearIt();
         while (it.HaySiguiente()) {
             const_Iterador* aux = it.Siguiente();
-            std::cout << "del it" << std::endl;
             delete aux;
             it.Avanzar();
         }

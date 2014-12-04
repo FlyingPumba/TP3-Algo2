@@ -145,11 +145,11 @@ void test_ciudad_iterador()
 	bool hayOtro = false;
 	while (it.HaySiguiente()) {
 		cant = cant + 1;
-		if (it.Siguiente().posEstacion.Siguiente().rur == rur1) {
+		if (it.Siguiente().posEstacion->Siguiente().rur == rur1) {
 			ASSERT_EQ(it.Siguiente().estActual, "A");
 			ASSERT_EQ(it.Siguiente().infracciones, 0);
 			robot1Esta = true;
-		} else if (it.Siguiente().posEstacion.Siguiente().rur == rur2) {
+		} else if (it.Siguiente().posEstacion->Siguiente().rur == rur2) {
 			ASSERT_EQ(it.Siguiente().estActual, "B");
 			ASSERT_EQ(it.Siguiente().infracciones, 0);
 			robot2Esta = true;
@@ -216,9 +216,9 @@ void test_ciudad_inspeccion()
 	bool hayOtro = false;
 	while (it.HaySiguiente()) {
 		cant = cant + 1;
-		if (it.Siguiente().posEstacion.Siguiente().rur == rur1) {
+		if (it.Siguiente().posEstacion->Siguiente().rur == rur1) {
 			robot1Esta = true;
-		} else if (it.Siguiente().posEstacion.Siguiente().rur == rur2) {
+		} else if (it.Siguiente().posEstacion->Siguiente().rur == rur2) {
 			robot2Esta = true;
 		} else {
 			hayOtro = true;
