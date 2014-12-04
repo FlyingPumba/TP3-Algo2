@@ -3,7 +3,7 @@
 
 #include "Tipos.h"
 #include "aed2/TiposBasicos.h"
-
+#include "ArbolSintactico.cpp"
 #include "tp/Ciudad.h"
 
 using namespace tp;

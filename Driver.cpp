@@ -1,5 +1,4 @@
 #include "Driver.h"
-#include "ArbolSintactico.h"
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -90,7 +89,7 @@ namespace aed2 {
     void Driver::AgregarSenda(const Estacion &e1, const Estacion &e2, Restriccion r)
     {
         ArbolSintactico* expr = ArbolSintactico::LeerDeString(r);
-        std::cout << expr->aString() << std::endl;
+        //std::cout << expr->aString() << std::endl;
 
         RestriccionTP& rest = ParsearArbolSintactico(expr);
         mapa.Conectar(e1, e2, rest);
@@ -99,7 +98,7 @@ namespace aed2 {
             delete ciudad;
         }
         ciudad = new Ciudad(mapa);
-        delete expr;
+        //delete expr;
     }
 
     Nat Driver::CantidadRobotsActivos() const
@@ -122,8 +121,9 @@ namespace aed2 {
             j = j + 1;
             it.Avanzar();
         }
+        RUR r = it.Siguiente().posEstacion.Siguiente().rur;
         delete &it;
-        return it.Siguiente().posEstacion.Siguiente().rur;
+        return r;
     }
 
     Estacion Driver::EstacionActualIesimoRobotActivo(Nat i) const
@@ -134,8 +134,9 @@ namespace aed2 {
             j = j + 1;
             it.Avanzar();
         }
+        Estacion est = (it.Siguiente()).estActual;
         delete &it;
-        return (it.Siguiente()).estActual;
+        return est;
     }
 
     Conj<Caracteristica> Driver::CaracteristicasIesimoRobotActivo(Nat i) const
@@ -164,8 +165,9 @@ namespace aed2 {
             j = j + 1;
             it.Avanzar();
         }
+        Nat inf = (it.Siguiente()).infracciones;
         delete &it;
-        return (it.Siguiente()).infracciones;
+        return inf;
     }
 
     RUR Driver::ElMasInfractor() const
@@ -207,17 +209,16 @@ namespace aed2 {
         ciudad->Inspeccion(e);
     }
 
-    RestriccionTP& ParsearArbolSintactico(ArbolSintactico* expr) {
+    RestriccionTP& Driver::ParsearArbolSintactico(ArbolSintactico* expr) {
         RestriccionTP* rest;
         if (expr->raiz == "&") {
-            rest = RestriccionTP::And(ParsearArbolSintactico(expr->izq),
-                                        ParsearArbolSintactico(expr->der));
+            rest = RestriccionTP::And(ParsearArbolSintactico(expr->izq), ParsearArbolSintactico(expr->der));
         } else if (expr->raiz == "|") {
-            rest = RestriccionTP::Or(ParsearArbolSintactico(expr->izq),
-                                        ParsearArbolSintactico(expr->der));
+            rest = RestriccionTP::Or(ParsearArbolSintactico(expr->izq), ParsearArbolSintactico(expr->der));
         } else if (expr->raiz == "!") {
             rest = RestriccionTP::Not(ParsearArbolSintactico(expr->izq));
         } else {
+            //String* copia = new String(expr->raiz);
             rest = new RestriccionTP(expr->raiz);
         }
         return *rest;
