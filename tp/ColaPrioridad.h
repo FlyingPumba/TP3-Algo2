@@ -267,23 +267,23 @@ namespace tp {
             ArbolBinario<T>* nil = new ArbolBinario<T>();
             if (camino[i-1] % 2 == 1) {
                 aux->Padre()->BorrarHojaDer(*nil);
-                /*if (aux->Izq().EsNil()) {
+                if (aux->Izq().EsNil()) {
                     delete &(aux->Izq());
                 }
                 if (aux->Der().EsNil()) {
                     delete &(aux->Der());
                 }
-                delete aux;*/
+                delete aux;
 
             } else {
                 aux->Padre()->BorrarHojaIzq(*nil);
-                /*if (aux->Izq().EsNil()) {
+                if (aux->Izq().EsNil()) {
                     delete &(aux->Izq());
                 }
                 if (aux->Der().EsNil()) {
                     delete &(aux->Der());
                 }
-                delete aux;*/
+                delete aux;
 
             }
             BajarPrimerNodo(*arbol);
