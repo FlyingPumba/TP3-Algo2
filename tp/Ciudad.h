@@ -127,7 +127,7 @@ namespace tp {
             };
 
             struct DatoRobot {
-                DatoRobot(Estacion est, ColaPrioridad<NodoPrioridad>::const_Iterador* it, const ConjRapido& tags) : estActual(est), tags(tags), infracciones(0), posEstacion(it), esta(true) { };
+                DatoRobot(Estacion est, ColaPrioridad<NodoPrioridad>::const_Iterador* it, const ConjRapido& tags) : estActual(est), tags(tags), infracciones(0), posEstacion(it), esta(true){};
 
                 Estacion estActual;
                 const ConjRapido& tags;
@@ -264,11 +264,11 @@ namespace tp {
             DiccRapido<bool>& dicc = datoRobot->sendasInfrac.Significado(estA);
             if (rest.Verifica(tags)) {
                 bool* aux = new bool();
-                *aux = false;
+                *aux = true;
                 dicc.Definir(estB, *aux);
             } else {
                 bool* aux = new bool();
-                *aux = true;
+                *aux = false;
                 dicc.Definir(estB, *aux);
             }
 
@@ -344,7 +344,7 @@ namespace tp {
             //delete &(datoRobot.sendasInfrac);
             //delete &(datoRobot.posEstacion);
             robots->Borrar(i);
-            delete &datoRobot;
+            //delete &datoRobot;
             i = i + 1;
         }
 
@@ -355,13 +355,13 @@ namespace tp {
         while (it.HaySiguiente()) {
             DatoEstacion& dato = estaciones.Significado(it.Siguiente());
             ColaPrioridad<NodoPrioridad>& robs = dato.robots;
-            /*while (!robs.EsVacia()) {
+            while (!robs.EsVacia()) {
                 const NodoPrioridad& nodo = robs.Proximo();
                 robs.Desencolar();
                 delete &nodo;
-            }*/
+            }
 
-            //delete &dato;
+            delete &dato;
             it.Avanzar();
         }
     }
