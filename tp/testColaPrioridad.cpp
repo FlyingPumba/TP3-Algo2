@@ -23,27 +23,27 @@ std::string to_str(const T& t)
 void test_cola_vacia_es_vacia()
 {
 	ColaPrioridad<int> cola;
-	ASSERT_EQ(cola.EsVacia(), true);
+	mt::assert_eq(cola.EsVacia(), true, "");
 
 }
 
 void test_cola_encolar()
 {
 	ColaPrioridad<int> cola;
-	ASSERT_EQ(cola.EsVacia(), true);
+	mt::assert_eq(cola.EsVacia(), true, "");
     int aux = 10;
     int aux2 = 42;
     int aux3 = 5;
     int aux4 = 60;
 	cola.Encolar(aux);
-	//ASSERT_EQ(cola.EsVacia(), false);
-	ASSERT_EQ(cola.Proximo(), 10);
+	//mt::assert_eq(cola.EsVacia(), false, "");
+	mt::assert_eq(cola.Proximo(), 10, "");
 	cola.Encolar(aux2);
-	ASSERT_EQ(cola.Proximo(), 42);
+	mt::assert_eq(cola.Proximo(), 42, "");
 	cola.Encolar(aux3);
-	ASSERT_EQ(cola.Proximo(), 42);
+	mt::assert_eq(cola.Proximo(), 42, "");
 	cola.Encolar(aux4);
-	ASSERT_EQ(cola.Proximo(), 60);
+	mt::assert_eq(cola.Proximo(), 60, "");
 }
 
 void test_cola_encolar1_desencolar1()
@@ -51,24 +51,22 @@ void test_cola_encolar1_desencolar1()
 	ColaPrioridad<int> cola;
 
 	int aux = 10;
-
 	cola.Encolar(aux);
-
-	ASSERT_EQ(cola.EsVacia(), false);
-	ASSERT_EQ(cola.Proximo(), 10);
+	mt::assert_eq(cola.EsVacia(), false, "");
+	mt::assert_eq(cola.Proximo(), 10, "");
 
 	cola.Desencolar();
 
-	ASSERT_EQ(cola.EsVacia(), true);
+	mt::assert_eq(cola.EsVacia(), true, "");
 
 	cola.Encolar(aux);
 
-	ASSERT_EQ(cola.EsVacia(), false);
-	ASSERT_EQ(cola.Proximo(), 10);
+	mt::assert_eq(cola.EsVacia(), false, "");
+	mt::assert_eq(cola.Proximo(), 10, "");
 
 	cola.Desencolar();
 
-	ASSERT_EQ(cola.EsVacia(), true);
+	mt::assert_eq(cola.EsVacia(), true, "");
 }
 
 void test_cola_desencolar()
@@ -78,12 +76,12 @@ void test_cola_desencolar()
 	int aux2 = 5;
 	cola.Encolar(aux);
 
-	ASSERT_EQ(cola.EsVacia(), false);
-	ASSERT_EQ(cola.Proximo(), 10);
+	mt::assert_eq(cola.EsVacia(), false, "");
+	mt::assert_eq(cola.Proximo(), 10, "");
 	cola.Encolar(aux2);
 	cola.Desencolar();
-	ASSERT_EQ(cola.Proximo(), 5);
-	ASSERT_EQ(cola.EsVacia(), false);
+	mt::assert_eq(cola.Proximo(), 5, "");
+	mt::assert_eq(cola.EsVacia(), false, "");
 	cola.Desencolar();
 
 }
@@ -96,17 +94,17 @@ void test_cola_encolar_y_desencolar()
     cola.Encolar(aux);
     cola.Encolar(aux2);
 
-    ASSERT_EQ(cola.EsVacia(), false);
-    ASSERT_EQ(cola.Proximo(), 42);
+    mt::assert_eq(cola.EsVacia(), false, "");
+    mt::assert_eq(cola.Proximo(), 42, "");
 
     cola.Desencolar();
 
-    ASSERT_EQ(cola.EsVacia(), false);
-    ASSERT_EQ(cola.Proximo(), 10);
+    mt::assert_eq(cola.EsVacia(), false, "");
+    mt::assert_eq(cola.Proximo(), 10, "");
 
     cola.Desencolar();
 
-    ASSERT_EQ(cola.EsVacia(), true);
+    mt::assert_eq(cola.EsVacia(), true, "");
 
 }
 
@@ -114,7 +112,7 @@ void test_cola_encolar_y_desencolar()
 void test_cola_encolar_y_desencolar_groso()
 {
 	ColaPrioridad<int> cola;
-	ASSERT_EQ(cola.EsVacia(), true);
+	mt::assert_eq(cola.EsVacia(), true, "");
 
 	int aux = 10;
 	int aux2 = 42;
@@ -125,73 +123,71 @@ void test_cola_encolar_y_desencolar_groso()
 
 	cola.Encolar(aux);
 
-	ASSERT_EQ(cola.EsVacia(), false);
-	ASSERT_EQ(cola.Proximo(), 10);
+	mt::assert_eq(cola.EsVacia(), false, "");
+	mt::assert_eq(cola.Proximo(), 10, "");
 
 	cola.Encolar(aux2);
-	ASSERT_EQ(cola.Proximo(), 42);
+	mt::assert_eq(cola.Proximo(), 42, "");
 
 	cola.Encolar(aux3);
-	ASSERT_EQ(cola.Proximo(), 42);
+	mt::assert_eq(cola.Proximo(), 42, "");
 
 	cola.Encolar(aux4);
-	ASSERT_EQ(cola.Proximo(), 60);
+	mt::assert_eq(cola.Proximo(), 60, "");
 	cola.Encolar(aux5);
 	cola.Encolar(aux6);
 	cola.Desencolar();
-	ASSERT_EQ(cola.Proximo(), 42);
+	mt::assert_eq(cola.Proximo(), 42, "");
 
 	cola.Desencolar();
-	ASSERT_EQ(cola.Proximo(), 10);
+	mt::assert_eq(cola.Proximo(), 10, "");
 
 	cola.Desencolar();
-	ASSERT_EQ(cola.Proximo(), 5);
+	mt::assert_eq(cola.Proximo(), 5, "");
 
 	cola.Desencolar();
-	ASSERT_EQ(cola.EsVacia(), false);
+	mt::assert_eq(cola.EsVacia(), false, "");
 }
 
 void test_iterador_cola()
 {
 	ColaPrioridad<int> cola;
-	ASSERT_EQ(cola.EsVacia(), true);
+	mt::assert_eq(cola.EsVacia(), true, "");
 
 	int aux = 10;
 	int aux2 = 42;
 	int aux3 = 5;
 	int aux4 = 60;
 
-	ColaPrioridad<int>::const_Iterador it = cola.Encolar(aux);
-	ColaPrioridad<int>::const_Iterador it1 = cola.Encolar(aux2);
-	ColaPrioridad<int>::const_Iterador it2 = cola.Encolar(aux3);
-	ColaPrioridad<int>::const_Iterador it3 = cola.Encolar(aux4);
+	ColaPrioridad<int>::const_Iterador* it = cola.Encolar(aux);
+	ColaPrioridad<int>::const_Iterador* it1 = cola.Encolar(aux2);
+	ColaPrioridad<int>::const_Iterador* it2 = cola.Encolar(aux3);
+	ColaPrioridad<int>::const_Iterador* it3 = cola.Encolar(aux4);
 
-	ASSERT_EQ(it.HaySiguiente(), true);
+	mt::assert_eq(it->HaySiguiente(), true, "");
 
-	ASSERT_EQ(it.Siguiente(), 10);
-	ASSERT_EQ(it1.Siguiente(), 42);
-	ASSERT_EQ(it2.Siguiente(), 5);
-	ASSERT_EQ(it3.Siguiente(), 60);
+	mt::assert_eq(it->Siguiente(), 10, "");
+	mt::assert_eq(it1->Siguiente(), 42, "");
+	mt::assert_eq(it2->Siguiente(), 5, "");
+	mt::assert_eq(it3->Siguiente(), 60, "");
 
-	ASSERT_EQ(cola.Proximo(), 60);
+	mt::assert_eq(cola.Proximo(), 60, "");
 
-	//it.BorrarSiguiente();
+	it->BorrarSiguiente();
 
-	//mt::assert_eq(cola.Proximo(), 60, "testlinea180");
+	mt::assert_eq(cola.Proximo(), 60, "testlinea180");
 
-	it2.BorrarSiguiente();
+	it2->BorrarSiguiente();
 
-	//mt::assert_eq(cola.Proximo(), 60, "testlinea184");
+	mt::assert_eq(cola.Proximo(), 60, "testlinea184");
 
-	it3.BorrarSiguiente();
+	it3->BorrarSiguiente();
 
 	mt::assert_eq(cola.Proximo(), 42, "testlinea188");
 
-	it1.BorrarSiguiente();
+	it1->BorrarSiguiente();
 
-	mt::assert_eq(cola.Proximo(), 10, "testlinea184");
-
-	//mt::assert_eq(cola.EsVacia(),true,"testlinea192");
+	mt::assert_eq(cola.EsVacia(),true,"testlinea192");
 }
 
 int main(int argc, char **argv)

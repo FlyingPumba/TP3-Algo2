@@ -122,9 +122,10 @@ namespace tp {
                 // cambio los padres
                 (*hijo.inicio).padre = (*padre.inicio).padre;
                 (*padre.inicio).padre = &hijo;
-                // arreglo la altura
-                padre.altura = padre.altura - 1;
-                hijo.altura = hijo.altura + 1;
+                // cambio las alturas
+                Nat auxAltura = padre.altura;
+                padre.altura = hijo.altura;
+                hijo.altura = auxAltura;
                 // cambio los tamanhos
                 Nat auxTamanho = padre.tamanho;
                 padre.tamanho = hijo.tamanho;

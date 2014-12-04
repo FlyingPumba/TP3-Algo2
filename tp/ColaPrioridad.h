@@ -22,7 +22,7 @@ namespace tp {
             /**
              * Encola un elemento a la Cola de Prioridad.
              */
-             ColaPrioridad<T>::const_Iterador& Encolar(const T& elem);
+             ColaPrioridad<T>::const_Iterador* Encolar(const T& elem);
 
 
             /**
@@ -48,7 +48,6 @@ namespace tp {
             bool EsVacia() const;
 
             /**
-             /**
              * Devuelve el proximo de la Cola de Prioridad.
              * Requiere: not vacia?(colaPrior)
              */
@@ -65,7 +64,8 @@ namespace tp {
             {
                 public:
 
-                    const_Iterador(ArbolBinario<T>* sub){
+                    const_Iterador(ColaPrioridad<T>* co, ArbolBinario<T>* sub){
+                        this->cola = co;
                         this->subCola = sub;
                     }
 
@@ -96,7 +96,14 @@ namespace tp {
                      */
                     void BorrarSiguiente();
 
+                    ~const_Iterador() {
+                        cola = NULL;
+                        subCola = NULL;
+                        std::cout << "dest it" << std::endl;
+                    }
+
                 private:
+                    ColaPrioridad<T>* cola;
                     ArbolBinario<T>* subCola;
             };
 
@@ -121,6 +128,7 @@ namespace tp {
             ColaPrioridad(ArbolBinario<T>* a) : arbol(a) {};
 
             ArbolBinario<T>* arbol;
+            Lista<const_Iterador*> iteradores;
 
             friend void const_Iterador::BorrarSiguiente();
 
@@ -147,8 +155,22 @@ namespace tp {
 
     template<class T>
     ColaPrioridad<T>::~ColaPrioridad() {
+        std::cout << "dest cola" << std::endl;
         while (!this->EsVacia()) {
+            ArbolBinario<T>* aux = arbol;
             Desencolar();
+            if (EsVacia()) {
+                //delete aux;
+                break;
+            }
+        }
+
+        typename Lista<const_Iterador*>::Iterador it = iteradores.CrearIt();
+        while (it.HaySiguiente()) {
+            const_Iterador* aux = it.Siguiente();
+            std::cout << "del it" << std::endl;
+            delete aux;
+            it.Avanzar();
         }
 
         delete (this->arbol);
@@ -162,14 +184,15 @@ namespace tp {
     }
 
     template<class T>
-    typename ColaPrioridad<T>::const_Iterador& ColaPrioridad<T>::Encolar(const T& elem) {
+    typename ColaPrioridad<T>::const_Iterador* ColaPrioridad<T>::Encolar(const T& elem) {
         if (this->EsVacia()) {
             ArbolBinario<T>* izq = new ArbolBinario<T>();
             ArbolBinario<T>* der = new ArbolBinario<T>();
             delete (this->arbol);
             this->arbol = new ArbolBinario<T>(*izq, elem, *der);
-            ColaPrioridad<T>::const_Iterador* it = new const_Iterador(this->arbol);
-            return *it;
+            ColaPrioridad<T>::const_Iterador* it = new const_Iterador(this, this->arbol);
+            iteradores.AgregarAtras(it);
+            return it;
         } else {
 
             Arreglo<int> camino = CaminoParaInsertarNuevoNodo(*this->arbol);
@@ -188,19 +211,20 @@ namespace tp {
             ArbolBinario<T>* aux = new ArbolBinario<T>(*izq, elem, *der);
 
             if (camino[i] % 2 == 1) {
-                ArbolBinario<T>* aux1 = &(padre->Der());
+                //ArbolBinario<T>* aux1 = &(padre->Der());
                 padre->AgregarHojaDer(*aux);
-                delete aux1;
+                //delete aux1;
                 SubirUltimoNodo(aux);
 
             } else {
-                ArbolBinario<T>* aux1 = &(padre->Izq());
+                //ArbolBinario<T>* aux1 = &(padre->Izq());
                 padre->AgregarHojaIzq(*aux);
-                delete aux1;
+                //delete aux1;
                 SubirUltimoNodo(aux);
             }
-            ColaPrioridad<T>::const_Iterador* it = new const_Iterador(aux);
-            return *it;
+            ColaPrioridad<T>::const_Iterador* it = new const_Iterador(this, aux);
+            iteradores.AgregarAtras(it);
+            return it;
         }
     }
 
@@ -365,7 +389,7 @@ namespace tp {
             } else {
                 camino.Definir(len-i, 1);
             }
-            n=n/2;
+            n = n / 2;
             i++;
         }
         return camino;
@@ -375,34 +399,14 @@ namespace tp {
 
     template<class T>
     void ColaPrioridad<T>::const_Iterador::BorrarSiguiente() {
-        ArbolBinario<T>* aux;
-        if (!this->subCola->Izq().EsNil()) {
-            aux = this->subCola->Izq().Padre();
-        } else if (!this->subCola->Der().EsNil()) {
-            aux = this->subCola->Der().Padre();
-        } else {
-            aux = this->subCola;
-        }
-
-        ArbolBinario<T>* raiz = aux;
-        while (raiz->Padre() != NULL){
-            raiz = raiz->Padre();
-        }
+        ArbolBinario<T>* aux= this->subCola;
 
         while (aux->Padre() != NULL){
             ArbolBinario<T>::Swap(*(aux->Padre()), *aux);
-            /*if (aux.Padre() != NULL){
-                aux = *aux.Padre();
-            }*/
         }
-        ArbolBinario<T>* aux2 = new ArbolBinario<T>(aux->Izq(), aux->Raiz(), aux->Der());
-        ColaPrioridad<T>* colaAux = new ColaPrioridad<T>(aux2);
+        ColaPrioridad<T>* colaAux = new ColaPrioridad<T>(aux);
         colaAux->Desencolar();
-        //delete colaAux;
-        //ArbolBinario<T>& b(*(this->Cola));
-        //b = *(colaAux->arbol);
-        *(raiz) = *(colaAux->arbol);
-        int a = 0;
+        cola->arbol = colaAux->arbol;
     }
 }
 #endif
