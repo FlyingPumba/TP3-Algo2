@@ -161,7 +161,7 @@ void test_iterador_cola()
 	int aux3 = 5;
 	int aux4 = 60;
 
-	ColaPrioridad<int>::const_Iterador it= cola.Encolar(aux);
+	ColaPrioridad<int>::const_Iterador it = cola.Encolar(aux);
 	ColaPrioridad<int>::const_Iterador it1 = cola.Encolar(aux2);
 	ColaPrioridad<int>::const_Iterador it2 = cola.Encolar(aux3);
 	ColaPrioridad<int>::const_Iterador it3 = cola.Encolar(aux4);
@@ -175,26 +175,23 @@ void test_iterador_cola()
 
 	ASSERT_EQ(cola.Proximo(), 60);
 
-	it.BorrarSiguiente();
-	std::cout << "1" << std::endl;
+	//it.BorrarSiguiente();
 
-
-	mt::assert_eq(cola.Proximo(), 60, "testlinea193");
-
-
-	std::cout << "2" << std::endl;
+	//mt::assert_eq(cola.Proximo(), 60, "testlinea180");
 
 	it2.BorrarSiguiente();
 
-	//mt::assert_eq(cola.Proximo(), 60, "testlinea201");
+	//mt::assert_eq(cola.Proximo(), 60, "testlinea184");
 
 	it3.BorrarSiguiente();
 
-	//mt::assert_eq(cola.Proximo(), 45, "testlinea205");
+	mt::assert_eq(cola.Proximo(), 42, "testlinea188");
 
 	it1.BorrarSiguiente();
 
-	//mt::assert_eq(cola.EsVacia(),true,"testlinea2012");
+	mt::assert_eq(cola.Proximo(), 10, "testlinea184");
+
+	//mt::assert_eq(cola.EsVacia(),true,"testlinea192");
 }
 
 int main(int argc, char **argv)

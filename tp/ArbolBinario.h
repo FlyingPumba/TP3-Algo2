@@ -272,7 +272,7 @@ namespace tp {
     template<class T>
     ArbolBinario<T>& ArbolBinario<T>::operator=(const ArbolBinario<T>& otro) {
         if(this != &otro) {
-            Destruir();
+            //Destruir();
             Asignar(otro);
         }
         return *this;
@@ -344,7 +344,15 @@ namespace tp {
             altura = 0;
             inicio = NULL;
         } else {
-            // TODO
+            tamanho = otro.tamanho;
+            altura = otro.altura;
+            inicio = otro.inicio;
+            if (inicio->izq->inicio != NULL) {
+                inicio->izq->inicio->padre = this;
+            }
+            if (inicio->der->inicio != NULL) {
+                inicio->der->inicio->padre = this;
+            }
         }
     }
 

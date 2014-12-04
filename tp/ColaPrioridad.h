@@ -65,8 +65,8 @@ namespace tp {
             {
                 public:
 
-                    const_Iterador(ArbolBinario<T>* b){
-                        this->subCola = b;
+                    const_Iterador(ArbolBinario<T>* sub){
+                        this->subCola = sub;
                     }
 
                     /**
@@ -97,7 +97,6 @@ namespace tp {
                     void BorrarSiguiente();
 
                 private:
-
                     ArbolBinario<T>* subCola;
             };
 
@@ -244,23 +243,23 @@ namespace tp {
             ArbolBinario<T>* nil = new ArbolBinario<T>();
             if (camino[i-1] % 2 == 1) {
                 aux->Padre()->BorrarHojaDer(*nil);
-                if (aux->Izq().EsNil()) {
+                /*if (aux->Izq().EsNil()) {
                     delete &(aux->Izq());
                 }
                 if (aux->Der().EsNil()) {
                     delete &(aux->Der());
                 }
-                delete aux;
+                delete aux;*/
 
             } else {
                 aux->Padre()->BorrarHojaIzq(*nil);
-                if (aux->Izq().EsNil()) {
+                /*if (aux->Izq().EsNil()) {
                     delete &(aux->Izq());
                 }
                 if (aux->Der().EsNil()) {
                     delete &(aux->Der());
                 }
-                delete aux;
+                delete aux;*/
 
             }
             BajarPrimerNodo(*arbol);
@@ -376,23 +375,34 @@ namespace tp {
 
     template<class T>
     void ColaPrioridad<T>::const_Iterador::BorrarSiguiente() {
-        ArbolBinario<T>* aux = this->subCola;
-        ArbolBinario<T>* raiz = this->subCola;
-        while(raiz->Padre() != NULL){
+        ArbolBinario<T>* aux;
+        if (!this->subCola->Izq().EsNil()) {
+            aux = this->subCola->Izq().Padre();
+        } else if (!this->subCola->Der().EsNil()) {
+            aux = this->subCola->Der().Padre();
+        } else {
+            aux = this->subCola;
+        }
+
+        ArbolBinario<T>* raiz = aux;
+        while (raiz->Padre() != NULL){
             raiz = raiz->Padre();
         }
+
         while (aux->Padre() != NULL){
             ArbolBinario<T>::Swap(*(aux->Padre()), *aux);
             /*if (aux.Padre() != NULL){
                 aux = *aux.Padre();
             }*/
         }
-        ColaPrioridad<T>* colaAux = new ColaPrioridad<T>(aux);
+        ArbolBinario<T>* aux2 = new ArbolBinario<T>(aux->Izq(), aux->Raiz(), aux->Der());
+        ColaPrioridad<T>* colaAux = new ColaPrioridad<T>(aux2);
         colaAux->Desencolar();
         //delete colaAux;
         //ArbolBinario<T>& b(*(this->Cola));
         //b = *(colaAux->arbol);
         *(raiz) = *(colaAux->arbol);
+        int a = 0;
     }
 }
 #endif
