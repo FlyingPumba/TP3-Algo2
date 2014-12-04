@@ -43,7 +43,32 @@ void test_cola_encolar()
 	cola.Encolar(aux3);
 	ASSERT_EQ(cola.Proximo(), 42);
 	cola.Encolar(aux4);
-	ASSERT_EQ(cola.Proximo(), 60); 
+	ASSERT_EQ(cola.Proximo(), 60);
+}
+
+void test_cola_encolar1_desencolar1()
+{
+	ColaPrioridad<int> cola;
+
+	int aux = 10;
+
+	cola.Encolar(aux);
+
+	ASSERT_EQ(cola.EsVacia(), false);
+	ASSERT_EQ(cola.Proximo(), 10);
+
+	cola.Desencolar();
+
+	ASSERT_EQ(cola.EsVacia(), true);
+
+	cola.Encolar(aux);
+
+	ASSERT_EQ(cola.EsVacia(), false);
+	ASSERT_EQ(cola.Proximo(), 10);
+
+	cola.Desencolar();
+
+	ASSERT_EQ(cola.EsVacia(), true);
 }
 
 void test_cola_desencolar()
@@ -133,20 +158,48 @@ void test_iterador_cola()
 
 	int aux = 10;
 	int aux2 = 42;
-	//int aux3 = 5;
-	//int aux4 = 60;
+	int aux3 = 5;
+	int aux4 = 60;
 
 	ColaPrioridad<int>::const_Iterador it= cola.Encolar(aux);
 	ColaPrioridad<int>::const_Iterador it1 = cola.Encolar(aux2);
-	//cola.Desencolar();
-	ASSERT_EQ(it.HaySiguiente(), true);
-	ASSERT_EQ(it1.Siguiente(), 42);
-	ASSERT_EQ(it.Siguiente(), 10);
+	ColaPrioridad<int>::const_Iterador it2 = cola.Encolar(aux3);
+	ColaPrioridad<int>::const_Iterador it3 = cola.Encolar(aux4);
 
+	ASSERT_EQ(it.HaySiguiente(), true);
+
+	ASSERT_EQ(it.Siguiente(), 10);
+	ASSERT_EQ(it1.Siguiente(), 42);
+	ASSERT_EQ(it2.Siguiente(), 5);
+	ASSERT_EQ(it3.Siguiente(), 60);
+
+	ASSERT_EQ(cola.Proximo(), 60);
+
+	it.BorrarSiguiente();
+	std::cout << "1" << std::endl;
+
+
+	mt::assert_eq(cola.Proximo(), 60, "testlinea193");
+
+
+	std::cout << "2" << std::endl;
+
+	it2.BorrarSiguiente();
+
+	//mt::assert_eq(cola.Proximo(), 60, "testlinea201");
+
+	it3.BorrarSiguiente();
+
+	//mt::assert_eq(cola.Proximo(), 45, "testlinea205");
+
+	it1.BorrarSiguiente();
+
+	//mt::assert_eq(cola.EsVacia(),true,"testlinea2012");
 }
 
 int main(int argc, char **argv)
 {
+	RUN_TEST(test_cola_encolar1_desencolar1);
 	RUN_TEST(test_cola_vacia_es_vacia);
 	RUN_TEST(test_cola_encolar);
 	RUN_TEST(test_cola_desencolar);

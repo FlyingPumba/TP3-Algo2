@@ -65,8 +65,7 @@ namespace tp {
             {
                 public:
 
-                    const_Iterador(ArbolBinario<T>* a, ArbolBinario<T>* b){
-                        this->Cola = a;
+                    const_Iterador(ArbolBinario<T>* b){
                         this->subCola = b;
                     }
 
@@ -99,7 +98,6 @@ namespace tp {
 
                 private:
 
-                    ArbolBinario<T>* Cola;
                     ArbolBinario<T>* subCola;
             };
 
@@ -121,7 +119,11 @@ namespace tp {
 
             Arreglo<int> CaminoParaBorrarUltimoNodo(ArbolBinario<T>& c);
 
+            ColaPrioridad(ArbolBinario<T>* a) : arbol(a) {};
+
             ArbolBinario<T>* arbol;
+
+            friend void const_Iterador::BorrarSiguiente();
 
     };
 
@@ -167,7 +169,7 @@ namespace tp {
             ArbolBinario<T>* der = new ArbolBinario<T>();
             delete (this->arbol);
             this->arbol = new ArbolBinario<T>(*izq, elem, *der);
-            ColaPrioridad<T>::const_Iterador* it = new const_Iterador(this->arbol, this->arbol);
+            ColaPrioridad<T>::const_Iterador* it = new const_Iterador(this->arbol);
             return *it;
         } else {
 
@@ -198,7 +200,7 @@ namespace tp {
                 delete aux1;
                 SubirUltimoNodo(aux);
             }
-            ColaPrioridad<T>::const_Iterador* it = new const_Iterador(this->arbol, aux);
+            ColaPrioridad<T>::const_Iterador* it = new const_Iterador(aux);
             return *it;
         }
     }
@@ -374,7 +376,23 @@ namespace tp {
 
     template<class T>
     void ColaPrioridad<T>::const_Iterador::BorrarSiguiente() {
-        // TODO
+        ArbolBinario<T>* aux = this->subCola;
+        ArbolBinario<T>* raiz = this->subCola;
+        while(raiz->Padre() != NULL){
+            raiz = raiz->Padre();
+        }
+        while (aux->Padre() != NULL){
+            ArbolBinario<T>::Swap(*(aux->Padre()), *aux);
+            /*if (aux.Padre() != NULL){
+                aux = *aux.Padre();
+            }*/
+        }
+        ColaPrioridad<T>* colaAux = new ColaPrioridad<T>(aux);
+        colaAux->Desencolar();
+        //delete colaAux;
+        //ArbolBinario<T>& b(*(this->Cola));
+        //b = *(colaAux->arbol);
+        *(raiz) = *(colaAux->arbol);
     }
 }
 #endif
