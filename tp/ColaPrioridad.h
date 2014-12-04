@@ -407,6 +407,10 @@ namespace tp {
         ColaPrioridad<T>* colaAux = new ColaPrioridad<T>(aux);
         colaAux->Desencolar();
         cola->arbol = colaAux->arbol;
+        free(colaAux);
+        //delete [] new char [sizeof(colaAux)];
+        //colaAux = NULL;
+        //delete colaAux;
     }
 }
 #endif
