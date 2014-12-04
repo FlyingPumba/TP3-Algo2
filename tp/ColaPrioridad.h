@@ -211,15 +211,15 @@ namespace tp {
             ArbolBinario<T>* aux = new ArbolBinario<T>(*izq, elem, *der);
 
             if (camino[i] % 2 == 1) {
-                //ArbolBinario<T>* aux1 = &(padre->Der());
+                ArbolBinario<T>* aux1 = &(padre->Der());
                 padre->AgregarHojaDer(*aux);
-                //delete aux1;
+                delete aux1;
                 SubirUltimoNodo(aux);
 
             } else {
-                //ArbolBinario<T>* aux1 = &(padre->Izq());
+                ArbolBinario<T>* aux1 = &(padre->Izq());
                 padre->AgregarHojaIzq(*aux);
-                //delete aux1;
+                delete aux1;
                 SubirUltimoNodo(aux);
             }
             ColaPrioridad<T>::const_Iterador* it = new const_Iterador(this, aux);
