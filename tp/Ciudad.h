@@ -284,8 +284,9 @@ namespace tp {
         assert(mapa.Conectadas(est, (*robots)[rur].estActual));
         DiccRapido<bool>& diccAux = (*robots)[rur].sendasInfrac.Significado(EstacionActual(rur));
         ColaPrioridad<NodoPrioridad>& colaEstB = estaciones.Significado(est).robots;
+        const NodoPrioridad& aux = (*robots)[rur].posEstacion->Siguiente();
         (*robots)[rur].posEstacion->BorrarSiguiente();
-        //delete &((*robots)[rur].posEstacion);
+        delete &aux;
         if (diccAux.Significado(est)) {
             (*robots)[rur].infracciones = (*robots)[rur].infracciones + 1;
         }
@@ -302,8 +303,10 @@ namespace tp {
         DatoEstacion& datoEst = estaciones.Significado(est);
         if (!datoEst.robots.EsVacia()) {
             if (datoEst.robots.Proximo().infracciones != 0) {
-                RUR r = datoEst.robots.Proximo().rur;
+                const NodoPrioridad& nodo = datoEst.robots.Proximo();
+                RUR r = nodo.rur;
                 datoEst.robots.Desencolar();
+                delete &nodo;
                 (*robots)[r].esta = false;
             }
         }
@@ -323,25 +326,31 @@ namespace tp {
                 Conj<String>::Iterador it2 = claves2.CrearIt();
                 while (it2.HaySiguiente()) {
                     bool& aux = datoRobot.sendasInfrac.Significado(it.Siguiente()).Significado(it2.Siguiente());
+                    //datoRobot.sendasInfrac.Significado(it.Siguiente()).Borrar(it2.Siguiente());
                     delete &aux;
                     it2.Avanzar();
                 }
 
 
                 DiccRapido<bool>& dicc = datoRobot.sendasInfrac.Significado(it.Siguiente());
+                //datoRobot.sendasInfrac.Borrar(it.Siguiente());
                 delete &dicc;
                 it.Avanzar();
             }
+
+            /*if (datoRobot.esta) {
+                datoRobot.posEstacion->BorrarSiguiente();
+            }*/
+
             //delete &(datoRobot.sendasInfrac);
             //delete &(datoRobot.posEstacion);
             robots->Borrar(i);
-            //delete &datoRobot;
+            delete &datoRobot;
             i = i + 1;
         }
 
         delete robots;
 
-        DiccRapido<DatoEstacion>::const_Iterador itEsts = estaciones.CrearIt();
         Conj<String> claves = estaciones.Claves();
         Conj<String>::Iterador it = claves.CrearIt();
         while (it.HaySiguiente()) {
