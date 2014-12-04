@@ -3,8 +3,10 @@
 
 #include "Tipos.h"
 #include "aed2/TiposBasicos.h"
-
+#include "ArbolSintactico.cpp"
 #include "tp/Ciudad.h"
+
+using namespace tp;
 
 namespace aed2 {
 
@@ -83,9 +85,6 @@ namespace aed2 {
 		Ciudad* ciudad;
 
 		RestriccionTP& ParsearArbolSintactico(ArbolSintactico* expr);
-
-		template <typename T>
-		std::string to_str(const T& t);
 
 	}; // class Driver
 
