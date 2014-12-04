@@ -127,7 +127,7 @@ namespace tp {
             };
 
             struct DatoRobot {
-                DatoRobot(Estacion est, ColaPrioridad<NodoPrioridad>::const_Iterador& it, const ConjRapido& tags) : estActual(est), tags(tags), infracciones(0), posEstacion(it), esta(true) { };
+                DatoRobot(Estacion est, ColaPrioridad<NodoPrioridad>::const_Iterador* it, const ConjRapido& tags) : estActual(est), tags(tags), infracciones(0), posEstacion(it), esta(true) { };
 
                 Estacion estActual;
                 const ConjRapido& tags;
