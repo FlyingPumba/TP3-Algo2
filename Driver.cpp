@@ -15,6 +15,31 @@ namespace aed2 {
     }
 
     Driver::~Driver() {
+        // recolecto todas las restricciones
+        Conj<Estacion>::const_Iterador it = mapa.Estaciones();
+        Conj<RestriccionTP&> restricciones;
+        while (it.HaySiguiente()) {
+            Conj<Estacion>::const_Iterador it2 = mapa.Estaciones();
+            while (it2.HaySiguiente()) {
+                if (mapa.Conectadas(it.Siguiente(), it2.Siguiente())) {
+                    RestriccionTP& rest = mapa.Rest(it.Siguiente(), it2.Siguiente());
+                    restricciones.Agregar(rest);
+                }
+
+                it2.Avanzar();
+            }
+
+            it.Avanzar();
+        }
+
+        // borro todas las restricciones
+        Conj<RestriccionTP&>::const_Iterador itRest = restricciones.CrearIt();
+        while (itRest.HaySiguiente()) {
+            RestriccionTP& rest = itRest.Siguiente();
+            delete &rest;
+            itRest.Avanzar();
+        }
+
         delete ciudad;
     }
 
@@ -98,7 +123,7 @@ namespace aed2 {
             delete ciudad;
         }
         ciudad = new Ciudad(mapa);
-        //delete expr;
+        delete expr;
     }
 
     Nat Driver::CantidadRobotsActivos() const
@@ -218,8 +243,10 @@ namespace aed2 {
         } else if (expr->raiz == "!") {
             rest = RestriccionTP::Not(ParsearArbolSintactico(expr->izq));
         } else {
-            //String* copia = new String(expr->raiz);
-            rest = new RestriccionTP(expr->raiz);
+            String* copia = new String();
+            *copia = expr->raiz;
+            rest = new RestriccionTP(*copia);
+            //rest = new RestriccionTP(expr->raiz);
         }
         return *rest;
     }

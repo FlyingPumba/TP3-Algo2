@@ -554,7 +554,7 @@ template<class K, class S>
 typename Dicc<K,S>::Iterador Dicc<K,S>::Buscar(const K& clave)
 {
   typename Dicc<K,S>::Iterador it = CrearIt();
-  while(it.HaySiguiente() && it.SiguienteClave() != clave){
+  while(it.HaySiguiente() && !(it.SiguienteClave() == clave)){
     it.Avanzar();
   }
   return it;
