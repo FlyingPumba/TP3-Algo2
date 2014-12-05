@@ -25,8 +25,8 @@ void test_ciudad_vacia()
 	mapa.Agregar("B");
 	mapa.Agregar("C");
 
-	Caracteristica tag_Camion = "Camion";
-	RestriccionTP rest(tag_Camion);
+	Caracteristica* tag_Camion = new Caracteristica("Camion");
+	RestriccionTP rest(*tag_Camion);
 
 	mapa.Conectar("A", "B", rest);
 
@@ -40,15 +40,15 @@ void test_ciudad_entrar()
 	mapa.Agregar("B");
 	mapa.Agregar("C");
 
-	Caracteristica tag_Camion = "Camion";
-	RestriccionTP rest(tag_Camion);
+	Caracteristica* tag_Camion = new Caracteristica("Camion");
+	RestriccionTP rest(*tag_Camion);
 
 	mapa.Conectar("A", "B", rest);
 
 	Ciudad c(mapa);
 
 	ConjRapido tags;
-	Caracteristica tag_Auto = "Auto";
+	Caracteristica tag_Auto("Auto");
 	tags.Agregar(tag_Auto);
 
 	int rur = c.ProximoRUR();
@@ -67,21 +67,21 @@ void test_ciudad_mover_sin_infraccion()
 	mapa.Agregar("B");
 	mapa.Agregar("C");
 
-	Caracteristica tag_Camion = "Camion";
-	RestriccionTP rest(tag_Camion);
+	Caracteristica* tag_Camion = new Caracteristica("Camion");
+	RestriccionTP rest(*tag_Camion);
 
 	mapa.Conectar("A", "B", rest);
 
 	Ciudad c(mapa);
 
 	ConjRapido tags;
-	tags.Agregar(tag_Camion);
+	tags.Agregar(*tag_Camion);
 
 	int rur = c.ProximoRUR();
 	c.Entrar(tags, "A");
 	c.Mover(rur, "B");
 	ASSERT_EQ(c.EstacionActual(rur), "B");
-	ASSERT_EQ(c.CantInfracciones(rur), 1);
+	ASSERT_EQ(c.CantInfracciones(rur), 0);
 }
 
 void test_ciudad_mover_con_infraccion()
@@ -91,8 +91,8 @@ void test_ciudad_mover_con_infraccion()
 	mapa.Agregar("B");
 	mapa.Agregar("C");
 
-	Caracteristica tag_Camion = "Camion";
-	RestriccionTP rest(tag_Camion);
+	Caracteristica* tag_Camion = new Caracteristica("Camion");
+	RestriccionTP rest(*tag_Camion);
 
 	mapa.Conectar("A", "B", rest);
 
@@ -106,7 +106,7 @@ void test_ciudad_mover_con_infraccion()
 	c.Entrar(tags, "A");
 	c.Mover(rur, "B");
 	ASSERT_EQ(c.EstacionActual(rur), "B");
-	ASSERT_EQ(c.CantInfracciones(rur), 0);
+	ASSERT_EQ(c.CantInfracciones(rur), 1);
 }
 
 void test_ciudad_iterador()
@@ -116,25 +116,25 @@ void test_ciudad_iterador()
 	mapa.Agregar("B");
 	mapa.Agregar("C");
 
-	Caracteristica tag_Camion = "Camion";
-	RestriccionTP rest1(tag_Camion);
+	Caracteristica* tag_Camion = new Caracteristica("Camion");
+	RestriccionTP rest1(*tag_Camion);
 
 	mapa.Conectar("A", "B", rest1);
 
-	Caracteristica tag_Auto = "Auto";
-	RestriccionTP rest2(tag_Auto);
+	Caracteristica* tag_Auto = new Caracteristica("Auto");
+	RestriccionTP rest2(*tag_Auto);
 
 	mapa.Conectar("B", "C", rest2);
 
 	Ciudad c(mapa);
 
 	ConjRapido tags1;
-	tags1.Agregar(tag_Camion);
+	tags1.Agregar(*tag_Camion);
 	int rur1 = c.ProximoRUR();
 	c.Entrar(tags1, "A");
 
 	ConjRapido tags2;
-	tags2.Agregar(tag_Auto);
+	tags2.Agregar(*tag_Auto);
 	int rur2 = c.ProximoRUR();
 	c.Entrar(tags2, "B");
 
@@ -173,25 +173,25 @@ void test_ciudad_inspeccion()
 	mapa.Agregar("B");
 	mapa.Agregar("C");
 
-	Caracteristica tag_Camion = "Camion";
-	RestriccionTP rest1(tag_Camion);
+	Caracteristica* tag_Camion = new Caracteristica("Camion");
+	RestriccionTP rest1(*tag_Camion);
 
 	mapa.Conectar("A", "B", rest1);
 
-	Caracteristica tag_Auto = "Auto";
-	RestriccionTP rest2(tag_Auto);
+	Caracteristica* tag_Auto = new Caracteristica("Auto");
+	RestriccionTP rest2(*tag_Auto);
 
 	mapa.Conectar("B", "C", rest2);
 
 	Ciudad c(mapa);
 
 	ConjRapido tags1;
-	tags1.Agregar(tag_Camion);
+	tags1.Agregar(*tag_Camion);
 	int rur1 = c.ProximoRUR();
 	c.Entrar(tags1, "A");
 
 	ConjRapido tags2;
-	tags2.Agregar(tag_Auto);
+	tags2.Agregar(*tag_Auto);
 	int rur2 = c.ProximoRUR();
 	c.Entrar(tags2, "B");
 
@@ -199,12 +199,12 @@ void test_ciudad_inspeccion()
 	c.Mover(rur1, "A");
 	c.Mover(rur1, "B");
 	c.Mover(rur1, "A");
-	ASSERT_EQ(c.CantInfracciones(rur1), 4);
+	ASSERT_EQ(c.CantInfracciones(rur1), 0);
 
 	c.Mover(rur2, "C");
 	c.Mover(rur2, "B");
 	c.Mover(rur2, "A");
-	ASSERT_EQ(c.CantInfracciones(rur2), 2);
+	ASSERT_EQ(c.CantInfracciones(rur2), 1);
 
 	c.Inspeccion("A");
 
@@ -226,8 +226,8 @@ void test_ciudad_inspeccion()
 		it.Avanzar();
 	}
 
-	ASSERT_EQ(robot1Esta, false);
-	ASSERT_EQ(robot2Esta, true);
+	ASSERT_EQ(robot1Esta, true);
+	ASSERT_EQ(robot2Esta, false);
 	ASSERT_EQ(hayOtro, false);
 	ASSERT_EQ(cant, 1);
 	delete &it;
