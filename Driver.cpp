@@ -23,6 +23,14 @@ namespace aed2 {
             itRest.Avanzar();
         }
 
+        // borro todos los conjuntos de tags creados al entrar un robot
+        Lista<ConjRapido*>::Iterador itTag = conjTags.CrearIt();
+        while (itTag.HaySiguiente()) {
+            ConjRapido* conj = itTag.Siguiente();
+            delete conj;
+            itTag.Avanzar();
+        }
+
         delete ciudad;
     }
 
@@ -204,6 +212,7 @@ namespace aed2 {
             tags->Agregar(it.Siguiente());
             it.Avanzar();
         }
+        conjTags.AgregarAtras(tags);
         ciudad->Entrar(*tags, estacionInicial);
     }
 
