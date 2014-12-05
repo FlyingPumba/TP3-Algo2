@@ -73,14 +73,18 @@ namespace tp {
     Mapa::Mapa() {}
 
     void Mapa::Agregar(Estacion est) {
+        #ifdef DEBUG
         assert(estaciones.Pertenece(est) == false);
+        #endif
         estaciones.Agregar(est);
     }
 
     void Mapa::Conectar(Estacion est1, Estacion est2, RestriccionTP& r) {
+        #ifdef DEBUG
         assert(estaciones.Pertenece(est1) == true);
         assert(estaciones.Pertenece(est2) == true);
         assert(Conectadas(est1, est2) == false);
+        #endif
         Nodo aux(est1, est2, r);
         sendas.Agregar(aux);
     }
