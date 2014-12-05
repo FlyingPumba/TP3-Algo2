@@ -83,6 +83,7 @@ namespace aed2 {
 		*********************************************************************/
 		Mapa mapa;
 		Ciudad* ciudad;
+		Lista<RestriccionTP*> restricciones;
 
 		RestriccionTP& ParsearArbolSintactico(ArbolSintactico* expr);
 

@@ -113,6 +113,7 @@ namespace tp {
             } else {
                 delete &(arbol->Izq());
                 delete &(arbol->Der());
+                delete &(arbol->Raiz());
                 delete arbol;
             }
         }

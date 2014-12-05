@@ -21,39 +21,42 @@ std::string to_str(const T& t)
 void test_restriccion_simple()
 {
 	ConjRapido tags;
-	Caracteristica tag_Camion = "Camion";
-	Caracteristica tag_Auto = "Auto";
+	Caracteristica* tag_Camion = new Caracteristica("Camion");
+	Caracteristica* tag_Auto = new Caracteristica("Auto");
 
-	RestriccionTP rest(tag_Camion);
+	RestriccionTP rest(*tag_Camion);
 	ASSERT_EQ(rest.Verifica(tags), false);
 
-	tags.Agregar(tag_Auto);
+	tags.Agregar(*tag_Auto);
 	ASSERT_EQ(rest.Verifica(tags), false);
 
-	tags.Agregar(tag_Camion);
+	tags.Agregar(*tag_Camion);
 	ASSERT_EQ(rest.Verifica(tags), true);
+
+	delete tag_Auto;
 }
 
 void test_restriccion_and()
 {
 	ConjRapido tags;
-	Caracteristica tag_Camion = "Camion";
-	Caracteristica tag_Auto = "Auto";
-	Caracteristica tag_Bici = "Bici";
+	Caracteristica* tag_Camion = new Caracteristica("Camion");
+	Caracteristica* tag_Auto = new Caracteristica("Auto");
+	Caracteristica* tag_Bici = new Caracteristica("Bici");
 
-	RestriccionTP r1(tag_Camion);
-	RestriccionTP r2(tag_Auto);
+	RestriccionTP r1(*tag_Camion);
+	RestriccionTP r2(*tag_Auto);
 
 	RestriccionTP* restAnd = RestriccionTP::And(r1, r2);
 
 	ASSERT_EQ(restAnd->Verifica(tags), false);
-	tags.Agregar(tag_Auto);
+	tags.Agregar(*tag_Auto);
 	ASSERT_EQ(restAnd->Verifica(tags), false);
-	tags.Agregar(tag_Bici);
+	tags.Agregar(*tag_Bici);
 	ASSERT_EQ(restAnd->Verifica(tags), false);
-	tags.Agregar(tag_Camion);
+	tags.Agregar(*tag_Camion);
 	ASSERT_EQ(restAnd->Verifica(tags), true);
 
+	delete tag_Bici;
 	delete restAnd;
 }
 
@@ -61,45 +64,48 @@ void test_restriccion_or()
 {
 	ConjRapido tags1;
 	ConjRapido tags2;
-	Caracteristica tag_Camion = "Camion";
-	Caracteristica tag_Auto = "Auto";
-	Caracteristica tag_Bici = "Bici";
+	Caracteristica* tag_Camion = new Caracteristica("Camion");
+	Caracteristica* tag_Auto = new Caracteristica("Auto");
+	Caracteristica* tag_Bici = new Caracteristica("Bici");
 
-	RestriccionTP r1(tag_Camion);
-	RestriccionTP r2(tag_Auto);
+	RestriccionTP r1(*tag_Camion);
+	RestriccionTP r2(*tag_Auto);
 
 	RestriccionTP* restOr = RestriccionTP::Or(r1, r2);
 
 	ASSERT_EQ(restOr->Verifica(tags1), false);
-	tags1.Agregar(tag_Bici);
+	tags1.Agregar(*tag_Bici);
 	ASSERT_EQ(restOr->Verifica(tags1), false);
-	tags1.Agregar(tag_Auto);
+	tags1.Agregar(*tag_Auto);
 	ASSERT_EQ(restOr->Verifica(tags1), true);
-	tags2.Agregar(tag_Camion);
+	tags2.Agregar(*tag_Camion);
 	ASSERT_EQ(restOr->Verifica(tags2), true);
 
+	delete tag_Bici;
 	delete restOr;
 }
 
 void test_restriccion_not()
 {
 	ConjRapido tags;
-	Caracteristica tag_Camion = "Camion";
-	Caracteristica tag_Auto = "Auto";
-	Caracteristica tag_Bici = "Bici";
+	Caracteristica* tag_Camion = new Caracteristica("Camion");
+	Caracteristica* tag_Auto = new Caracteristica("Auto");
+	Caracteristica* tag_Bici = new Caracteristica("Bici");
 
-	RestriccionTP r1(tag_Camion);
+	RestriccionTP r1(*tag_Camion);
 
 	RestriccionTP* restNot = RestriccionTP::Not(r1);
 
 	ASSERT_EQ(restNot->Verifica(tags), true);
-	tags.Agregar(tag_Auto);
+	tags.Agregar(*tag_Auto);
 	ASSERT_EQ(restNot->Verifica(tags), true);
-	tags.Agregar(tag_Bici);
+	tags.Agregar(*tag_Bici);
 	ASSERT_EQ(restNot->Verifica(tags), true);
-	tags.Agregar(tag_Camion);
+	tags.Agregar(*tag_Camion);
 	ASSERT_EQ(restNot->Verifica(tags), false);
 
+	delete tag_Auto;
+	delete tag_Bici;
 	delete restNot;
 }
 
@@ -107,17 +113,17 @@ void test_restriccion_compleja()
 {
 	ConjRapido tags1;
 	ConjRapido tags2;
-	Caracteristica tag_Camion = "Camion";
-	Caracteristica tag_Auto = "Auto";
-	Caracteristica tag_Bici = "Bici";
-	Caracteristica tag_Avion = "Avion";
-	Caracteristica tag_Lancha = "Lancha";
+	Caracteristica* tag_Camion = new Caracteristica("Camion");
+	Caracteristica* tag_Auto = new Caracteristica("Auto");
+	Caracteristica* tag_Bici = new Caracteristica("Bici");
+	Caracteristica* tag_Avion = new Caracteristica("Avion");
+	Caracteristica* tag_Lancha = new Caracteristica("Lancha");
 
-	RestriccionTP r1(tag_Camion);
-	RestriccionTP r2(tag_Auto);
-	RestriccionTP r3(tag_Bici);
-	RestriccionTP r4(tag_Avion);
-	RestriccionTP r5(tag_Lancha);
+	RestriccionTP r1(*tag_Camion);
+	RestriccionTP r2(*tag_Auto);
+	RestriccionTP r3(*tag_Bici);
+	RestriccionTP r4(*tag_Avion);
+	RestriccionTP r5(*tag_Lancha);
 
 	// Restriccion:
 	// (!Avion & !Lancha) & (Camion | Auto | Bici)
@@ -132,12 +138,12 @@ void test_restriccion_compleja()
 
 	ConjRapido tags;
 	ASSERT_EQ(rest->Verifica(tags), false);
-	tags.Agregar(tag_Auto);
+	tags.Agregar(*tag_Auto);
 	ASSERT_EQ(rest->Verifica(tags), true);
-	tags.Agregar(tag_Camion);
+	tags.Agregar(*tag_Camion);
 	ASSERT_EQ(rest->Verifica(tags), true);
-	tags.Agregar(tag_Avion);
-	ASSERT_EQ(rest->Verifica(tags), true);
+	tags.Agregar(*tag_Avion);
+	ASSERT_EQ(rest->Verifica(tags), false);
 
 	delete restNot1;
 	delete restNot2;
