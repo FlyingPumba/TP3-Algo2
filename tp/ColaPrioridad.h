@@ -24,19 +24,6 @@ namespace tp {
              */
              ColaPrioridad<T>::Iterador* Encolar(const T& elem);
 
-
-            /**
-             * Constructor por copia.  Los elementos de otro se copian
-             * en el mismo orden a this, y pasan a ser Colas de Prioridad independientes
-             */
-            ColaPrioridad<T>(const ColaPrioridad<T>& otro);
-
-            /**
-             * Operacion de asignacion.  Borra lo que se que habia en this
-             * y copia los elementos de otro en el mismo orden.
-             */
-            ColaPrioridad<T>& operator=(const ColaPrioridad<T>& otro);
-
             /**
              * Destructor.  Borra lo que hubiera en el ColaPrioridad.
              */
@@ -86,7 +73,9 @@ namespace tp {
                      * Requiere: haysiguiente?(it)
                      */
                     const T& Siguiente() const{
+                        #ifdef DEBUG
                         assert(this->subCola->EsNil() == false);
+                        #endif
                         return this->subCola->Raiz();
                     }
 
@@ -141,16 +130,6 @@ namespace tp {
 
     template<class T>
     ColaPrioridad<T>::ColaPrioridad() : arbol(new ArbolBinario<T>()) { }
-
-    template<class T>
-    ColaPrioridad<T>::ColaPrioridad(const ColaPrioridad<T>& otro) {
-        //TODO
-    }
-
-    template<class T>
-    ColaPrioridad<T>& ColaPrioridad<T>::operator=(const ColaPrioridad<T>& otro) {
-        //TODO
-    }
 
     template<class T>
     ColaPrioridad<T>::~ColaPrioridad() {
@@ -227,7 +206,10 @@ namespace tp {
 
     template<class T>
     void ColaPrioridad<T>::Desencolar() {
+        #ifdef DEBUG
 	    assert(this->arbol->EsNil() != true);
+        #endif
+
         if (arbol->Izq().EsNil() && arbol->Der().EsNil()){
             if (!this->EsVacia()) {
                 if (this->arbol->Izq().EsNil()) {
