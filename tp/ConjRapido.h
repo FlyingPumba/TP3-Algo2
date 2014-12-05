@@ -85,8 +85,6 @@ namespace tp {
 
     };
 
-    std::ostream& operator<<(std::ostream& os, const ConjRapido& c);
-
     ConjRapido::ConjRapido() : size(0) {}
 
     void ConjRapido::Agregar(const String& elem) {
@@ -98,7 +96,7 @@ namespace tp {
     }
 
     ConjRapido::~ConjRapido() {
-        // TODO
+        // Solo hace falta que se destruya el diccionario, y lo hace el compilador
     }
 
     bool ConjRapido::Pertenece(const String& elem) const {
@@ -111,11 +109,6 @@ namespace tp {
 
     Nat ConjRapido::Cardinal() const {
         return size;
-    }
-
-    std::ostream& operator<<(std::ostream& os, const ConjRapido& c) {
-        os << "[";
-        return os << "]";
     }
 
     ConjRapido::const_Iterador ConjRapido::CrearIt() const {
