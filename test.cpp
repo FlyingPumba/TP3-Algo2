@@ -138,7 +138,8 @@ void test_ciudad_simple()
 }
 
 void test_ciudad_completo() {
-	Conj<Estacion> estaciones; estaciones.Agregar("Belgrano"); 
+	Conj<Estacion> estaciones;
+	estaciones.Agregar("Belgrano"); 
 	estaciones.Agregar("Retiro");
 	estaciones.Agregar("Martinez");
 	estaciones.Agregar("Relejos");
@@ -169,7 +170,6 @@ void test_ciudad_completo() {
 	ASSERT_EQ(caba.CantidadEstaciones(), 5);
 	ASSERT_EQ(caba.CaracteristicasIesimoRobotActivo(1) == r2, true);
 	ASSERT_EQ(caba.CantidadRobotsActivos(), 4);
-	//ASSERT_EQ(caba.IesimaRestriccionDeSenda("Relejos",0),"trenDeCarga & !trenDePasajeros" ); //revisar 
 	ASSERT_EQ(caba.CantInfraccionesIesimoRobotActivo(3), 0);
 	ASSERT_EQ(caba.CantidadDeSendasParaEstacion("Belgrano"), 3);
 	ASSERT_EQ(caba.IesimaEstacion(4), "Laboca");
@@ -217,10 +217,186 @@ void test_ciudad_completo() {
 
 }
 
+void test_ciudad_hiper_completo() {
+	Conj<Estacion> estaciones;
+	estaciones.Agregar("Sol"); 
+	estaciones.Agregar("Mercurio"); 
+	estaciones.Agregar("Venus");
+	estaciones.Agregar("Tierra");
+	estaciones.Agregar("Luna");
+	estaciones.Agregar("Marte");
+	estaciones.Agregar("Jupiter");
+	estaciones.Agregar("Saturno");
+	estaciones.Agregar("Urano");
+	estaciones.Agregar("Neptuno");
+
+	Driver sistemaSolar(estaciones);
+
+	sistemaSolar.AgregarSenda("Marte", "Sol", "RecolectorDePlasma");
+	sistemaSolar.AgregarSenda("Marte", "Mercurio", "RecolectorDePlasma");
+	sistemaSolar.AgregarSenda("Mercurio", "Sol", "RecolectorDePlasma");
+
+	sistemaSolar.AgregarSenda("Tierra", "Marte", "Escavadora | NaveDeCarga | ModuloHabitable | NaveDePasajeros");
+	sistemaSolar.AgregarSenda("Tierra", "Luna", "ModuloHabitable & NaveDePasajeros");
+	sistemaSolar.AgregarSenda("Marte", "Luna", "ModuloHabitable | NaveDePasajeros");
+
+	sistemaSolar.AgregarSenda("Tierra", "Neptuno", "NaveReactorNuclear & !NaveDePasajeros");
+	sistemaSolar.AgregarSenda("Tierra", "Saturno", "NaveReactorNuclear & !NaveDePasajeros");
+	sistemaSolar.AgregarSenda("Tierra", "Urano", "NaveReactorNuclear & !NaveDePasajeros");
+	sistemaSolar.AgregarSenda("Neptuno", "Urano", "NaveReactorNuclear & !NaveDePasajeros");
+	sistemaSolar.AgregarSenda("Saturno", "Urano", "NaveReactorNuclear & !NaveDePasajeros");
+	sistemaSolar.AgregarSenda("Saturno", "Neptuno", "NaveReactorNuclear & !NaveDePasajeros");
+	sistemaSolar.AgregarSenda("Saturno", "Jupiter", "NaveReactorNuclear & !NaveDePasajeros");
+	sistemaSolar.AgregarSenda("Urano", "Venus", "NaveReactorNuclear & !NaveDePasajeros");
+	sistemaSolar.AgregarSenda("Neptuno", "Jupiter", "NaveReactorNuclear & !NaveDePasajeros");
+
+	sistemaSolar.AgregarSenda("Marte", "Venus", "NaveDePasajeros");
+	sistemaSolar.AgregarSenda("Venus", "Jupiter", "NaveRebelde");
+	sistemaSolar.AgregarSenda("Tierra", "Venus", "NaveDeGuerra");
+	sistemaSolar.AgregarSenda("Tierra", "Jupiter", "NaveDeGuerra");
+
+
+	Conj<Caracteristica> r1, r2, r3, r4, r5, r6, r7, r8, r9;
+	r1.Agregar("NaveDePasajeros"); 
+
+	r2.Agregar("NaveDePasajeros"); 
+	r2.Agregar("ModuloHabitable"); 
+
+	r3.Agregar("Escavadora"); 
+
+	r4.Agregar("NaveDeCarga");
+	r4.Agregar("NaveDePasajeros");
+
+	r5.Agregar("NaveRebelde");
+	r5.Agregar("NaveDePasajeros");	
+
+	r6.Agregar("NaveRebelde");
+	r6.Agregar("NaveDePasajeros");
+	r6.Agregar("ModuloHabitable");
+
+	r7.Agregar("RecolectorDePlasma"); 
+
+	r8.Agregar("NaveReactorNuclear");
+
+	r9.Agregar("NaveRebelde");
+	r9.Agregar("NaveDeGuerra");
+	r9.Agregar("NaveReactorNuclear");
+
+	sistemaSolar.Entrar(r1,"Tierra"); // RUR 0 
+	sistemaSolar.Entrar(r2,"Luna"); // RUR 1 
+	sistemaSolar.Entrar(r3,"Marte"); // RUR 2 
+	sistemaSolar.Entrar(r4,"Marte"); // RUR 3
+
+	ASSERT_EQ(sistemaSolar.IesimoRobotActivo(2),2);
+	ASSERT_EQ(sistemaSolar.EstacionActualIesimoRobotActivo(2),"Marte");
+	ASSERT_EQ(sistemaSolar.CantidadEstaciones(), 10);
+	ASSERT_EQ(sistemaSolar.CaracteristicasIesimoRobotActivo(3) == r4, true);
+	ASSERT_EQ(sistemaSolar.CantidadRobotsActivos(), 4);
+	ASSERT_EQ(sistemaSolar.CantInfraccionesIesimoRobotActivo(0), 0);
+	ASSERT_EQ(sistemaSolar.CantInfraccionesIesimoRobotActivo(1), 0);
+	ASSERT_EQ(sistemaSolar.CantInfraccionesIesimoRobotActivo(2), 0);
+	ASSERT_EQ(sistemaSolar.CantInfraccionesIesimoRobotActivo(3), 0);
+	ASSERT_EQ(sistemaSolar.CantidadDeSendasParaEstacion("Venus"), 4);
+	ASSERT_EQ(sistemaSolar.CantidadDeSendasParaEstacion("Tierra"), 7);
+
+	// r1 lleva pasajeros a la Luna, pero no es un modulo habitable
+	sistemaSolar.Mover(0,"Luna"); // RUR 0: 1 infracciones 
+	// r1 lleva pasajeros a Marte
+	sistemaSolar.Mover(0,"Marte"); // RUR 0: 0 infracciones 
+	// r1 vuelve a la Luna
+	sistemaSolar.Mover(0,"Luna"); // RUR 0: 0 infracciones 
+	// r1 vuelve a la Tierra
+	sistemaSolar.Mover(0,"Tierra"); // RUR 0: 2 infracciones 
+
+	// r2 va a la Tierra a buscar pasajeros
+	sistemaSolar.Mover(1,"Tierra"); // RUR 1: 0 infracciones 
+	// r2 va a Marte a colonizar
+	sistemaSolar.Mover(1,"Marte"); // RUR 1: 0 infracciones
+
+	// inspeccion en Marte !
+	sistemaSolar.Inspeccion("Marte");
+	// todo en orden por acá:
+	ASSERT_EQ(sistemaSolar.CantidadRobotsActivos(), 4);
+	ASSERT_EQ(sistemaSolar.CantInfraccionesIesimoRobotActivo(0), 2);
+	ASSERT_EQ(sistemaSolar.CantInfraccionesIesimoRobotActivo(1), 0);
+	ASSERT_EQ(sistemaSolar.CantInfraccionesIesimoRobotActivo(2), 0);
+	ASSERT_EQ(sistemaSolar.CantInfraccionesIesimoRobotActivo(3), 0);
+
+	// r3 se mueve a escavar en Venus
+	sistemaSolar.Mover(2,"Venus"); // RUR 2: 1 infracciones 
+
+	sistemaSolar.Entrar(r5,"Venus"); // RUR 4
+	// r5 se mueve a jupiter
+	sistemaSolar.Mover(4,"Jupiter"); // RUR 4: 0 infracciones 
+	// r5 decide explorar Saturno y Urano en busca de material radioactivo
+	sistemaSolar.Mover(4,"Saturno"); // RUR 4: 1 infracciones 
+	sistemaSolar.Mover(4,"Urano"); // RUR 4: 2 infracciones 
+	// r5 vuelve a Venus
+	sistemaSolar.Mover(4,"Venus"); // RUR 4: 3 infracciones 
+
+	// inspeccion en Venus !
+	sistemaSolar.Inspeccion("Venus");
+	// r5 es eliminado del sistema
+	ASSERT_EQ(sistemaSolar.CantidadRobotsActivos(), 4);
+	ASSERT_EQ(sistemaSolar.CantInfraccionesIesimoRobotActivo(0), 2);
+	ASSERT_EQ(sistemaSolar.CantInfraccionesIesimoRobotActivo(1), 0);
+	ASSERT_EQ(sistemaSolar.CantInfraccionesIesimoRobotActivo(2), 1);
+	ASSERT_EQ(sistemaSolar.CantInfraccionesIesimoRobotActivo(3), 0);
+
+	// entras las naves restantes al sistema
+	sistemaSolar.Entrar(r6,"Jupiter"); // RUR 5
+	sistemaSolar.Entrar(r7,"Marte"); // RUR 6
+	sistemaSolar.Entrar(r8,"Saturno"); // RUR 7
+	sistemaSolar.Entrar(r9,"Jupiter"); // RUR 8
+
+	// r8 recorre todos los planetas radioactivos
+	sistemaSolar.Mover(7,"Urano"); // RUR 8: 0 infracciones 
+	sistemaSolar.Mover(7,"Neptuno"); // RUR 8: 0 infracciones 
+	sistemaSolar.Mover(7,"Urano"); // RUR 8: 0 infracciones 
+	sistemaSolar.Mover(7,"Saturno"); // RUR 8: 0 infracciones 
+	sistemaSolar.Mover(7,"Neptuno"); // RUR 8: 0 infracciones 
+	sistemaSolar.Mover(7,"Saturno"); // RUR 8: 0 infracciones 
+
+	// r9 se mueve a Saturno a buscar material radioactivo, escoltado por r6
+	sistemaSolar.Mover(8,"Saturno"); // RUR 8: 1 infracciones 
+	sistemaSolar.Mover(5,"Saturno"); // RUR 8: 1 infracciones 
+
+	// encuentran a r8 y lo capturan, llevandolo a Neptuno y luego volviendo a Jupiter
+	sistemaSolar.Mover(7,"Neptuno"); // RUR 7: 0 infracciones 
+	sistemaSolar.Mover(8,"Neptuno"); // RUR 8: 2 infracciones 
+	sistemaSolar.Mover(5,"Neptuno"); // RUR 5: 2 infracciones 
+	sistemaSolar.Mover(7,"Jupiter"); // RUR 7: 1 infracciones 
+	sistemaSolar.Mover(8,"Jupiter"); // RUR 8: 2 infracciones 
+	sistemaSolar.Mover(5,"Jupiter"); // RUR 5: 2 infracciones 
+
+	// patrulla de inspeccion en Jupiter !
+	sistemaSolar.Inspeccion("Jupiter");
+	sistemaSolar.Inspeccion("Jupiter");
+
+	ASSERT_EQ(sistemaSolar.CantidadRobotsActivos(), 7);
+	ASSERT_EQ(sistemaSolar.CantInfraccionesIesimoRobotActivo(0), 2);
+	ASSERT_EQ(sistemaSolar.CantInfraccionesIesimoRobotActivo(1), 0);
+	ASSERT_EQ(sistemaSolar.CantInfraccionesIesimoRobotActivo(2), 1);
+	ASSERT_EQ(sistemaSolar.CantInfraccionesIesimoRobotActivo(3), 0);
+	ASSERT_EQ(sistemaSolar.CantInfraccionesIesimoRobotActivo(4), 0);
+	ASSERT_EQ(sistemaSolar.CantInfraccionesIesimoRobotActivo(5), 0);
+	ASSERT_EQ(sistemaSolar.CantInfraccionesIesimoRobotActivo(6), 0);
+
+	ASSERT_EQ(sistemaSolar.ElMasInfractor(), 0);
+	ASSERT_EQ(sistemaSolar.EstacionActualIesimoRobotActivo(0),"Tierra");
+	ASSERT_EQ(sistemaSolar.EstacionActualIesimoRobotActivo(1),"Marte");
+	ASSERT_EQ(sistemaSolar.EstacionActualIesimoRobotActivo(2),"Venus");
+	ASSERT_EQ(sistemaSolar.EstacionActualIesimoRobotActivo(3),"Marte");
+	ASSERT_EQ(sistemaSolar.EstacionActualIesimoRobotActivo(4),"Marte");
+	ASSERT_EQ(sistemaSolar.EstacionActualIesimoRobotActivo(5),"Jupiter");
+	ASSERT_EQ(sistemaSolar.EstacionActualIesimoRobotActivo(6),"Jupiter");
+}
+
 int main(int argc, char **argv)
 {
 	RUN_TEST(test_ciudad_simple);
 	RUN_TEST(test_ciudad_completo);
+	RUN_TEST(test_ciudad_hiper_completo);
 
 /******************************************************************
  * TODO: escribir casos de test exhaustivos para todas            *
