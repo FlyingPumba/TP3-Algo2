@@ -20,11 +20,6 @@ namespace tp {
             ArbolBinario(ArbolBinario<T>& izq, const T& raiz, ArbolBinario<T>& der);
 
             /**
-             * Constructor por copia.
-             */
-            ArbolBinario(const ArbolBinario<T>& otro);
-
-            /**
              * Operacion de asignacion.  Borra lo que se que habia en this y copia las referencias al otro.
              * El inicio de los dos arboles pasan a apuntar a la misma dirección de memoria.
              */
@@ -112,9 +107,11 @@ namespace tp {
              *      (Izq(padre) == hijo or Der(padre) == hijo)
              */
             static void Swap(ArbolBinario<T>& padre, ArbolBinario<T>& hijo) {
+                #ifdef DEBUG
                 assert(padre.EsNil() != true);
                 assert(hijo.EsNil() != true);
                 assert(padre.Izq() == hijo || padre.Der() == hijo);
+                #endif
                 // NO copio los datos del padre al hijo y viceversa porque quiero que la dir conserve su valor inicial
                 //const T* punteroAux = (*padre.inicio).dato;
                 //(*padre.inicio).dato = (*hijo.inicio).dato;
@@ -171,8 +168,10 @@ namespace tp {
 
             }
             static void CambiarPimeroPorUltimo(ArbolBinario<T>& prim, ArbolBinario<T>& ult) {
+                #ifdef DEBUG
                 assert(prim.EsNil() != true);
                 assert(ult.EsNil() != true);
+                #endif
                 // cambio los padres
                 (*prim.inicio).padre = (*ult.inicio).padre;
                 (*ult.inicio).padre = NULL;
@@ -266,14 +265,8 @@ namespace tp {
     }
 
     template<class T>
-    ArbolBinario<T>::ArbolBinario(const ArbolBinario<T>& otro) {
-        // TODO
-    }
-
-    template<class T>
     ArbolBinario<T>& ArbolBinario<T>::operator=(const ArbolBinario<T>& otro) {
         if(this != &otro) {
-            //Destruir();
             Asignar(otro);
         }
         return *this;
@@ -303,14 +296,18 @@ namespace tp {
 
     template<class T>
     const T& ArbolBinario<T>::Raiz() const {
+        #ifdef DEBUG
         assert(inicio != NULL);
+        #endif
         assert((*inicio).dato != NULL);
         return *(inicio->dato);
     }
 
     template<class T>
     ArbolBinario<T>* ArbolBinario<T>::Padre() const {
+        #ifdef DEBUG
         assert(inicio != NULL);
+        #endif
         return inicio->padre;
     }
 
@@ -326,7 +323,9 @@ namespace tp {
 
     template<class T>
     void ArbolBinario<T>::CambiarRaiz(const T& raiz) {
+        #ifdef DEBUG
         assert(inicio != NULL);
+        #endif
         (*inicio).dato = &raiz;
     }
 
@@ -386,10 +385,13 @@ namespace tp {
 
     template<class T>
     void ArbolBinario<T>::BorrarHojaIzq(ArbolBinario<T>& nil) {
+        #ifdef DEBUG
         assert(this->EsNil() != true);
         assert(nil.EsNil() == true);
         assert(this->Izq().EsNil() != true);
         assert(this->Izq().Izq().EsNil() == true && this->Izq().Der().EsNil() == true);
+        #endif
+
         this->inicio->izq = &nil;
        // nil.inicio->padre = this;
         this->tamanho = this->tamanho - 1;
@@ -418,10 +420,13 @@ namespace tp {
 
     template<class T>
     void ArbolBinario<T>::BorrarHojaDer(ArbolBinario<T>& nil) {
+        #ifdef DEBUG
         assert(this->EsNil() != true);
         assert(nil.EsNil() == true);
         assert(this->Der().EsNil() != true);
         assert(this->Der().Izq().EsNil() == true && this->Der().Der().EsNil() == true);
+        #endif
+
         this->inicio->der = &nil;
       //  nil.inicio->padre = this;
         this->tamanho = this->tamanho - 1;
@@ -450,9 +455,12 @@ namespace tp {
 
     template<class T>
     void ArbolBinario<T>::AgregarHojaIzq(ArbolBinario<T>& izq) {
+        #ifdef DEBUG
         assert(this->EsNil() != true);
         assert(this->Izq().EsNil() == true);
         assert(izq.Izq().EsNil() == true && izq.Der().EsNil() == true);
+        #endif
+
         this->inicio->izq = &izq;
         izq.inicio->padre = this;
         this->tamanho = this->tamanho + 1;
@@ -481,9 +489,12 @@ namespace tp {
 
     template<class T>
     void ArbolBinario<T>::AgregarHojaDer(ArbolBinario<T>& der) {
+        #ifdef DEBUG
         assert(this->EsNil() != true);
         assert(this->Der().EsNil() == true);
         assert(der.Izq().EsNil() == true && der.Der().EsNil() == true);
+        #endif
+
         this->inicio->der = &der;
         der.inicio->padre = this;
         this->tamanho = this->tamanho + 1;
