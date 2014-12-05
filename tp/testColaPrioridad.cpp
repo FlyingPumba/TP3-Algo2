@@ -159,10 +159,10 @@ void test_iterador_cola()
 	int aux3 = 5;
 	int aux4 = 60;
 
-	ColaPrioridad<int>::const_Iterador* it = cola.Encolar(aux);
-	ColaPrioridad<int>::const_Iterador* it1 = cola.Encolar(aux2);
-	ColaPrioridad<int>::const_Iterador* it2 = cola.Encolar(aux3);
-	ColaPrioridad<int>::const_Iterador* it3 = cola.Encolar(aux4);
+	ColaPrioridad<int>::Iterador* it = cola.Encolar(aux);
+	ColaPrioridad<int>::Iterador* it1 = cola.Encolar(aux2);
+	ColaPrioridad<int>::Iterador* it2 = cola.Encolar(aux3);
+	ColaPrioridad<int>::Iterador* it3 = cola.Encolar(aux4);
 
 	mt::assert_eq(it->HaySiguiente(), true, "");
 

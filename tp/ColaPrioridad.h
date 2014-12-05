@@ -12,7 +12,7 @@ namespace tp {
         public:
 
             // forward declaration
-            class const_Iterador;
+            class Iterador;
 
             /**
              * Crea una Cola de Prioridad.
@@ -22,7 +22,7 @@ namespace tp {
             /**
              * Encola un elemento a la Cola de Prioridad.
              */
-             ColaPrioridad<T>::const_Iterador* Encolar(const T& elem);
+             ColaPrioridad<T>::Iterador* Encolar(const T& elem);
 
 
             /**
@@ -60,11 +60,11 @@ namespace tp {
 
             void Desencolar();
 
-            class const_Iterador
+            class Iterador
             {
                 public:
 
-                    const_Iterador(ColaPrioridad<T>* co, ArbolBinario<T>* sub){
+                    Iterador(ColaPrioridad<T>* co, ArbolBinario<T>* sub){
                         this->cola = co;
                         this->subCola = sub;
                     }
@@ -96,7 +96,7 @@ namespace tp {
                      */
                     void BorrarSiguiente();
 
-                    ~const_Iterador() {
+                    ~Iterador() {
                         cola = NULL;
                         subCola = NULL;
                     }
@@ -127,9 +127,9 @@ namespace tp {
             ColaPrioridad(ArbolBinario<T>* a) : arbol(a) {};
 
             ArbolBinario<T>* arbol;
-            Lista<const_Iterador*> iteradores;
+            Lista<Iterador*> iteradores;
 
-            friend void const_Iterador::BorrarSiguiente();
+            friend void Iterador::BorrarSiguiente();
 
     };
 
@@ -163,9 +163,9 @@ namespace tp {
             }
         }
 
-        typename Lista<const_Iterador*>::Iterador it = iteradores.CrearIt();
+        typename Lista<Iterador*>::Iterador it = iteradores.CrearIt();
         while (it.HaySiguiente()) {
-            const_Iterador* aux = it.Siguiente();
+            Iterador* aux = it.Siguiente();
             delete aux;
             it.Avanzar();
         }
@@ -181,13 +181,13 @@ namespace tp {
     }
 
     template<class T>
-    typename ColaPrioridad<T>::const_Iterador* ColaPrioridad<T>::Encolar(const T& elem) {
+    typename ColaPrioridad<T>::Iterador* ColaPrioridad<T>::Encolar(const T& elem) {
         if (this->EsVacia()) {
             ArbolBinario<T>* izq = new ArbolBinario<T>();
             ArbolBinario<T>* der = new ArbolBinario<T>();
             delete (this->arbol);
             this->arbol = new ArbolBinario<T>(*izq, elem, *der);
-            ColaPrioridad<T>::const_Iterador* it = new const_Iterador(this, this->arbol);
+            ColaPrioridad<T>::Iterador* it = new Iterador(this, this->arbol);
             iteradores.AgregarAtras(it);
             return it;
         } else {
@@ -219,7 +219,7 @@ namespace tp {
                 delete aux1;
                 SubirUltimoNodo(aux);
             }
-            ColaPrioridad<T>::const_Iterador* it = new const_Iterador(this, aux);
+            ColaPrioridad<T>::Iterador* it = new Iterador(this, aux);
             iteradores.AgregarAtras(it);
             return it;
         }
@@ -395,7 +395,7 @@ namespace tp {
     // Implementacion del iterador:
 
     template<class T>
-    void ColaPrioridad<T>::const_Iterador::BorrarSiguiente() {
+    void ColaPrioridad<T>::Iterador::BorrarSiguiente() {
         ArbolBinario<T>* aux= this->subCola;
 
         while (aux->Padre() != NULL){

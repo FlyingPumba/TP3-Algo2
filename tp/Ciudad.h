@@ -127,12 +127,12 @@ namespace tp {
             };
 
             struct DatoRobot {
-                DatoRobot(Estacion est, ColaPrioridad<NodoPrioridad>::const_Iterador* it, const ConjRapido& tags, DiccRapido< DiccRapido<bool> >* dicc) : estActual(est), tags(tags), infracciones(0), posEstacion(it), sendasInfrac(dicc), esta(true){};
+                DatoRobot(Estacion est, ColaPrioridad<NodoPrioridad>::Iterador* it, const ConjRapido& tags, DiccRapido< DiccRapido<bool> >* dicc) : estActual(est), tags(tags), infracciones(0), posEstacion(it), sendasInfrac(dicc), esta(true){};
 
                 Estacion estActual;
                 const ConjRapido& tags;
                 Nat infracciones;
-                ColaPrioridad<NodoPrioridad>::const_Iterador* posEstacion;
+                ColaPrioridad<NodoPrioridad>::Iterador* posEstacion;
                 DiccRapido< DiccRapido<bool> >* sendasInfrac;
                 bool esta;
             };
@@ -245,7 +245,7 @@ namespace tp {
         nodo->rur = proximoRUR;
 
         DatoEstacion& datoAux = estaciones.Significado(est);
-        ColaPrioridad<NodoPrioridad>::const_Iterador* itCola = datoAux.robots.Encolar(*nodo);
+        ColaPrioridad<NodoPrioridad>::Iterador* itCola = datoAux.robots.Encolar(*nodo);
         DiccRapido< DiccRapido<bool> >* dicc = new DiccRapido< DiccRapido<bool> >();
 
         DatoRobot* datoRobot = new DatoRobot(est, itCola, tags, dicc);
@@ -294,7 +294,7 @@ namespace tp {
         NodoPrioridad* nodo = new NodoPrioridad();
         nodo->infracciones = (*robots)[rur].infracciones;
         nodo->rur = rur;
-        ColaPrioridad<NodoPrioridad>::const_Iterador* itCola = colaEstB.Encolar(*nodo);
+        ColaPrioridad<NodoPrioridad>::Iterador* itCola = colaEstB.Encolar(*nodo);
         (*robots)[rur].posEstacion = itCola;
         (*robots)[rur].estActual = est;
     }
