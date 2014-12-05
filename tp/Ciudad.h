@@ -127,13 +127,13 @@ namespace tp {
             };
 
             struct DatoRobot {
-                DatoRobot(Estacion est, ColaPrioridad<NodoPrioridad>::const_Iterador* it, const ConjRapido& tags) : estActual(est), tags(tags), infracciones(0), posEstacion(it), esta(true){};
+                DatoRobot(Estacion est, ColaPrioridad<NodoPrioridad>::const_Iterador* it, const ConjRapido& tags, DiccRapido< DiccRapido<bool> >* dicc) : estActual(est), tags(tags), infracciones(0), posEstacion(it), sendasInfrac(dicc), esta(true){};
 
                 Estacion estActual;
                 const ConjRapido& tags;
                 Nat infracciones;
                 ColaPrioridad<NodoPrioridad>::const_Iterador* posEstacion;
-                DiccRapido< DiccRapido<bool> > sendasInfrac;
+                DiccRapido< DiccRapido<bool> >* sendasInfrac;
                 bool esta;
             };
 
@@ -246,22 +246,22 @@ namespace tp {
 
         DatoEstacion& datoAux = estaciones.Significado(est);
         ColaPrioridad<NodoPrioridad>::const_Iterador* itCola = datoAux.robots.Encolar(*nodo);
-        //ColaPrioridad<NodoPrioridad>::const_Iterador& itCola = datoAux.robots.Encolar(*nodo);
+        DiccRapido< DiccRapido<bool> >* dicc = new DiccRapido< DiccRapido<bool> >();
 
-        DatoRobot* datoRobot = new DatoRobot(est, itCola, tags);
+        DatoRobot* datoRobot = new DatoRobot(est, itCola, tags, dicc);
 
         Conj<Ests>::const_Iterador it = estsConectadas.CrearIt();
         while (it.HaySiguiente()) {
             Estacion estA = it.Siguiente().estA;
             Estacion estB = it.Siguiente().estB;
-            if (!datoRobot->sendasInfrac.Definido(estA)) {
+            if (!datoRobot->sendasInfrac->Definido(estA)) {
                 DiccRapido<bool>* dicc = new DiccRapido<bool>();
-                datoRobot->sendasInfrac.Definir(estA, *dicc);
+                datoRobot->sendasInfrac->Definir(estA, *dicc);
             }
             DiccRapido<RestriccionTP>& diccAux = estaciones.Significado(estA).sendas;
             RestriccionTP& rest = diccAux.Significado(estB);
 
-            DiccRapido<bool>& dicc = datoRobot->sendasInfrac.Significado(estA);
+            DiccRapido<bool>& dicc = datoRobot->sendasInfrac->Significado(estA);
             if (rest.Verifica(tags)) {
                 bool* aux = new bool();
                 *aux = true;
@@ -276,12 +276,14 @@ namespace tp {
         }
         robots->Definir(proximoRUR, *datoRobot);
         proximoRUR = proximoRUR + 1;
+
+        delete datoRobot;
     }
 
     void Ciudad::Mover(RUR rur, Estacion est) {
         assert(estaciones.Definido(est));
         assert(mapa.Conectadas(est, (*robots)[rur].estActual));
-        DiccRapido<bool>& diccAux = (*robots)[rur].sendasInfrac.Significado(EstacionActual(rur));
+        DiccRapido<bool>& diccAux = (*robots)[rur].sendasInfrac->Significado(EstacionActual(rur));
         ColaPrioridad<NodoPrioridad>& colaEstB = estaciones.Significado(est).robots;
         const NodoPrioridad& aux = (*robots)[rur].posEstacion->Siguiente();
         (*robots)[rur].posEstacion->BorrarSiguiente();
@@ -317,34 +319,25 @@ namespace tp {
         while (i < robots->Tamanho() && robots->Definido(i)) {
 
             DatoRobot& datoRobot = (*robots)[i];
-            Conj<String> claves = datoRobot.sendasInfrac.Claves();
+            Conj<String> claves = datoRobot.sendasInfrac->Claves();
             Conj<String>::Iterador it = claves.CrearIt();
             while (it.HaySiguiente()) {
 
-                Conj<String> claves2 = datoRobot.sendasInfrac.Significado(it.Siguiente()).Claves();
+                Conj<String> claves2 = datoRobot.sendasInfrac->Significado(it.Siguiente()).Claves();
                 Conj<String>::Iterador it2 = claves2.CrearIt();
                 while (it2.HaySiguiente()) {
-                    bool& aux = datoRobot.sendasInfrac.Significado(it.Siguiente()).Significado(it2.Siguiente());
-                    //datoRobot.sendasInfrac.Significado(it.Siguiente()).Borrar(it2.Siguiente());
+                    bool& aux = datoRobot.sendasInfrac->Significado(it.Siguiente()).Significado(it2.Siguiente());
                     delete &aux;
                     it2.Avanzar();
                 }
 
 
-                DiccRapido<bool>& dicc = datoRobot.sendasInfrac.Significado(it.Siguiente());
-                //datoRobot.sendasInfrac.Borrar(it.Siguiente());
+                DiccRapido<bool>& dicc = datoRobot.sendasInfrac->Significado(it.Siguiente());
                 delete &dicc;
                 it.Avanzar();
             }
 
-            /*if (datoRobot.esta) {
-                datoRobot.posEstacion->BorrarSiguiente();
-            }*/
-
-            //delete &(datoRobot.sendasInfrac);
-            //delete &(datoRobot.posEstacion);
-            robots->Borrar(i);
-            //delete &datoRobot;
+            delete datoRobot.sendasInfrac;
             i = i + 1;
         }
 
