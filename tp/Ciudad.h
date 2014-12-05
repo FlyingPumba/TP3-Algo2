@@ -228,7 +228,10 @@ namespace tp {
     }
 
     void Ciudad::Entrar(const ConjRapido& tags, Estacion est) {
+        #ifdef DEBUG
         assert(estaciones.Definido(est));
+        #endif
+
         if (robots->Tamanho() == proximoRUR + 1) {
             Arreglo<DatoRobot>* aux =  new Arreglo<DatoRobot>(32);
             int i = 0;
@@ -281,8 +284,11 @@ namespace tp {
     }
 
     void Ciudad::Mover(RUR rur, Estacion est) {
+        #ifdef DEBUG
         assert(estaciones.Definido(est));
         assert(mapa.Conectadas(est, (*robots)[rur].estActual));
+        #endif
+
         DiccRapido<bool>& diccAux = (*robots)[rur].sendasInfrac->Significado(EstacionActual(rur));
         ColaPrioridad<NodoPrioridad>& colaEstB = estaciones.Significado(est).robots;
         const NodoPrioridad& aux = (*robots)[rur].posEstacion->Siguiente();
@@ -300,7 +306,10 @@ namespace tp {
     }
 
     void Ciudad::Inspeccion(Estacion est) {
+        #ifdef DEBUG
         assert(estaciones.Definido(est));
+        #endif
+
         DatoEstacion& datoEst = estaciones.Significado(est);
         if (!datoEst.robots.EsVacia()) {
             if (datoEst.robots.Proximo().infracciones != 0) {
@@ -373,17 +382,23 @@ namespace tp {
     }
 
     Estacion Ciudad::EstacionActual(RUR r) const {
+        #ifdef DEBUG
         assert(robots->Definido(r));
+        #endif
         return (*robots)[r].estActual;
     }
 
     const ConjRapido& Ciudad::Tags(RUR r) const {
+        #ifdef DEBUG
         assert(robots->Definido(r));
+        #endif
         return (*robots)[r].tags;
     }
 
     const Nat Ciudad::CantInfracciones(RUR r) const {
+        #ifdef DEBUG
         assert(robots->Definido(r));
+        #endif
         return (*robots)[r].infracciones;
     }
 
@@ -418,7 +433,9 @@ namespace tp {
     }
 
     void itArreglo::Avanzar() {
+        #ifdef DEBUG
         assert(HaySiguiente());
+        #endif
         int i = pos + 1;
         bool hayUnoValido = false;
         while (i < arreglo.Tamanho() && arreglo.Definido(i)) {
