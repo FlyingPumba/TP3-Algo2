@@ -121,7 +121,7 @@ namespace aed2 {
             j = j + 1;
             it.Avanzar();
         }
-        RUR r = it.Siguiente().posEstacion.Siguiente().rur;
+        RUR r = it.Siguiente().posEstacion->Siguiente().rur;
         delete &it;
         return r;
     }
@@ -173,12 +173,12 @@ namespace aed2 {
     RUR Driver::ElMasInfractor() const
     {
         itArreglo& it(ciudad->Robots());
-        RUR r = it.Siguiente().posEstacion.Siguiente().rur;
+        RUR r = it.Siguiente().posEstacion->Siguiente().rur;
         Nat inf = it.Siguiente().infracciones;
 
         while (it.HaySiguiente()) {
             if (it.Siguiente().infracciones > inf) {
-                r = it.Siguiente().posEstacion.Siguiente().rur;
+                r = it.Siguiente().posEstacion->Siguiente().rur;
                 inf = it.Siguiente().infracciones;
             }
             it.Avanzar();

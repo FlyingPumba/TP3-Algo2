@@ -264,11 +264,11 @@ namespace tp {
             DiccRapido<bool>& dicc = datoRobot->sendasInfrac->Significado(estA);
             if (rest.Verifica(tags)) {
                 bool* aux = new bool();
-                *aux = true;
+                *aux = false;
                 dicc.Definir(estB, *aux);
             } else {
                 bool* aux = new bool();
-                *aux = false;
+                *aux = true;
                 dicc.Definir(estB, *aux);
             }
 
