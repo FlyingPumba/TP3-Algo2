@@ -70,8 +70,6 @@ namespace tp {
 
     };
 
-    std::ostream& operator<<(std::ostream& os, const Mapa&);
-
     Mapa::Mapa() {}
 
     void Mapa::Agregar(Estacion est) {
@@ -88,7 +86,7 @@ namespace tp {
     }
 
     Mapa::~Mapa() {
-        // TODO
+        // No hace falta borrar nada, no se hacen llamadas a new
     }
 
     Conj<Estacion>::const_Iterador Mapa::Estaciones() const {
@@ -96,8 +94,10 @@ namespace tp {
     }
 
     bool Mapa::Conectadas(Estacion est1, Estacion est2) const {
+        #ifdef DEBUG
         assert(estaciones.Pertenece(est1) == true);
         assert(estaciones.Pertenece(est2) == true);
+        #endif
         Conj<Nodo>::const_Iterador it = sendas.CrearIt();
         while (it.HaySiguiente()) {
             Nodo aux = it.Siguiente();
@@ -111,9 +111,11 @@ namespace tp {
     }
 
     RestriccionTP& Mapa::Rest(Estacion est1, Estacion est2) const {
+        #ifdef DEBUG
         assert(estaciones.Pertenece(est1) == true);
         assert(estaciones.Pertenece(est2) == true);
         //assert(Conectadas(est1, est2) == true);
+        #endif
         Conj<Nodo>::const_Iterador it = sendas.CrearIt();
         while (it.HaySiguiente()) {
             Nodo aux = it.Siguiente();
@@ -123,11 +125,6 @@ namespace tp {
             }
             it.Avanzar();
         }
-    }
-
-    std::ostream& operator<<(std::ostream& os, const Mapa& a) {
-        os << "[";
-        return os << "]";
     }
 }
 #endif

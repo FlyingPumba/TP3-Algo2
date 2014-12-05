@@ -54,8 +54,8 @@ void test_mapa_con_estaciones_conectadas()
 	mapa.Agregar("B");
 	mapa.Agregar("C");
 
-	Caracteristica tag_Camion = "Camion";
-	RestriccionTP rest(tag_Camion);
+	Caracteristica* tag_Camion = new Caracteristica("Camion");
+	RestriccionTP rest(*tag_Camion);
 
 	mapa.Conectar("A", "B", rest);
 	ASSERT_EQ(mapa.Conectadas("A", "B"), true);
