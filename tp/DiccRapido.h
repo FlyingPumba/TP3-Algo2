@@ -108,12 +108,6 @@ namespace tp {
     };
 
     template<class T>
-    std::ostream& operator<<(std::ostream& os, const DiccRapido<T>&);
-
-    template<class T>
-    bool operator==(const DiccRapido<T>&, const DiccRapido<T>&);
-
-    template<class T>
     DiccRapido<T>::DiccRapido() {}
 
     template<class T>
@@ -245,12 +239,6 @@ namespace tp {
     template<class T>
     const Conj<String>& DiccRapido<T>::Claves() const {
         return claves;
-    }
-
-    template<class T>
-    std::ostream& operator<<(std::ostream& os, const DiccRapido<T>& a) {
-        os << "[";
-        return os << "]";
     }
 
     template<class T>
